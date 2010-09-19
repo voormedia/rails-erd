@@ -1,0 +1,4 @@
+=== 0.1.0
+
+* Released on September 20th, 2010.
+* First public release.

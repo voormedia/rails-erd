@@ -1,0 +1,56 @@
+= Rails ERD - Generate Entity-Relationship Diagrams for Rails applications
+
+Rails ERD is a Rails plugin that allows you to easily generate diagrams based
+on your ActiveRecord models. The diagrams give a great overview of how your
+models are related. Having a diagram that describes your models is perfect
+documentation for your application.
+
+Rails ERD was created specifically for Rails 3. It uses ActiveRecord reflection
+to figure out how your models are associated.
+
+== Getting started
+
+In its most simple form, Rails ERD is a plugin for Rails 3 that provides you
+with a Rake task to create an Entity-Relationship Diagram. It depends on the
+Graphviz visualisation library. You have to install Graphviz before using
+Rails ERD. In order to create PDF files (the default), you should install
+or compile Graphviz with Pango/Cairo.
+
+For example, to install Graphviz with MacPorts:
+
+  % sudo port install graphviz
+
+Or with Homebrew:
+
+  % brew install cairo pango graphviz
+
+Next, install Rails ERD. Open your +Gemfile+, and add the following:
+
+  group :development do
+    gem 'rails-erd'
+  end
+
+Tell Bundler to install Rails ERD:
+
+  % bundle install
+
+You now have access to Rails ERD through Rake. Generate a new
+Entity-Relationship Diagram for your Rails application:
+
+  % rake erd
+
+All done! You will now have a file named +ERD.pdf+ in your application root.
+
+== Advanced use
+
+Rails ERD has several options that you can use to customise its behaviour.
+All options can be provided on the command line. For example:
+
+  % rake erd exclude_timestamps=false
+
+For an overview of all available options, see the documentation of RailsERD:
+http://rails-erd.rubyforge.org/doc/
+
+== License
+
+Rails ERD is released under the MIT license.
