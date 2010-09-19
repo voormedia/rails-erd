@@ -1,3 +1,4 @@
+require "rubygems"
 require "test/unit"
 require "active_support/test_case"
 
@@ -66,7 +67,7 @@ class ActiveSupport::TestCase
       ActiveRecord::Base.connection.drop_table table
     end
     ActiveRecord::Base.direct_descendants.clear
-    Arel::Relation.class_variable_set :@@connection_tables_primary_keys, {}
+    Arel::Relation.send :class_variable_set, :@@connection_tables_primary_keys, {}
     ActiveSupport::Dependencies::Reference.clear!
   end
 end
