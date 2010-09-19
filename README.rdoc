@@ -39,7 +39,7 @@ Entity-Relationship Diagram for your Rails application:
 
   % rake erd
 
-All done! You will now have a file named +ERD.pdf+ in your application root.
+All done! You will now have a file named <tt>ERD.pdf</tt> in your application root.
 
 == Advanced use
 
