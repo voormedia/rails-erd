@@ -6,7 +6,7 @@ Jeweler::Tasks.new do |spec|
   spec.name = "rails-erd"
   spec.rubyforge_project = "rails-erd"
   spec.summary = "Entity-relationship diagram for your Rails models."
-  spec.description = "Automatically generate an entity-relationship diagram (ERD) for the models in your Rails application."
+  spec.description = "Automatically generate an entity-relationship diagram (ERD) for your Rails models."
 
   spec.authors = ["Rolf Timmermans"]
   spec.email = "r.timmermans@voormedia.com"
@@ -20,6 +20,7 @@ Jeweler::GemcutterTasks.new
 
 Jeweler::RubyforgeTasks.new do |rubyforge|
   rubyforge.doc_task = "rdoc"
+  rubyforge.remote_doc_path = "doc"
 end
 
 Rake::TestTask.new do |test|
@@ -31,7 +32,7 @@ begin
   Rake::RDocTask.new do |rdoc|
     rdoc.rdoc_files = Dir["[A-Z][A-Z]*"] + Dir["lib/**/*.rb"]
     rdoc.title = "Rails ERD – Entity-Relationship Diagrams for Rails"
-    rdoc.rdoc_dir = "doc"
+    rdoc.rdoc_dir = "rdoc"
   end
 rescue => e
   puts e.message
