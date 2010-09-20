@@ -155,7 +155,7 @@ Then you can inspect your domain model like this:
   #=> RailsERD::Relationship::Cardinality::OneToMany
 
 The above is just a sample of what is possible. See the API documentation for
-more details:<br/>
+more details:<br>
 http://rails-erd.rubyforge.org/doc/
 
 If you wish to generate your own graphs, take a look at how the default
