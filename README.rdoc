@@ -15,13 +15,13 @@ you may want to try Railroad[http://railroad.rubyforge.org/].
 
 == Links
 
-Current documentation:<br/>
+Current documentation:
 http://rails-erd.rubyforge.org/doc/
 
-Source code at Github:<br/>
+Source code at Github:
 http://github.com/voormedia/rails-erd
 
-Homepage:<br/>
+Homepage:
 http://rails-erd.rubyforge.org/
 
 == Example output
@@ -155,11 +155,11 @@ Then you can inspect your domain model like this:
   #=> RailsERD::Relationship::Cardinality::OneToMany
 
 The above is just a sample of what is possible. See the API documentation for
-more details:<br>
+more details:
 http://rails-erd.rubyforge.org/doc/
 
 If you wish to generate your own graphs, take a look at how the default
-diagrams are being generated. See the source of RailsERD::Diagram:<br/>
+diagrams are being generated. See the source of RailsERD::Diagram:
 http://github.com/voormedia/rails-erd/blob/master/lib/rails_erd/diagram.rb
 
 Please note that before the 1.0 release, the API may change subtly between
@@ -177,5 +177,5 @@ Rails ERD is released under the MIT license. See the LICENSE.
 
 == Credits
 
-Rails ERD depends on the Ruby-Graphviz library to generate diagrams:<br/>
+Rails ERD depends on the Ruby-Graphviz library to generate diagrams:
 http://github.com/glejeune/Ruby-Graphviz/
