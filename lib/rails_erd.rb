@@ -14,6 +14,9 @@ require "rails_erd/railtie" if defined? Rails
 #                      to +true+.
 # exclude_unconnected:: Excludes entities that are not connected to other
 #                       entities from the diagram. Defaults to +true+.
+# file_type:: The file type of the generated diagram. Defaults to +:pdf+, which
+#             is the recommended format. Other formats may render significantly
+#             worse than a PDF file.
 # orientation:: The direction of the hierarchy of entities. Either +:horizontal+
 #               or +:vertical+. Defaults to +:horizontal+. The orientation of the
 #               PDF that is generated depends on the amount of hierarchy
@@ -21,9 +24,6 @@ require "rails_erd/railtie" if defined? Rails
 # suppress_warnings:: When set to +true+, no warnings are printed to the
 #                     command line while processing the domain model. Defaults
 #                     to +false+.
-# type:: The file type of the generated diagram. Defaults to +:pdf+, which
-#        is the recommended format. Other formats may render significantly
-#        worse than a PDF file.
 #
 # You can specify the option on the command line if you use Rails ERD with
 # Rake:
@@ -47,8 +47,8 @@ module RailsERD
     :exclude_primary_keys, true,
     :exclude_timestamps, true,
     :exclude_unconnected, true,
+    :file_type, :pdf,
     :orientation, :horizontal,
-    :suppress_warnings, false,
-    :type, :pdf
+    :suppress_warnings, false
   ]
 end

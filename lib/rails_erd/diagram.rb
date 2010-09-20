@@ -1,5 +1,6 @@
 require "rails_erd/domain"
 require "graphviz"
+require "erb"
 
 module RailsERD
   # Create Graphviz-based diagrams based on the domain model. For easy
@@ -31,13 +32,13 @@ module RailsERD
     
     # Save the diagram.
     def output
-      graph.output(options.type.to_sym => file_name)
+      graph.output(options.file_type.to_sym => file_name)
       self
     end
     
     # Returns the file name that will be used when saving the diagram.
     def file_name
-      "ERD.#{options.type}"
+      "ERD.#{options.file_type}"
     end
     
     private
@@ -80,9 +81,11 @@ module RailsERD
             options.exclude_timestamps && attribute.timestamp?
           }
           
-          nodes[entity] = graph.add_node entity.name, :html => ERB.new(NODE_LABEL_TEMPLATE, nil, "<>").result(binding)
+          nodes[entity] = graph.add_node entity.name, :label => "<" + ERB.new(NODE_LABEL_TEMPLATE, nil, "<>").result(binding) + ">"
         end
-
+        
+        raise "No (connected) entities found; create your models first!" if nodes.empty?
+        
         @domain.relationships.each do |relationship|
           options = {}
           options[:arrowhead] = relationship.cardinality.one_to_one? ? :dot : :normal
