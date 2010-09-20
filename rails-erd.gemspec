@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{rails-erd}
-  s.version = "0.1.1"
+  s.version = "0.2.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Rolf Timmermans"]
-  s.date = %q{2010-09-20}
+  s.date = %q{2010-09-21}
   s.description = %q{Automatically generate an entity-relationship diagram (ERD) for your Rails models.}
   s.email = %q{r.timmermans@voormedia.com}
   s.extra_rdoc_files = [
@@ -27,13 +27,14 @@ Gem::Specification.new do |s|
      "lib/rails_erd.rb",
      "lib/rails_erd/attribute.rb",
      "lib/rails_erd/diagram.rb",
+     "lib/rails_erd/diagram/graphviz.rb",
+     "lib/rails_erd/diagram/templates/node.erb",
      "lib/rails_erd/domain.rb",
      "lib/rails_erd/entity.rb",
      "lib/rails_erd/railtie.rb",
      "lib/rails_erd/relationship.rb",
      "lib/rails_erd/relationship/cardinality.rb",
      "lib/rails_erd/tasks.rake",
-     "lib/rails_erd/templates/node.erb",
      "rails-erd.gemspec",
      "test/test_helper.rb",
      "test/unit/attribute_test.rb",
@@ -41,13 +42,15 @@ Gem::Specification.new do |s|
      "test/unit/diagram_test.rb",
      "test/unit/domain_test.rb",
      "test/unit/entity_test.rb",
+     "test/unit/graphviz_test.rb",
+     "test/unit/rake_task_test.rb",
      "test/unit/relationship_test.rb"
   ]
   s.homepage = %q{http://rails-erd.rubyforge.org/}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{rails-erd}
-  s.rubygems_version = %q{1.3.6}
+  s.rubygems_version = %q{1.3.7}
   s.summary = %q{Entity-relationship diagram for your Rails models.}
   s.test_files = [
     "test/test_helper.rb",
@@ -56,6 +59,8 @@ Gem::Specification.new do |s|
      "test/unit/diagram_test.rb",
      "test/unit/domain_test.rb",
      "test/unit/entity_test.rb",
+     "test/unit/graphviz_test.rb",
+     "test/unit/rake_task_test.rb",
      "test/unit/relationship_test.rb"
   ]
 
@@ -63,7 +68,7 @@ Gem::Specification.new do |s|
     current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
     s.specification_version = 3
 
-    if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
+    if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<activerecord>, ["~> 3.0.0"])
       s.add_runtime_dependency(%q<activesupport>, ["~> 3.0.0"])
       s.add_runtime_dependency(%q<ruby-graphviz>, ["~> 0.9.17"])
