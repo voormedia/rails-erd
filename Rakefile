@@ -12,8 +12,10 @@ Jeweler::Tasks.new do |spec|
   spec.email = "r.timmermans@voormedia.com"
   spec.homepage = "http://rails-erd.rubyforge.org/"
 
+  spec.add_runtime_dependency "activerecord", "~> 3.0.0"
   spec.add_runtime_dependency "activesupport", "~> 3.0.0"
   spec.add_runtime_dependency "ruby-graphviz", "~> 0.9.17"
+  spec.add_development_dependency "sqlite3-ruby"
 end
 
 Jeweler::GemcutterTasks.new
@@ -36,6 +38,5 @@ begin
     rdoc.title = "Rails ERD – Entity-Relationship Diagrams for Rails"
     rdoc.rdoc_dir = "rdoc"
   end
-rescue => e
-  puts e.message
+rescue LoadError
 end

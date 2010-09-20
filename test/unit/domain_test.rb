@@ -8,7 +8,8 @@ class DomainTest < ActiveSupport::TestCase
   
   test "name should return rails application name" do
     Object::Quux = Module.new
-    Object::Quux::Application = Class.new Rails::Application
+    Object::Quux::Application = Class.new
+    Object::Rails = Struct.new(:application).new(Object::Quux::Application.new)
     assert_equal "Quux", Domain.generate.name
   end
   

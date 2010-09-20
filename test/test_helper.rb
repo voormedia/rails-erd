@@ -4,8 +4,8 @@ require "active_support/test_case"
 
 require "rails_erd/domain"
 
-require "rails"
 require "active_record"
+require "sqlite3"
 
 ActiveRecord::Base.establish_connection :adapter => "sqlite3", :database => ":memory:"
 
