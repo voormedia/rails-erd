@@ -45,12 +45,12 @@ module RailsERD
       @relationships ||= Relationship.from_associations(self, associations)
     end
     
-    # Returns a specific entity object for the given +ActiveRecord+ model.
+    # Returns a specific entity object for the given Active Record model.
     def entity_for(model) #:nodoc:
       entity_mapping[model] or raise "model #{model} exists, but is not included in the domain"
     end
     
-    # Returns an array of relationships for the given +ActiveRecord+ model.
+    # Returns an array of relationships for the given Active Record model.
     def relationships_for(model) #:nodoc:
       relationships_mapping[model] or []
     end

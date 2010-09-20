@@ -1,4 +1,8 @@
 module RailsERD
+  # Describes a relationship between two entities. A relationship is detected
+  # based on Active Record associations. One relationship may represent more
+  # than one association, however. Associations that share the same foreign
+  # key are grouped together.
   class Relationship
     class << self
       def from_associations(domain, associations) #:nodoc:
@@ -14,16 +18,15 @@ module RailsERD
       end
     end
 
-    # Returns the domain in which this relationship is defined.
+    # The domain in which this relationship is defined.
     attr_reader :domain
 
-    # Returns the source entity. The source entity corresponds to the model
-    # that has defined a +has_one+ or +has_many+ association with the other
-    # model.
+    # The source entity. It corresponds to the model that has defined a
+    # +has_one+ or +has_many+ association with the other model.
     attr_reader :source
     
-    # Returns the destination entity. The destination entity corresponds to the
-    # model that has defined a +belongs_to+ association with the other model.
+    # The destination entity. It corresponds to the model that has defined
+    # a +belongs_to+ association with the other model.
     attr_reader :destination
   
     def initialize(domain, associations) #:nodoc:
@@ -35,7 +38,7 @@ module RailsERD
       @source, @destination = @destination, @source if assoc.belongs_to?
     end
     
-    # Returns all +ActiveRecord+ association objects that describe this
+    # Returns all Active Record association objects that describe this
     # relationship.
     def associations
       @forward_associations + @reverse_associations

@@ -5,6 +5,7 @@ module RailsERD
       ORDER = {} #:nodoc:
 
       class << self
+        # Returns the cardinality as symbol.
         attr_reader :type
 
         def from_macro(macro) #:nodoc:

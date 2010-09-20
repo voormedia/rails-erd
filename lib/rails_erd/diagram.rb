@@ -2,11 +2,21 @@ require "rails_erd/domain"
 require "graphviz"
 
 module RailsERD
+  # Create Graphviz-based diagrams based on the domain model. For easy
+  # command line graph generation, you can use rake:
+  #
+  #   % rake erd
+  #
+  # Please see the README.rdoc file for more details on how to use Rails ERD
+  # from the command line.
   class Diagram
     NODE_LABEL_TEMPLATE = File.read(File.expand_path("templates/node.erb", File.dirname(__FILE__))) #:nodoc:
     NODE_WIDTH = 130 #:nodoc:
     
     class << self
+      # Generate a new domain model based on all <tt>ActiveRecord::Base</tt>
+      # subclasses, and create a new diagram. Use the given options for both
+      # the domain generation and the diagram generation.
       def generate(options = {})
         new(Domain.generate(options), options).output
       end
@@ -14,9 +24,23 @@ module RailsERD
     
     attr_reader :options #:nodoc:
 
+    # Create a new diagram based on the given domain.
     def initialize(domain, options = {})
       @domain, @options = domain, RailsERD.options.merge(options)
     end
+    
+    # Save the diagram.
+    def output
+      graph.output(options.type.to_sym => file_name)
+      self
+    end
+    
+    # Returns the file name that will be used when saving the diagram.
+    def file_name
+      "ERD.#{options.type}"
+    end
+    
+    private
     
     def graph
       @graph ||= GraphViz.new(@domain.name, :type => :digraph) do |graph|
@@ -70,17 +94,6 @@ module RailsERD
         end
       end
     end
-    
-    def output
-      graph.output(options.type.to_sym => file_name)
-      self
-    end
-    
-    def file_name
-      "ERD.#{options.type}"
-    end
-    
-    private
     
     def horizontal?
       options.orientation == :horizontal

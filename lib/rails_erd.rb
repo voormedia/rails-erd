@@ -12,11 +12,11 @@ require "rails_erd/railtie" if defined? Rails
 # exclude_timestamps:: Excludes timestamp columns (<tt>created_at/on</tt> and
 #                      <tt>updated_at/on</tt>) from attribute lists. Defaults
 #                      to +true+.
-# exclude_unconnected:: Excludes entities that are not connected from the diagram.
-#                       Defaults to +true+.
+# exclude_unconnected:: Excludes entities that are not connected to other
+#                       entities from the diagram. Defaults to +true+.
 # orientation:: The direction of the hierarchy of entities. Either +:horizontal+
 #               or +:vertical+. Defaults to +:horizontal+. The orientation of the
-#               PDF that is generated greatly depends on the amount of hierarchy
+#               PDF that is generated depends on the amount of hierarchy
 #               in your models.
 # suppress_warnings:: When set to +true+, no warnings are printed to the
 #                     command line while processing the domain model. Defaults
@@ -24,6 +24,17 @@ require "rails_erd/railtie" if defined? Rails
 # type:: The file type of the generated diagram. Defaults to +:pdf+, which
 #        is the recommended format. Other formats may render significantly
 #        worse than a PDF file.
+#
+# You can specify the option on the command line if you use Rails ERD with
+# Rake:
+#
+#   % rake erd orientation=vertical exclude_timestamps=false
+#
+# When using Rails ERD from within Ruby, you can set the options on the
+# RailsERD namespace module:
+#
+#   RailsERD.options.orientation = :vertical
+#   RailsERD.options.exclude_timestamps = false
 module RailsERD
   class << self
     # Access to default options. Any instance of RailsERD::Domain and

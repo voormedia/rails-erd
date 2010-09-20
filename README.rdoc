@@ -10,7 +10,19 @@ application's domain model. If you don't like the default output, it is very
 easy to use the API to build your own diagrams.
 
 Rails ERD was created specifically for Rails 3. It uses ActiveRecord reflection
-to figure out how your models are associated.
+to figure out how your models are associated. For older Rails applications,
+you may want to try Railroad[http://railroad.rubyforge.org/].
+
+== Links
+
+Current documentation:<br/>
+http://rails-erd.rubyforge.org/doc/
+
+Source code at Github:<br/>
+http://github.com/voormedia/rails-erd
+
+Homepage:<br/>
+http://rails-erd.rubyforge.org/
 
 == Example output
 
@@ -20,8 +32,9 @@ http://rails-erd.rubyforge.org/examples/event-forms.png
 
 {Download generated PDF}[http://rails-erd.rubyforge.org/examples/event-forms.pdf]
 
-Typo is a blogging application built in Rails. This diagram is generated from
-the the Rails 3 branch which is currently still in development.
+Typo is a blogging application built in Rails. This is an excerpt from the
+diagram that was generated from the Rails 3 branch (which is currently still
+in development).
 
 http://rails-erd.rubyforge.org/examples/typo-blog.png
 
@@ -61,7 +74,7 @@ Entity-Relationship Diagram for your Rails application:
 
 All done! You will now have a file named <tt>ERD.pdf</tt> in your application root.
 
-== Advanced use
+== Customisation
 
 Rails ERD has several options that you can use to customise its behaviour.
 All options can be provided on the command line. For example:
@@ -75,11 +88,11 @@ exclude_primary_keys:: Excludes primary key columns from attribute lists.
 exclude_timestamps:: Excludes timestamp columns (<tt>created_at/on</tt> and
                      <tt>updated_at/on</tt>) from attribute lists. Defaults
                      to +true+.
-exclude_unconnected:: Excludes entities that are not connected from the diagram.
-                      Defaults to +true+.
+exclude_unconnected:: Excludes entities that are not connected to other
+                      entities from the diagram. Defaults to +true+.
 orientation:: The direction of the hierarchy of entities. Either +horizontal+
               or +vertical+. Defaults to +horizontal+. The orientation of the
-              PDF that is generated greatly depends on the amount of hierarchy
+              PDF that is generated depends on the amount of hierarchy
               in your models.
 suppress_warnings:: When set to +true+, no warnings are printed to the
                     command line while processing the domain model. Defaults
@@ -89,8 +102,80 @@ type:: The file type of the generated diagram. Defaults to +pdf+, which
        worse than a PDF file. The available formats depend on your installation
        of Graphviz.
 
-== Creating your own diagrams
+== Advanced use
+
+Rails ERD also allows you to use its internal API to inspect your Rails domain
+model. It is easy to generate alternative presentations of your Active Record
+models this way. If used outside of Rails, install Rails ERD as a gem:
+
+  % gem install rails-erd
+
+Suppose we have the following models:
+
+  class User < ActiveRecord::Base
+    has_many :posts
+    has_many :comments
+  end
+  
+  class Post < ActiveRecord::Base
+    belongs_to :user
+    has_many :comments
+  end
+  
+  class Comment < ActiveRecord::Base
+    belongs_to :user
+    belongs_to :post
+  end
+
+Then you can inspect your domain model like this:
+
+  require "rails_erd/domain"
+
+  domain = RailsERD::Domain.generate
+  domain.entities
+  #=> [ #<RailsERD::Entity @model=Comment>,
+  #     #<RailsERD::Entity @model=Post>,
+  #     #<RailsERD::Entity @model=User> ]
+  
+  domain.entities.first.connected?
+  #=> true
+  
+  domain.relationships
+  #=> [ #<RailsERD::Relationship @source=Post @destination=Comment>,
+  #     #<RailsERD::Relationship @source=User @destination=Comment>,
+  #     #<RailsERD::Relationship @source=User @destination=Post> ]
+  
+  domain.relationships.first.destination
+  #=> Comment
+  
+  domain.relationships.first.mutual?
+  #=> true
+  
+  domain.relationships.first.cardinality
+  #=> RailsERD::Relationship::Cardinality::OneToMany
+
+The above is just a sample of what is possible. See the API documentation for
+more details:<br/>
+http://rails-erd.rubyforge.org/doc/
+
+If you wish to generate your own graphs, take a look at how the default
+diagrams are being generated. See the source of RailsERD::Diagram:<br/>
+http://github.com/voormedia/rails-erd/blob/master/lib/rails_erd/diagram.rb
+
+Please note that before the 1.0 release, the API may change subtly between
+minor versions.
+
+== About Rails ERD
+
+Author: Rolf Timmermans (r.timmermans <i>at</i> voormedia.com)
+
+Copyright 2010 Voormedia B.V.
 
 == License
 
-Rails ERD is released under the MIT license.
+Rails ERD is released under the MIT license. See the LICENSE.
+
+== Credits
+
+Rails ERD depends on the Ruby-Graphviz library to generate diagrams:<br/>
+http://github.com/glejeune/Ruby-Graphviz/

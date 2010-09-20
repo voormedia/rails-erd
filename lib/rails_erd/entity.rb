@@ -1,11 +1,11 @@
 module RailsERD
-  # Entities represent your +ActiveRecord+ models. Entities may be connected
+  # Entities represent your Active Record models. Entities may be connected
   # to other entities.
   class Entity
     # The domain in which this entity resides.
     attr_reader :domain
     
-    # The +ActiveRecord+ model that this entity corresponds to.
+    # The Active Record model that this entity corresponds to.
     attr_reader :model
 
     def initialize(domain, model) #:nodoc:
