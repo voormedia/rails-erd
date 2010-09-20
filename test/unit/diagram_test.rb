@@ -9,11 +9,38 @@ class DiagramTest < ActiveSupport::TestCase
   
   # Diagram generation =======================================================
   test "generate should create output based on domain model" do
+    create_model "Foo", :bar => :references, :column => :string do
+      belongs_to :bar
+    end
+    create_model "Bar", :column => :string
+    RailsERD::Diagram.generate(:file_type => :dot)
+    assert File.exists?("ERD.dot")
+  end
+
+  test "generate should create output based on domain without attributes" do
     create_model "Foo", :bar => :references do
       belongs_to :bar
     end
     create_model "Bar"
     RailsERD::Diagram.generate(:file_type => :dot)
+    assert File.exists?("ERD.dot")
+  end
+  
+  test "generate should create vertical output based on domain model" do
+    create_model "Foo", :bar => :references, :column => :string do
+      belongs_to :bar
+    end
+    create_model "Bar", :column => :string
+    RailsERD::Diagram.generate(:file_type => :dot, :orientation => :vertical)
+    assert File.exists?("ERD.dot")
+  end
+
+  test "generate should create vertical output based on domain without attributes" do
+    create_model "Foo", :bar => :references do
+      belongs_to :bar
+    end
+    create_model "Bar"
+    RailsERD::Diagram.generate(:file_type => :dot, :orientation => :vertical)
     assert File.exists?("ERD.dot")
   end
 

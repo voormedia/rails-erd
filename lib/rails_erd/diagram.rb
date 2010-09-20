@@ -2,6 +2,19 @@ require "rails_erd/domain"
 require "graphviz"
 require "erb"
 
+# Fix bad RegEx test in Ruby-Graphviz.
+GraphViz::Types::LblString.class_eval do
+  def output
+    if /^<.*>$/m =~ @data
+      @data
+    else
+      @data.to_s.inspect.gsub("\\\\", "\\")
+    end
+  end
+  alias_method :to_gv, :output
+  alias_method :to_s, :output
+end
+
 module RailsERD
   # Create Graphviz-based diagrams based on the domain model. For easy
   # command line graph generation, you can use rake:
@@ -80,7 +93,6 @@ module RailsERD
             options.exclude_foreign_keys && attribute.foreign_key? or
             options.exclude_timestamps && attribute.timestamp?
           }
-          
           nodes[entity] = graph.add_node entity.name, :label => "<" + ERB.new(NODE_LABEL_TEMPLATE, nil, "<>").result(binding) + ">"
         end
         
