@@ -80,6 +80,15 @@ class RelationshipTest < ActiveSupport::TestCase
     assert_equal [false], domain.relationships.map(&:indirect?)
   end
   
+  test "indirect should return false for non mutual ordinary relationship" do
+    create_model "Foo", :bar => :references do
+      belongs_to :bar
+    end
+    create_model "Bar"
+    domain = Domain.generate
+    assert_equal [false], domain.relationships.map(&:indirect?)
+  end
+  
   test "indirect should return true if relationship is a through association" do
     create_model "Foo", :baz => :references, :bar => :references do
       belongs_to :baz

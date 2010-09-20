@@ -1,3 +1,9 @@
+=== 0.2.0
+
+* Subtle changes in diagram style.
+* Fixed error where non-mutual relationships might be inadvertently classified
+  as indirect relationships.
+
 === 0.1.1
 
 * Fixed small errors in Ruby 1.8.7.

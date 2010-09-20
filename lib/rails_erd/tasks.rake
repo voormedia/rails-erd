@@ -14,7 +14,7 @@ namespace :erd do
   end
   
   task :load_models do
-    say "Loading ActiveRecord models..."
+    say "Loading Active Record models..."
 
     Rake::Task[:environment].invoke
     Rails.application.config.paths.app.models.paths.each do |model_path|
@@ -25,7 +25,7 @@ namespace :erd do
   end
   
   task :generate => [:options, :load_models] do
-    say "Generating ERD diagram..."
+    say "Generating Entity-Relationship Diagram..."
 
     require "rails_erd/diagram"
     diagram = RailsERD::Diagram.generate

@@ -74,11 +74,13 @@ module RailsERD
         graph.node[:fontsize] = 10
         graph.node[:fontname] = "Arial"
         graph.node[:margin] = "0.07,0.05"
+        graph.node[:penwidth] = 0.8
 
         graph.edge[:fontname] = "Arial"
         graph.edge[:fontsize] = 8
         graph.edge[:dir] = :both
-        graph.edge[:arrowsize] = 0.8
+        graph.edge[:arrowsize] = 0.7
+        graph.edge[:penwidth] = 0.8
         
         nodes = {}
 
@@ -103,7 +105,7 @@ module RailsERD
           options[:arrowhead] = relationship.cardinality.one_to_one? ? :dot : :normal
           options[:arrowtail] = relationship.cardinality.many_to_many? ? :normal : :dot
           options[:weight] = relationship.strength
-          options.merge! :style => :dashed, :constraint => false if relationship.indirect?
+          options.merge! :style => :dotted, :constraint => false if relationship.indirect?
 
           graph.add_edge nodes[relationship.source], nodes[relationship.destination], options
         end

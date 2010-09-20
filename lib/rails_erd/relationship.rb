@@ -56,7 +56,7 @@ module RailsERD
     # Rails with <tt>has_many :through</tt> or <tt>has_one :through</tt>
     # association macros.
     def indirect?
-      @forward_associations.all?(&:through_reflection)
+      !@forward_associations.empty? and @forward_associations.all?(&:through_reflection)
     end
     
     # Indicates whether or not the relationship is defined by two inverse
