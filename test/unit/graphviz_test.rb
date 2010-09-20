@@ -19,10 +19,14 @@ class GraphvizTest < ActiveSupport::TestCase
   
   def find_dot_nodes(diagram)
     [].tap do |nodes|
-      diagram.graph.each_node do |node|
+      diagram.graph.each_node do |name, node|
         nodes << node
       end
     end
+  end
+
+  def find_dot_node(diagram, name)
+    diagram.graph.get_node(name)
   end
 
   def find_dot_edges(diagram)
@@ -106,7 +110,7 @@ class GraphvizTest < ActiveSupport::TestCase
       belongs_to :bar
     end
     create_model "Bar"
-    assert_equal ["Bar", "Foo"], find_dot_nodes(diagram).sort
+    assert_equal ["Bar", "Foo"], find_dot_nodes(diagram).map(&:id).sort
   end
   
   test "generate should add label for entities" do
@@ -114,8 +118,7 @@ class GraphvizTest < ActiveSupport::TestCase
       belongs_to :bar
     end
     create_model "Bar"
-    assert_match %r{<\w+.*?>Bar</\w+>},
-      diagram.graph.get_node(find_dot_nodes(diagram).first)[:label].to_gv
+    assert_match %r{<\w+.*?>Bar</\w+>}, find_dot_node(diagram, "Bar")[:label].to_gv
   end
 
   test "generate should add attributes to entity labels" do
@@ -123,8 +126,7 @@ class GraphvizTest < ActiveSupport::TestCase
       belongs_to :bar
     end
     create_model "Bar", :column => :string
-    assert_match %r{<\w+.*?>column <\w+.*?>str</\w+.*?>},
-      diagram.graph.get_node(find_dot_nodes(diagram).first)[:label].to_gv
+    assert_match %r{<\w+.*?>column <\w+.*?>str</\w+.*?>}, find_dot_node(diagram, "Bar")[:label].to_gv
   end
 
 
