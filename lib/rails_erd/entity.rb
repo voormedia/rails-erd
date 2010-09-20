@@ -8,7 +8,7 @@ module RailsERD
     # The Active Record model that this entity corresponds to.
     attr_reader :model
 
-    def initialize(domain, model) #:nodoc:
+    def initialize(domain, model) # @private :nodoc:
       @domain, @model = domain, model
     end
     
@@ -35,15 +35,15 @@ module RailsERD
       model.name
     end
   
-    def inspect #:nodoc:
+    def inspect # @private :nodoc:
       "#<#{self.class}:0x%.14x @model=#{name}>" % (object_id << 1)
     end
     
-    def to_s #:nodoc:
+    def to_s # @private :nodoc:
       name
     end
   
-    def <=>(other) #:nodoc:
+    def <=>(other) # @private :nodoc:
       self.name <=> other.name
     end
   end

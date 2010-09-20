@@ -57,6 +57,13 @@ class ActiveSupport::TestCase
     $stdout = stdout
   end
   
+  def create_simple_domain
+    create_model "Foo", :bar => :references do
+      belongs_to :bar
+    end
+    create_model "Bar"
+  end
+  
   private
   
   def reset_domain

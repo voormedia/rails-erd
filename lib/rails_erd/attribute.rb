@@ -3,17 +3,17 @@ module RailsERD
   # Describes an entity's attribute. Attributes correspond directly to
   # database columns.
   class Attribute
-    TIMESTAMP_NAMES = %w{created_at created_on updated_at updated_on} #:nodoc:
+    TIMESTAMP_NAMES = %w{created_at created_on updated_at updated_on} # @private :nodoc:
 
     class << self
-      def from_model(domain, model) #:nodoc:
+      def from_model(domain, model) # @private :nodoc:
         model.arel_table.columns.collect { |column| Attribute.new(domain, model, column) }.sort
       end
     end
 
-    attr_reader :column #:nodoc:
+    attr_reader :column # @private :nodoc:
   
-    def initialize(domain, model, column) #:nodoc:
+    def initialize(domain, model, column) # @private :nodoc:
       @domain, @model, @column = domain, model, column
     end
     
@@ -53,15 +53,15 @@ module RailsERD
       TIMESTAMP_NAMES.include? name
     end
     
-    def <=>(other) #:nodoc:
+    def <=>(other) # @private :nodoc:
       name <=> other.name
     end
     
-    def inspect #:nodoc:
+    def inspect # @private :nodoc:
       "#<#{self.class.name}:0x%.14x @column=#{name.inspect} @type=#{type.inspect}>" % (object_id << 1)
     end
   
-    def to_s #:nodoc:
+    def to_s # @private :nodoc:
       name
     end
   

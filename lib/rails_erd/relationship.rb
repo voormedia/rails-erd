@@ -5,7 +5,7 @@ module RailsERD
   # key are grouped together.
   class Relationship
     class << self
-      def from_associations(domain, associations) #:nodoc:
+      def from_associations(domain, associations) # @private :nodoc:
         assoc_groups = associations.group_by { |assoc| association_identity(assoc) }
         assoc_groups.collect { |_, assoc_group| Relationship.new(domain, assoc_group.to_a) }
       end
@@ -29,7 +29,7 @@ module RailsERD
     # a +belongs_to+ association with the other model.
     attr_reader :destination
   
-    def initialize(domain, associations) #:nodoc:
+    def initialize(domain, associations) # @private :nodoc:
       @domain = domain
       @reverse_associations, @forward_associations = *associations.partition(&:belongs_to?)
     
@@ -77,11 +77,11 @@ module RailsERD
       associations.size
     end
 
-    def inspect #:nodoc:
+    def inspect # @private :nodoc:
       "#<#{self.class}:0x%.14x @source=#{source} @destination=#{destination}>" % (object_id << 1)
     end
   
-    def <=>(other) #:nodoc:
+    def <=>(other) # @private :nodoc:
       (source.name <=> other.source.name).nonzero? or (destination.name <=> other.destination.name)
     end
   end

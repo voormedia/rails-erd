@@ -40,7 +40,6 @@ http://rails-erd.rubyforge.org/examples/typo-blog.png
 
 {Download complete diagram as PDF}[http://rails-erd.rubyforge.org/examples/typo-blog.pdf]
 
-
 == Getting started
 
 In its most simple form, Rails ERD is a plugin for Rails 3 that provides you
@@ -102,7 +101,56 @@ suppress_warnings:: When set to +true+, no warnings are printed to the
                     command line while processing the domain model. Defaults
                     to +false+.
 
-== Advanced use
+== Custom diagrams
+
+If you're completely unsatisfied with the diagrams that Rails ERD creates,
+you can still use it to create your own diagrams. It provides you with an easy
+way to create any kind of diagram based on your application's domain model.
+
+As an example, a diagram class that generates code that can be used with
+yUML (http://yuml.me) can be as simple as:
+
+  require "rails_erd/diagram"
+
+  class YumlDiagram < RailsERD::Diagram
+    def process_relationship(rel)
+      return if rel.indirect?
+
+      arrow = case
+      when rel.cardinality.one_to_one?   then "1-1>"
+      when rel.cardinality.one_to_many?  then "1-*>"
+      when rel.cardinality.many_to_many? then "*-*>"
+      end
+
+      instructions << "[#{rel.source}] #{arrow} [#{rel.destination}]"
+    end
+
+    def save
+      instructions * "\n"
+    end
+
+    def instructions
+      @instructions ||= []
+    end
+  end
+
+Only 18 lines of code! Then, to generate the diagram (example based on the
+domain model of Gemcutter):
+
+  YumlDiagram.create
+  #=> "[Rubygem] 1-*> [Ownership]
+  #    [Rubygem] 1-*> [Subscription]
+  #    [Rubygem] 1-*> [Version]
+  #    [Rubygem] 1-1> [Linkset]
+  #    [Rubygem] 1-*> [Dependency]
+  #    [Version] 1-*> [Dependency]
+  #    [User] 1-*> [Ownership]
+  #    [User] 1-*> [Subscription]
+  #    [User] 1-*> [WebHook]"
+
+{See what that would look like}[http://yuml.me/diagram/scruffy/class/%5BRubygem%5D%201-*%3E%20%5BOwnership%5D,%20%5BRubygem%5D%201-*%3E%20%5BSubscription%5D,%20%5BRubygem%5D%201-*%3E%20%5BVersion%5D,%20%5BRubygem%5D%201-1%3E%20%5BLinkset%5D,%20%5BRubygem%5D%201-*%3E%20%5BDependency%5D,%20%5BVersion%5D%201-*%3E%20%5BDependency%5D,%20%5BUser%5D%201-*%3E%20%5BOwnership%5D,%20%5BUser%5D%201-*%3E%20%5BSubscription%5D,%20%5BUser%5D%201-*%3E%20%5BWebHook%5D].
+
+== Internal API
 
 Rails ERD also allows you to use its internal API to inspect your Rails domain
 model. It is easy to generate alternative presentations of your Active Record
@@ -157,10 +205,6 @@ Then you can inspect your domain model like this:
 The above is just a sample of what is possible. See the API documentation for
 more details:
 http://rails-erd.rubyforge.org/doc/
-
-If you wish to generate your own graphs, take a look at how the default
-diagrams are being generated. See the source of RailsERD::Diagram:
-http://github.com/voormedia/rails-erd/blob/master/lib/rails_erd/diagram.rb
 
 Please note that before the 1.0 release, the API may change subtly between
 minor versions.

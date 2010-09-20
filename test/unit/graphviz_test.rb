@@ -1,0 +1,140 @@
+require File.expand_path("../test_helper", File.dirname(__FILE__))
+
+class GraphvizTest < ActiveSupport::TestCase
+  def setup
+    RailsERD.options.file_type = :dot
+    load "rails_erd/diagram/graphviz.rb"
+  end
+  
+  def teardown
+    FileUtils.rm "ERD.dot" rescue nil
+    RailsERD::Diagram.send :remove_const, :Graphviz
+  end
+  
+  def diagram
+    @diagram ||= Diagram::Graphviz.new(Domain.generate).tap do |diagram|
+      diagram.generate
+    end
+  end
+  
+  def find_dot_nodes(diagram)
+    [].tap do |nodes|
+      diagram.graph.each_node do |node|
+        nodes << node
+      end
+    end
+  end
+
+  def find_dot_edges(diagram)
+    [].tap do |edges|
+      diagram.graph.each_edge do |edge|
+        edges << [edge.node_one, edge.node_two]
+      end
+    end
+  end
+  
+  # Diagram properties =======================================================
+  test "file name should depend on file type" do
+    create_simple_domain
+    begin
+      assert_equal "ERD.svg", Diagram::Graphviz.create(:file_type => :svg)
+    ensure
+      FileUtils.rm "ERD.svg" rescue nil
+    end
+  end
+  
+  # Diagram generation =======================================================
+  test "create should create output based on domain model" do
+    create_model "Foo", :bar => :references, :column => :string do
+      belongs_to :bar
+    end
+    create_model "Bar", :column => :string
+    Diagram::Graphviz.create
+    assert File.exists?("ERD.dot")
+  end
+
+  test "create should create output based on domain without attributes" do
+    create_model "Foo", :bar => :references do
+      belongs_to :bar
+    end
+    create_model "Bar"
+    Diagram::Graphviz.create
+    assert File.exists?("ERD.dot")
+  end
+  
+  test "create should create vertical output based on domain model" do
+    create_model "Foo", :bar => :references, :column => :string do
+      belongs_to :bar
+    end
+    create_model "Bar", :column => :string
+    Diagram::Graphviz.create(:orientation => :vertical)
+    assert File.exists?("ERD.dot")
+  end
+
+  test "create should create vertical output based on domain without attributes" do
+    create_model "Foo", :bar => :references do
+      belongs_to :bar
+    end
+    create_model "Bar"
+    Diagram::Graphviz.create(:orientation => :vertical)
+    assert File.exists?("ERD.dot")
+  end
+
+  test "create should not create output if there are no connected models" do
+    Diagram::Graphviz.create rescue nil
+    assert !File.exists?("ERD.dot")
+  end
+
+  test "create should abort and complain if there are no connected models" do
+    message = nil
+    begin
+      Diagram::Graphviz.create
+    rescue => e
+      message = e.message
+    end
+    assert_match /No \(connected\) entities found/, message
+  end
+  
+  # Graphviz output ==========================================================
+  test "generate should create directed graph" do
+    create_simple_domain
+    assert_equal "digraph", diagram.graph.type
+  end
+  
+  test "generate should create node for each entity" do
+    create_model "Foo", :bar => :references do
+      belongs_to :bar
+    end
+    create_model "Bar"
+    assert_equal ["Bar", "Foo"], find_dot_nodes(diagram).sort
+  end
+  
+  test "generate should add label for entities" do
+    create_model "Foo", :bar => :references do
+      belongs_to :bar
+    end
+    create_model "Bar"
+    assert_match %r{<\w+.*?>Bar</\w+>},
+      diagram.graph.get_node(find_dot_nodes(diagram).first)[:label].to_gv
+  end
+
+  test "generate should add attributes to entity labels" do
+    create_model "Foo", :bar => :references do
+      belongs_to :bar
+    end
+    create_model "Bar", :column => :string
+    assert_match %r{<\w+.*?>column <\w+.*?>str</\w+.*?>},
+      diagram.graph.get_node(find_dot_nodes(diagram).first)[:label].to_gv
+  end
+
+
+  test "generate should create edge for each relationship" do
+    create_model "Foo", :bar => :references do
+      belongs_to :bar
+    end
+    create_model "Bar", :foo => :references do
+      belongs_to :foo
+    end
+    assert_equal [["Bar", "Foo"], ["Foo", "Bar"]], find_dot_edges(diagram).sort
+  end
+end

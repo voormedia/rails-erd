@@ -27,10 +27,10 @@ namespace :erd do
   task :generate => [:options, :load_models] do
     say "Generating Entity-Relationship Diagram..."
 
-    require "rails_erd/diagram"
-    diagram = RailsERD::Diagram.generate
+    require "rails_erd/diagram/graphviz"
+    file = RailsERD::Diagram::Graphviz.create
 
-    say "Done! Saved diagram to #{diagram.file_name}."
+    say "Done! Saved diagram to #{file}."
   end
 end
 

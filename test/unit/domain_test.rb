@@ -7,14 +7,28 @@ class DomainTest < ActiveSupport::TestCase
   end
   
   test "name should return rails application name" do
-    Object::Quux = Module.new
-    Object::Quux::Application = Class.new
-    Object::Rails = Struct.new(:application).new(Object::Quux::Application.new)
-    assert_equal "Quux", Domain.generate.name
+    begin
+      Object::Quux = Module.new
+      Object::Quux::Application = Class.new
+      Object::Rails = Struct.new(:application).new(Object::Quux::Application.new)
+      assert_equal "Quux", Domain.generate.name
+    ensure
+      Object::Quux.send :remove_const, :Application
+      Object.send :remove_const, :Quux
+      Object.send :remove_const, :Rails
+    end
   end
   
   test "name should return nil outside rails" do
     assert_nil Domain.generate.name
+  end
+  
+  test "inspect should display relationships" do
+    create_model "Foo", :bar => :references do
+      belongs_to :bar
+    end
+    create_model "Bar"
+    assert_match %r{#<RailsERD::Domain:.* {Bar => Foo}>}, Domain.generate.inspect
   end
   
   # Entity processing ========================================================

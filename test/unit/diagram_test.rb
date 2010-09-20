@@ -1,61 +1,57 @@
 require File.expand_path("../test_helper", File.dirname(__FILE__))
 
-require "rails_erd/diagram"
-
 class DiagramTest < ActiveSupport::TestCase
+  def setup
+    load "rails_erd/diagram.rb"
+  end
+  
   def teardown
-    FileUtils.rm "ERD.dot" rescue nil
+    RailsERD.send :remove_const, :Diagram
   end
   
-  # Diagram generation =======================================================
-  test "generate should create output based on domain model" do
-    create_model "Foo", :bar => :references, :column => :string do
-      belongs_to :bar
+  # Diagram ==================================================================
+  test "create class method should return result of save" do
+    create_simple_domain
+    subclass = Class.new(Diagram) do
+      def save
+        "foobar"
+      end
     end
-    create_model "Bar", :column => :string
-    RailsERD::Diagram.generate(:file_type => :dot)
-    assert File.exists?("ERD.dot")
+    assert_equal "foobar", subclass.create
   end
 
-  test "generate should create output based on domain without attributes" do
-    create_model "Foo", :bar => :references do
-      belongs_to :bar
-    end
-    create_model "Bar"
-    RailsERD::Diagram.generate(:file_type => :dot)
-    assert File.exists?("ERD.dot")
+  test "create should return result of save" do
+    create_simple_domain
+    diagram = Class.new(Diagram) do
+      def save
+        "foobar"
+      end
+    end.new(Domain.generate)
+    assert_equal "foobar", diagram.create
   end
   
-  test "generate should create vertical output based on domain model" do
-    create_model "Foo", :bar => :references, :column => :string do
-      belongs_to :bar
-    end
-    create_model "Bar", :column => :string
-    RailsERD::Diagram.generate(:file_type => :dot, :orientation => :vertical)
-    assert File.exists?("ERD.dot")
+  test "domain sould return given domain" do
+    domain = Object.new
+    assert_same domain, Class.new(Diagram).new(domain).domain
   end
 
-  test "generate should create vertical output based on domain without attributes" do
-    create_model "Foo", :bar => :references do
-      belongs_to :bar
+  # Diagram abstractness =====================================================
+  test "create should succeed silently if called on abstract class" do
+    create_simple_domain
+    assert_nothing_raised do
+      Diagram.create
     end
-    create_model "Bar"
-    RailsERD::Diagram.generate(:file_type => :dot, :orientation => :vertical)
-    assert File.exists?("ERD.dot")
   end
 
-  test "generate should not create output if there are no connected models" do
-    RailsERD::Diagram.generate(:file_type => :dot) rescue nil
-    assert !File.exists?("ERD.dot")
-  end
-
-  test "generate should abort and complain if there are no connected models" do
-    message = nil
-    begin
-      RailsERD::Diagram.generate(:file_type => :dot)
-    rescue => e
-      message = e.message
+  test "create should succeed if called on class that implements process_entity and process_relationship" do
+    create_simple_domain
+    assert_nothing_raised do
+      Class.new(Diagram) do
+        def process_entity(*args)
+        end
+        def process_relationship(*args)
+        end
+      end.create
     end
-    assert_match /No \(connected\) entities found/, message
   end
 end

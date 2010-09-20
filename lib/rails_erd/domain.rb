@@ -21,7 +21,8 @@ module RailsERD
       end
     end
     
-    attr_reader :options #:nodoc:
+    # The options that are used to generate this domain model.
+    attr_reader :options
 
     # Create a new domain model object based on the given array of models.
     # The given models are assumed to be subclasses of <tt>ActiveRecord::Base</tt>.
@@ -46,17 +47,18 @@ module RailsERD
     end
     
     # Returns a specific entity object for the given Active Record model.
-    def entity_for(model) #:nodoc:
+    def entity_for(model) # @private :nodoc:
       entity_mapping[model] or raise "model #{model} exists, but is not included in the domain"
     end
     
     # Returns an array of relationships for the given Active Record model.
-    def relationships_for(model) #:nodoc:
+    def relationships_for(model) # @private :nodoc:
       relationships_mapping[model] or []
     end
   
-    def inspect #:nodoc:
-      "#<#{self.class} {#{relationships.map { |rel| "#{rel.from} => #{rel.to}" } * ", "}}>"
+    def inspect # @private :nodoc:
+      "#<#{self.class}:0x%.14x {%s}>" %
+        [object_id << 1, relationships.map { |rel| "#{rel.source} => #{rel.destination}" } * ", "]
     end
     
     private
