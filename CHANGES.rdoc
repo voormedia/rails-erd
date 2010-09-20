@@ -3,6 +3,7 @@
 * Subtle changes in diagram style.
 * Fixed error where non-mutual relationships might be inadvertently classified
   as indirect relationships.
+* Fixed error where diagrams with a vertical layout might fail to be generated.
 
 === 0.1.1
 
