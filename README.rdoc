@@ -1,28 +1,48 @@
 = Rails ERD - Generate Entity-Relationship Diagrams for Rails applications
 
-Rails ERD is a Rails plugin that allows you to easily generate diagrams based
-on your ActiveRecord models. The diagrams give a great overview of how your
+Rails ERD is a Rails plugin that allows you to easily generate a diagram based
+on your ActiveRecord models. The diagram gives an overview of how your
 models are related. Having a diagram that describes your models is perfect
 documentation for your application.
 
+The second goal of Rails ERD is to provide you with a tool to inspect your
+application's domain model. If you don't like the default output, it is very
+easy to use the API to build your own diagrams.
+
 Rails ERD was created specifically for Rails 3. It uses ActiveRecord reflection
 to figure out how your models are associated.
+
+== Example output
+
+This is an example diagram from an actual Rails application.
+
+http://rails-erd.rubyforge.org/examples/event-forms.png
+
+{Download generated PDF}[http://rails-erd.rubyforge.org/examples/event-forms.pdf]
+
+Typo is a blogging application built in Rails. This diagram is generated from
+the the Rails 3 branch which is currently still in development.
+
+http://rails-erd.rubyforge.org/examples/typo-blog.png
+
+{Download complete diagram as PDF}[http://rails-erd.rubyforge.org/examples/typo-blog.pdf]
+
 
 == Getting started
 
 In its most simple form, Rails ERD is a plugin for Rails 3 that provides you
 with a Rake task to create an Entity-Relationship Diagram. It depends on the
-Graphviz visualisation library. You have to install Graphviz before using
-Rails ERD. In order to create PDF files (the default), you should install
-or compile Graphviz with Pango/Cairo.
+Graphviz[http://www.graphviz.org/] visualisation library. In order to create
+PDF files (the default), you should install or compile Graphviz with support
+for Pango and Cairo.
 
-For example, to install Graphviz with MacPorts:
-
-  % sudo port install graphviz
-
-Or with Homebrew:
+For example, to install Graphviz with Homebrew:
 
   % brew install cairo pango graphviz
+
+Or with MacPorts:
+
+  % sudo port install graphviz
 
 Next, install Rails ERD. Open your +Gemfile+, and add the following:
 
@@ -46,10 +66,30 @@ All done! You will now have a file named <tt>ERD.pdf</tt> in your application ro
 Rails ERD has several options that you can use to customise its behaviour.
 All options can be provided on the command line. For example:
 
-  % rake erd exclude_timestamps=false
+  % rake erd orientation=vertical exclude_timestamps=false
 
-For an overview of all available options, see the documentation of RailsERD:
-http://rails-erd.rubyforge.org/doc/
+exclude_foreign_keys:: Excludes foreign key columns from attribute lists.
+                       Defaults to +true+.
+exclude_primary_keys:: Excludes primary key columns from attribute lists.
+                       Defaults to +true+.
+exclude_timestamps:: Excludes timestamp columns (<tt>created_at/on</tt> and
+                     <tt>updated_at/on</tt>) from attribute lists. Defaults
+                     to +true+.
+exclude_unconnected:: Excludes entities that are not connected from the diagram.
+                      Defaults to +true+.
+orientation:: The direction of the hierarchy of entities. Either +horizontal+
+              or +vertical+. Defaults to +horizontal+. The orientation of the
+              PDF that is generated greatly depends on the amount of hierarchy
+              in your models.
+suppress_warnings:: When set to +true+, no warnings are printed to the
+                    command line while processing the domain model. Defaults
+                    to +false+.
+type:: The file type of the generated diagram. Defaults to +pdf+, which
+       is the recommended format. Other formats may render significantly
+       worse than a PDF file. The available formats depend on your installation
+       of Graphviz.
+
+== Creating your own diagrams
 
 == License
 

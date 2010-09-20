@@ -27,6 +27,8 @@ Rake::TestTask.new do |test|
   test.pattern = "test/unit/**/*_test.rb"
 end
 
+task :default => :test
+
 begin
   require "hanna/rdoctask"
   Rake::RDocTask.new do |rdoc|

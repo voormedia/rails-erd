@@ -44,7 +44,12 @@ module RailsERD
         
         nodes = {}
 
-        @domain.entities.select(&:connected?).each do |entity|
+        @domain.entities.each do |entity|
+          if options.exclude_unconnected && !entity.connected?
+            warn "Skipping unconnected model #{entity.name} (use exclude_unconnected=false to include)"
+            next
+          end
+          
           attributes = entity.attributes.reject { |attribute|
             options.exclude_primary_keys && attribute.primary_key? or
             options.exclude_foreign_keys && attribute.foreign_key? or
@@ -83,6 +88,10 @@ module RailsERD
 
     def vertical?
       !horizontal?
+    end
+
+    def warn(message)
+      puts "Warning: #{message}" unless options.suppress_warnings
     end
   end
 end
