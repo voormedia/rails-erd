@@ -48,7 +48,7 @@ module RailsERD
       end
       
       def <=>(other) # @private :nodoc:
-        compare_with(other, &:type).nonzero? or
+        (type <=> other.type).nonzero? or
         compare_with(other) { |x| x.source_range.first + x.destination_range.first }.nonzero? or
         compare_with(other) { |x| x.source_range.last + x.destination_range.last }.nonzero? or
         compare_with(other) { |x| x.source_range.last }.nonzero? or
