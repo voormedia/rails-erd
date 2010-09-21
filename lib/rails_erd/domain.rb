@@ -2,7 +2,6 @@ require "set"
 require "rails_erd"
 require "rails_erd/entity"
 require "rails_erd/relationship"
-require "rails_erd/relationship/cardinality"
 require "rails_erd/attribute"
 
 module RailsERD

@@ -1,9 +1,13 @@
+require "rails_erd/relationship/cardinality"
+
 module RailsERD
   # Describes a relationship between two entities. A relationship is detected
   # based on Active Record associations. One relationship may represent more
   # than one association, however. Associations that share the same foreign
   # key are grouped together.
   class Relationship
+    N = Cardinality::N
+    
     class << self
       def from_associations(domain, associations) # @private :nodoc:
         assoc_groups = associations.group_by { |assoc| association_identity(assoc) }
@@ -44,11 +48,16 @@ module RailsERD
       @forward_associations + @reverse_associations
     end
     
-    # Returns the cardinality of this relationship. The cardinality may be
-    # one of Cardinality::OneToOne, Cardinality::OneToMany, or
-    # Cardinality::ManyToMany.
+    # Returns the cardinality of this relationship.
     def cardinality
-      @forward_associations.collect { |assoc| Cardinality.from_macro(assoc.macro) }.max or Cardinality::OneToMany
+      @forward_associations.collect do |assoc|
+        l_min = 0
+        l_max = assoc.macro == :has_and_belongs_to_many ? N : 1
+        r_min = 0
+        r_max = assoc.macro == :has_one ? 1 : N
+        
+        Cardinality.new(l_min..l_max, r_min..r_max)
+      end.max or Cardinality.new(1, 0..N) # TODO, flawed logic
     end
     
     # Indicates if a relationship is indirect, that is, if it is defined

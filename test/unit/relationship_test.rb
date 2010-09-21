@@ -146,7 +146,7 @@ class RelationshipTest < ActiveSupport::TestCase
       has_one :foo
     end
     domain = Domain.generate
-    assert_equal [Relationship::Cardinality::OneToOne], domain.relationships.map(&:cardinality)
+    assert_equal [:one_to_one], domain.relationships.map(&:cardinality).map(&:name)
   end
   
   test "cardinality should return one to many for has_many associations" do
@@ -155,7 +155,7 @@ class RelationshipTest < ActiveSupport::TestCase
       has_many :foos
     end
     domain = Domain.generate
-    assert_equal [Relationship::Cardinality::OneToMany], domain.relationships.map(&:cardinality)
+    assert_equal [:one_to_many], domain.relationships.map(&:cardinality).map(&:name)
   end
   
   test "cardinality should return many to many for has_and_belongs_to_many associations" do
@@ -167,7 +167,7 @@ class RelationshipTest < ActiveSupport::TestCase
       has_and_belongs_to_many :foos
     end
     domain = Domain.generate
-    assert_equal [Relationship::Cardinality::ManyToMany], domain.relationships.map(&:cardinality)
+    assert_equal [:many_to_many], domain.relationships.map(&:cardinality).map(&:name)
   end
   
   test "cardinality should return one to many for multiple associations with maximum cardinality of has_many" do
@@ -177,7 +177,7 @@ class RelationshipTest < ActiveSupport::TestCase
       has_many :foos
     end
     domain = Domain.generate
-    assert_equal [Relationship::Cardinality::OneToMany], domain.relationships.map(&:cardinality)
+    assert_equal [:one_to_many], domain.relationships.map(&:cardinality).map(&:name)
   end
   
   test "cardinality should return one to many if forward association is missing" do
@@ -186,7 +186,7 @@ class RelationshipTest < ActiveSupport::TestCase
     end
     create_model "Bar"
     domain = Domain.generate
-    assert_equal [Relationship::Cardinality::OneToMany], domain.relationships.map(&:cardinality)
+    assert_equal [:one_to_many], domain.relationships.map(&:cardinality).map(&:name)
   end
   
   # test "cardinality should return zero or more for has_many association" do

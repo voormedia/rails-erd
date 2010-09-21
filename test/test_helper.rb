@@ -9,9 +9,9 @@ require "sqlite3"
 
 ActiveRecord::Base.establish_connection :adapter => "sqlite3", :database => ":memory:"
 
-include RailsERD
-
 class ActiveSupport::TestCase
+  include RailsERD
+
   teardown :reset_domain
 
   def create_table(table, columns = {}, pk = nil)

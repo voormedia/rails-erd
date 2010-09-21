@@ -40,7 +40,8 @@ module RailsERD
         :fontsize => 13,
         :fontname => "Arial Bold",
         :remincross => true,
-        :outputorder => :edgesfirst }
+        :outputorder => :edgesfirst
+      }
 
       # Default node attributes.
       NODE_ATTRIBUTES = {
@@ -48,7 +49,8 @@ module RailsERD
         :fontsize => 10,
         :fontname => "Arial",
         :margin => "0.07,0.05",
-        :penwidth => 0.8 }
+        :penwidth => 0.8
+      }
 
       # Default edge attributes.
       EDGE_ATTRIBUTES = {
@@ -56,7 +58,8 @@ module RailsERD
         :fontsize => 8,
         :dir => :both,
         :arrowsize => 0.7,
-        :penwidth => 0.8 }
+        :penwidth => 0.8
+      }
 
       def graph
         @graph ||= GraphViz.digraph(@domain.name) do |graph|
