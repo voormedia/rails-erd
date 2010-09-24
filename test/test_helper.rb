@@ -5,7 +5,13 @@ require "active_support/test_case"
 require "rails_erd/domain"
 
 require "active_record"
-require "sqlite3"
+
+if (RUBY_ENGINE rescue nil) == "jruby"
+  require "jdbc/sqlite3"
+  require "arjdbc/sqlite3"
+else
+  require "sqlite3"
+end
 
 ActiveRecord::Base.establish_connection :adapter => "sqlite3", :database => ":memory:"
 
