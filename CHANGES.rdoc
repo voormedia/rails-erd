@@ -1,3 +1,9 @@
+=== To be released:
+
+* Changed line widths to 1.0 to avoid invisible node boundaries with older
+  versions of Graphviz.
+* Added option to exclude indirect relationships (exclude_indirect).
+
 === 0.2.0
 
 * Added simple way to create your own type of diagrams with a tiny amount of

@@ -83,6 +83,9 @@ All options can be provided on the command line. For example:
 
 exclude_foreign_keys:: Excludes foreign key columns from attribute lists.
                        Defaults to +true+.
+exclude_indirect:: Excludes relationships that are indirect. Indirect relationships
+                   are defined in Active Record with <tt>has_many :through</tt>
+                   associations.
 exclude_primary_keys:: Excludes primary key columns from attribute lists.
                        Defaults to +true+.
 exclude_timestamps:: Excludes timestamp columns (<tt>created_at/on</tt> and

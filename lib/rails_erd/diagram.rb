@@ -135,7 +135,9 @@ module RailsERD
     end
     
     def filtered_relationships
-      @domain.relationships
+      @domain.relationships.reject { |relationship|
+        options.exclude_indirect && relationship.indirect?
+      }
     end
     
     def filtered_attributes(entity)

@@ -7,6 +7,9 @@ require "rails_erd/railtie" if defined? Rails
 #
 # exclude_foreign_keys:: Excludes foreign key columns from attribute lists.
 #                        Defaults to +true+.
+# exclude_indirect:: Excludes relationships that are indirect. Indirect relationships
+#                    are defined in Active Record with <tt>has_many :through</tt>
+#                    associations.
 # exclude_primary_keys:: Excludes primary key columns from attribute lists.
 #                        Defaults to +true+.
 # exclude_timestamps:: Excludes timestamp columns (<tt>created_at/on</tt> and
@@ -44,6 +47,7 @@ module RailsERD
 
   self.options = ActiveSupport::OrderedOptions[
     :exclude_foreign_keys, true,
+    :exclude_indirect, false,
     :exclude_primary_keys, true,
     :exclude_timestamps, true,
     :exclude_unconnected, true,

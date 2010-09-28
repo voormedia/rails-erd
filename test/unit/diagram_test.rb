@@ -9,6 +9,17 @@ class DiagramTest < ActiveSupport::TestCase
     RailsERD.send :remove_const, :Diagram
   end
   
+  def retrieve_relationships(klass, options = {})
+    [].tap do |relationships|
+      klass.class_eval do
+        define_method :process_relationship do |relationship|
+          relationships << relationship
+        end
+      end
+      klass.create(options)
+    end
+  end
+  
   # Diagram ==================================================================
   test "create class method should return result of save" do
     create_simple_domain
@@ -53,5 +64,41 @@ class DiagramTest < ActiveSupport::TestCase
         end
       end.create
     end
+  end
+  
+  # Diagram filtering ========================================================
+  test "generate should yield relationships" do
+    create_simple_domain
+    assert_equal 1, retrieve_relationships(Class.new(Diagram)).length
+  end
+
+  test "generate should yield indirect relationships if exclude_indirect is false" do
+    create_model "Foo" do
+      has_many :bazs
+      has_many :bars
+    end
+    create_model "Bar", :foo => :references do
+      belongs_to :foo
+      has_many :bazs, :through => :foo
+    end
+    create_model "Baz", :foo => :references do
+      belongs_to :foo
+    end
+    assert_equal [false, false, true], retrieve_relationships(Class.new(Diagram), :exclude_indirect => false).map(&:indirect?)
+  end
+  
+  test "generate should filter indirect relationships if exclude_indirect is true" do
+    create_model "Foo" do
+      has_many :bazs
+      has_many :bars
+    end
+    create_model "Bar", :foo => :references do
+      belongs_to :foo
+      has_many :bazs, :through => :foo
+    end
+    create_model "Baz", :foo => :references do
+      belongs_to :foo
+    end
+    assert_equal [false, false], retrieve_relationships(Class.new(Diagram), :exclude_indirect => true).map(&:indirect?)
   end
 end
