@@ -3,7 +3,7 @@ module RailsERD
     class Cardinality
       N = Infinity = 1.0/0 # And beyond.
       
-      CARDINALS = {
+      CLASSES = {
         [1, 1] => :one_to_one,
         [1, N] => :one_to_many,
         [N, 1] => :many_to_one,
@@ -38,7 +38,7 @@ module RailsERD
       #   cardinality.one_to_many?
       #   #=> false
       def name
-        CARDINALS[cardinal]
+        CLASSES[cardinality_class]
       end
       
       # Returns +true+ if the source (left side) is not mandatory.
@@ -57,10 +57,10 @@ module RailsERD
         self.class.new destination_range, source_range
       end
       
-      CARDINALS.each do |cardinal, name|
+      CLASSES.each do |cardinality_class, name|
         class_eval <<-RUBY
           def #{name}?
-            cardinal == #{cardinal.inspect}
+            cardinality_class == #{cardinality_class.inspect}
           end
         RUBY
       end
@@ -70,7 +70,7 @@ module RailsERD
       end
       
       def <=>(other) # @private :nodoc:
-        (cardinal <=> other.cardinal).nonzero? or
+        (cardinality_class <=> other.cardinality_class).nonzero? or
         compare_with(other) { |x| x.source_range.first + x.destination_range.first }.nonzero? or
         compare_with(other) { |x| x.source_range.last + x.destination_range.last }.nonzero? or
         compare_with(other) { |x| x.source_range.last }.nonzero? or
@@ -84,22 +84,22 @@ module RailsERD
       
       protected
 
-      # The cardinal number of the source (left side). Either +1+ or +Infinity+.
-      def source_cardinal
+      # The cardinality class of the source (left side). Either +1+ or +Infinity+.
+      def source_cardinality_class
         source_range.last == 1 ? 1 : N
       end
       
-      # The cardinal number of the destination (left side). Either +1+ or +Infinity+.
-      def destination_cardinal
+      # The cardinality class of the destination (left side). Either +1+ or +Infinity+.
+      def destination_cardinality_class
         destination_range.last == 1 ? 1 : N
       end
       
-      # Returns an array with the cardinal numbers for the source and
+      # Returns an array with the cardinality classes for the source and
       # destination of this cardinality. Possible return values are:
       # <tt>[1, 1]</tt>, <tt>[1, N]</tt>, <tt>[N, N]</tt>, and (in theory)
       # <tt>[N, 1]</tt>.
-      def cardinal
-        [source_cardinal, destination_cardinal]
+      def cardinality_class
+        [source_cardinality_class, destination_cardinality_class]
       end
       
       private
