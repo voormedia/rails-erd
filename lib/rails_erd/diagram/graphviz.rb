@@ -24,6 +24,19 @@ module RailsERD
     #
     # Please see the README.rdoc file for more details on how to use Rails ERD
     # from the command line.
+    #
+    # === Options
+    #
+    # The following options are supported:
+    #
+    # file_type:: The file type of the generated diagram. Defaults to +pdf+, which
+    #             is the recommended format. Other formats may render significantly
+    #             worse than a PDF file. The available formats depend on your installation
+    #             of Graphviz.
+    # orientation:: The direction of the hierarchy of entities. Either +horizontal+
+    #               or +vertical+. Defaults to +horizontal+. The orientation of the
+    #               PDF that is generated depends on the amount of hierarchy
+    #               in your models.    
     class Graphviz < Diagram
       NODE_LABEL_TEMPLATE = ERB.new(File.read(File.expand_path("templates/node.erb", File.dirname(__FILE__))), nil, "<>") # @private :nodoc:
 
@@ -49,7 +62,7 @@ module RailsERD
         :fontsize => 10,
         :fontname => "Arial",
         :margin => "0.07,0.05",
-        :penwidth => 1.0  # At least 1.0, to make Graphviz 2.20 happy.
+        :penwidth => 1.0
       }
 
       # Default edge attributes.
@@ -93,7 +106,19 @@ module RailsERD
         graph.add_edge graph.get_node(relationship.source.name), graph.get_node(relationship.destination.name),
           relationship_options(relationship)
       end
-      
+
+      # Returns +true+ if the layout or hierarchy of the diagram should be
+      # horizontally oriented.
+      def horizontal?
+        options.orientation == :horizontal
+      end
+
+      # Returns +true+ if the layout or hierarchy of the diagram should be
+      # vertically oriented.
+      def vertical?
+        !horizontal?
+      end
+
       private
       
       # Returns the file name that will be used when saving the diagram.

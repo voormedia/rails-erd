@@ -7,6 +7,14 @@ require "rails_erd/attribute"
 module RailsERD
   # The domain describes your Rails domain model. This class is the starting
   # point to get information about your models.
+  #
+  # === Options
+  #
+  # The following options are available:
+  #
+  # suppress_warnings:: When set to +true+, no warnings are printed to the
+  #                     command line while processing the domain model. Defaults
+  #                     to +false+.
   class Domain
     class << self
       # Generates a domain model object based on all loaded subclasses of

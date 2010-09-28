@@ -11,8 +11,8 @@ class GraphvizTest < ActiveSupport::TestCase
     RailsERD::Diagram.send :remove_const, :Graphviz
   end
   
-  def diagram
-    @diagram ||= Diagram::Graphviz.new(Domain.generate).tap do |diagram|
+  def diagram(options = {})
+    @diagram ||= Diagram::Graphviz.new(Domain.generate(options), options).tap do |diagram|
       diagram.generate
     end
   end
@@ -45,6 +45,16 @@ class GraphvizTest < ActiveSupport::TestCase
     ensure
       FileUtils.rm "ERD.svg" rescue nil
     end
+  end
+  
+  test "rank direction should be lr for horizontal orientation" do
+    create_simple_domain
+    assert_equal '"LR"', diagram(:orientation => :horizontal).graph[:rankdir].to_s
+  end
+
+  test "rank direction should be tb for vertical orientation" do
+    create_simple_domain
+    assert_equal '"TB"', diagram(:orientation => :vertical).graph[:rankdir].to_s
   end
   
   # Diagram generation =======================================================
@@ -138,5 +148,15 @@ class GraphvizTest < ActiveSupport::TestCase
       belongs_to :foo
     end
     assert_equal [["Bar", "Foo"], ["Foo", "Bar"]], find_dot_edges(diagram).sort
+  end
+  
+  test "node records should have direction reversing braces for vertical orientation" do
+    create_simple_domain
+    assert_match %r(\A<{\s*<.*\|.*>\s*}>\Z)m, find_dot_node(diagram(:orientation => :vertical), "Bar")[:label].to_gv
+  end
+
+  test "node records should not have direction reversing braces for horizontal orientation" do
+    create_simple_domain
+    assert_match %r(\A<\s*<.*\|.*>\s*>\Z)m, find_dot_node(diagram(:orientation => :horizontal), "Bar")[:label].to_gv
   end
 end

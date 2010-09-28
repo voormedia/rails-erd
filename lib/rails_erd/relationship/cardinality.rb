@@ -8,7 +8,7 @@ module RailsERD
         [1, N] => :one_to_many,
         [N, 1] => :many_to_one,
         [N, N] => :many_to_many
-      }
+      } # @private :nodoc:
 
       attr_reader :source_range
       

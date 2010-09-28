@@ -2,31 +2,8 @@ require "active_support/ordered_options"
 require "rails_erd/railtie" if defined? Rails
 
 # Rails ERD provides several options that allow you to customise the
-# generation of the diagram and the domain model itself. Currently, the
-# following options are supported:
-#
-# exclude_foreign_keys:: Excludes foreign key columns from attribute lists.
-#                        Defaults to +true+.
-# exclude_indirect:: Excludes relationships that are indirect. Indirect relationships
-#                    are defined in Active Record with <tt>has_many :through</tt>
-#                    associations.
-# exclude_primary_keys:: Excludes primary key columns from attribute lists.
-#                        Defaults to +true+.
-# exclude_timestamps:: Excludes timestamp columns (<tt>created_at/on</tt> and
-#                      <tt>updated_at/on</tt>) from attribute lists. Defaults
-#                      to +true+.
-# exclude_unconnected:: Excludes entities that are not connected to other
-#                       entities from the diagram. Defaults to +true+.
-# file_type:: The file type of the generated diagram. Defaults to +:pdf+, which
-#             is the recommended format. Other formats may render significantly
-#             worse than a PDF file.
-# orientation:: The direction of the hierarchy of entities. Either +:horizontal+
-#               or +:vertical+. Defaults to +:horizontal+. The orientation of the
-#               PDF that is generated depends on the amount of hierarchy
-#               in your models.
-# suppress_warnings:: When set to +true+, no warnings are printed to the
-#                     command line while processing the domain model. Defaults
-#                     to +false+.
+# generation of the diagram and the domain model itself. For an overview of
+# all options available in Rails ERD, see README.rdoc.
 #
 # You can specify the option on the command line if you use Rails ERD with
 # Rake:

@@ -81,6 +81,11 @@ All options can be provided on the command line. For example:
 
   % rake erd orientation=vertical exclude_timestamps=false
 
+=== Diagram generation
+
+The following options are supported by the diagram generation module. Any
+diagram generator will automatically honour these options.
+
 exclude_foreign_keys:: Excludes foreign key columns from attribute lists.
                        Defaults to +true+.
 exclude_indirect:: Excludes relationships that are indirect. Indirect relationships
@@ -93,6 +98,12 @@ exclude_timestamps:: Excludes timestamp columns (<tt>created_at/on</tt> and
                      to +true+.
 exclude_unconnected:: Excludes entities that are not connected to other
                       entities from the diagram. Defaults to +true+.
+
+=== Graphviz diagram generation
+
+The following options are supported by the default diagram generator, which
+outputs diagrams created with Graphviz.
+
 file_type:: The file type of the generated diagram. Defaults to +pdf+, which
             is the recommended format. Other formats may render significantly
             worse than a PDF file. The available formats depend on your installation
@@ -101,6 +112,11 @@ orientation:: The direction of the hierarchy of entities. Either +horizontal+
               or +vertical+. Defaults to +horizontal+. The orientation of the
               PDF that is generated depends on the amount of hierarchy
               in your models.
+
+=== General options
+
+The following options are used by any part of Rails ERD.
+
 suppress_warnings:: When set to +true+, no warnings are printed to the
                     command line while processing the domain model. Defaults
                     to +false+.

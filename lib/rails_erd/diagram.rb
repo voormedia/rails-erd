@@ -48,6 +48,27 @@ module RailsERD
   #
   # For another example implementation, see Diagram::Graphviz, which is the
   # default (and currently only) diagram type that is used by Rails ERD.
+  #
+  # === Options
+  #
+  # The following options are available and will by automatically used by any
+  # diagram generator inheriting from this class.
+  #
+  # exclude_foreign_keys:: Excludes foreign key columns from attribute lists.
+  #                        Defaults to +true+.
+  # exclude_indirect:: Excludes relationships that are indirect. Indirect relationships
+  #                    are defined in Active Record with <tt>has_many :through</tt>
+  #                    associations.
+  # exclude_primary_keys:: Excludes primary key columns from attribute lists.
+  #                        Defaults to +true+.
+  # exclude_timestamps:: Excludes timestamp columns (<tt>created_at/on</tt> and
+  #                      <tt>updated_at/on</tt>) from attribute lists. Defaults
+  #                      to +true+.
+  # exclude_unconnected:: Excludes entities that are not connected to other
+  #                       entities from the diagram. Defaults to +true+.
+  # suppress_warnings:: When set to +true+, no warnings are printed to the
+  #                     command line while processing the domain model. Defaults
+  #                     to +false+.
   class Diagram
     class << self
       # Generates a new domain model based on all <tt>ActiveRecord::Base</tt>
@@ -106,18 +127,6 @@ module RailsERD
     # the diagram. This method will be called once for eacn relationship
     # that should be displayed.
     def process_relationship(relationship)
-    end
-    
-    # Returns +true+ if the layout or hierarchy of the diagram should be
-    # horizontally oriented.
-    def horizontal?
-      options.orientation == :horizontal
-    end
-
-    # Returns +true+ if the layout or hierarchy of the diagram should be
-    # vertically oriented.
-    def vertical?
-      !horizontal?
     end
     
     private
