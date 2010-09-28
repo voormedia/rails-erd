@@ -49,7 +49,7 @@ module RailsERD
         :fontsize => 10,
         :fontname => "Arial",
         :margin => "0.07,0.05",
-        :penwidth => 0.8
+        :penwidth => 1.0  # At least 1.0, to make Graphviz 2.20 happy.
       }
 
       # Default edge attributes.
@@ -58,7 +58,7 @@ module RailsERD
         :fontsize => 8,
         :dir => :both,
         :arrowsize => 0.7,
-        :penwidth => 0.8
+        :penwidth => 1.0
       }
 
       def graph
