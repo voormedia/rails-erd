@@ -164,7 +164,7 @@ class GraphvizTest < ActiveSupport::TestCase
   
   test "node records should have direction reversing braces for vertical orientation" do
     create_simple_domain
-    assert_match %r(\A<{\s*<.*\|.*>\s*}>\Z)m, find_dot_node(diagram(:orientation => :vertical), "Bar")[:label].to_gv
+    assert_match %r(\A<\{\s*<.*\|.*>\s*\}>\Z)m, find_dot_node(diagram(:orientation => :vertical), "Bar")[:label].to_gv
   end
 
   test "node records should not have direction reversing braces for horizontal orientation" do
