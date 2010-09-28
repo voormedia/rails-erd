@@ -38,8 +38,19 @@ module RailsERD
   
     def initialize(domain, associations) # @private :nodoc:
       @domain = domain
-      @reverse_associations, @forward_associations = *associations.partition(&:belongs_to?)
-    
+      associations.each do |assoc|
+        raise "FOO" if assoc.klass.nil? or assoc.active_record.nil?
+      end
+      
+      @reverse_associations, @forward_associations = *unless any_habtm?(associations)
+        associations.partition(&:belongs_to?)
+      else
+        # Many-to-many associations don't have a clearly defined direction.
+        # We sort by name and use the first model as the source.
+        source = associations.first.active_record
+        associations.partition { |association| association.active_record == source }
+      end
+      
       assoc = @forward_associations.first || @reverse_associations.first
       @source, @destination = @domain.entity_for(assoc.active_record), @domain.entity_for(assoc.klass)
       @source, @destination = @destination, @source if assoc.belongs_to?
@@ -54,8 +65,9 @@ module RailsERD
     # Returns the cardinality of this relationship.
     def cardinality
       @cardinality ||= begin
-        forward_range = associations_range(@source.model, @forward_associations)
-        reverse_range = associations_range(@destination.model, @reverse_associations)
+        reverse_maximum = any_habtm?(associations) ? N : 1
+        forward_range = associations_range(@source.model, @forward_associations, N)
+        reverse_range = associations_range(@destination.model, @reverse_associations, reverse_maximum)
         Cardinality.new(reverse_range, forward_range)
       end
     end
@@ -122,13 +134,19 @@ module RailsERD
     
     private
 
-    def associations_range(model, associations)
-      min = 0
-      max = N
-      associations.each do |assoc|
-        min = [min, association_minimum(model, assoc)].max
-        max = [max, association_maximum(model, assoc)].min
-      end
+    def associations_range(model, associations, absolute_max)
+      # The minimum of the range is the maximum value of each association
+      # minimum. If there is none, it is zero by definition. The reasoning is
+      # that from all associations, if only one has a required minimum, then
+      # this side of the relationship has a cardinality of at least one.
+      min = associations.map { |assoc| association_minimum(model, assoc) }.max || 0
+
+      # The maximum of the range is the maximum value of each association
+      # maximum. If there is none, it is equal to the absolute maximum. If
+      # only one association has a high cardinality on this side, the
+      # relationship itself has the same maximum cardinality.
+      max = associations.map { |assoc| association_maximum(model, assoc) }.max || absolute_max
+
       min..max
     end
     
@@ -139,22 +157,17 @@ module RailsERD
     end
 
     def association_maximum(model, association)
-      maximum = case association.macro
-      when :belongs_to then 1
-      when :has_one then 1
-      when :has_many then N
-      when :has_and_belongs_to_many then N
-      else
-        domain.warn "Association macro #{association.macro.inspect} unknown, cardinality defaults to infinity"
-        return N
-      end
-      
+      maximum = association.collection? ? N : 1      
       length_validators = association_validators(:length, model, association)
       length_validators.map { |v| v.options[:maximum] }.compact.min or maximum
     end
     
     def association_validators(kind, model, association)
       model.validators_on(association.name).select { |v| v.kind == kind }
+    end
+    
+    def any_habtm?(associations)
+      associations.any? { |association| association.macro == :has_and_belongs_to_many }
     end
   end
 end

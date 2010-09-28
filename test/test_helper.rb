@@ -64,7 +64,7 @@ class ActiveSupport::TestCase
   end
   
   def create_simple_domain
-    create_model "Foo", :bar => :references do
+    create_model "Beer", :bar => :references do
       belongs_to :bar
     end
     create_model "Bar"
@@ -95,7 +95,7 @@ class ActiveSupport::TestCase
     create_model "More" do
       has_and_belongs_to_many :many
     end
-    create_table "many_more", :foo_id => :integer, :bar_id => :integer
+    create_table "many_more", :many_id => :integer, :more_id => :integer
   end
   
   private

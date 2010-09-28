@@ -221,14 +221,13 @@ class GraphvizTest < ActiveSupport::TestCase
   end
 
   test "generate should use normal arrow and dot tail and head for mandatory many to many cardinalities with bachman notation" do
-    pending
-    # create_many_to_many_assoc_domain
-    # Many.class_eval do
-    #   validates_presence_of :more
-    # end
-    # More.class_eval do
-    #   validates_presence_of :many
-    # end
-    # assert_equal [["dotnormal", "dotnormal"]], find_dot_edge_styles(diagram(:notation => :bachman))
+    create_many_to_many_assoc_domain
+    Many.class_eval do
+      validates_presence_of :more
+    end
+    More.class_eval do
+      validates_presence_of :many
+    end
+    assert_equal [["dotnormal", "dotnormal"]], find_dot_edge_styles(diagram(:notation => :bachman))
   end
 end

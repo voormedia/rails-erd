@@ -1,9 +1,15 @@
 === To be released:
 
-* Changed line widths to 1.0 to avoid invisible node boundaries with older
-  versions of Graphviz.
+* Added the ability to support multiple styles of cardinality notations.
+  Currently supported types are 'simple' and 'bachman'. See the documentation
+  and project homepage for details.
 * Added option to exclude indirect relationships (exclude_indirect).
 * Slightly altered the type descriptions of attributes.
+* Improved internal logic to determine the cardinality of relationships.
+* More versatile API that allows you to inspect relationships and their
+  cardinalities.
+* Changed line widths to 1.0 to avoid invisible node boundaries with older
+  versions of Graphviz.
 
 === 0.2.0
 
