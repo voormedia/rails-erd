@@ -115,7 +115,7 @@ class AttributeTest < ActiveSupport::TestCase
   # Type descriptions ========================================================
   test "type_description should return short type description" do
     create_model "Foo", :a => :binary
-    assert_equal "blob", create_attribute(Foo, "a").type_description
+    assert_equal "binary", create_attribute(Foo, "a").type_description
   end
 
   test "type_description should return short type description without limit if standard" do
@@ -123,7 +123,7 @@ class AttributeTest < ActiveSupport::TestCase
       create_model "Foo"
       add_column :foos, :my_str, :string, :limit => 255
       ActiveRecord::Base.connection.native_database_types[:string]
-      assert_equal "str (255)", create_attribute(Foo, "my_str").type_description
+      assert_equal "string (255)", create_attribute(Foo, "my_str").type_description
     end
   end
 
@@ -131,7 +131,7 @@ class AttributeTest < ActiveSupport::TestCase
     with_native_limit :string, 456 do
       create_model "Foo"
       add_column :foos, :my_str, :string, :limit => 456
-      assert_equal "str", create_attribute(Foo, "my_str").type_description
+      assert_equal "string", create_attribute(Foo, "my_str").type_description
     end
   end
   
@@ -139,6 +139,28 @@ class AttributeTest < ActiveSupport::TestCase
     create_model "Foo", :a => :integer do
       validates_presence_of :a
     end
-    assert_equal "int ∗", create_attribute(Foo, "a").type_description
+    assert_equal "integer ∗", create_attribute(Foo, "a").type_description
+  end
+  
+  test "limit should return nil if there is no limit" do
+    create_model "Foo"
+    add_column :foos, :my_txt, :text
+    assert_equal nil, create_attribute(Foo, "my_txt").limit
+  end
+  
+  test "limit should return nil if equal to standard database limit" do
+    with_native_limit :string, 456 do
+      create_model "Foo"
+      add_column :foos, :my_str, :string, :limit => 456
+      assert_equal nil, create_attribute(Foo, "my_str").limit
+    end
+  end
+  
+  test "limit should return limit if nonstandard" do
+    with_native_limit :string, 456 do
+      create_model "Foo"
+      add_column :foos, :my_str, :string, :limit => 255
+      assert_equal 255, create_attribute(Foo, "my_str").limit
+    end
   end
 end

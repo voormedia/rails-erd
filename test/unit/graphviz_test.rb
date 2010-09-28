@@ -136,7 +136,7 @@ class GraphvizTest < ActiveSupport::TestCase
       belongs_to :bar
     end
     create_model "Bar", :column => :string
-    assert_match %r{<\w+.*?>column <\w+.*?>str</\w+.*?>}, find_dot_node(diagram, "Bar")[:label].to_gv
+    assert_match %r{<\w+.*?>column <\w+.*?>string</\w+.*?>}, find_dot_node(diagram, "Bar")[:label].to_gv
   end
 
 

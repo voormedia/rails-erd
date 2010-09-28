@@ -65,32 +65,25 @@ module RailsERD
       name
     end
   
-    # Returns a short description of the attribute type. If the attribute has
+    # Returns a description of the attribute type. If the attribute has
     # a non-standard limit or if it is mandatory, this information is included.
     #
     # Example output:
-    # <tt>:integer</tt>:: int
-    # <tt>:string, :limit => 255</tt>:: str
-    # <tt>:string, :limit => 128</tt>:: str (128)
-    # <tt>:boolean, :null => false</tt>:: bool *
+    # <tt>:integer</tt>:: integer
+    # <tt>:string, :limit => 255</tt>:: string
+    # <tt>:string, :limit => 128</tt>:: string (128)
+    # <tt>:boolean, :null => false</tt>:: boolean *
     def type_description
-      case type
-      when :integer       then "int"
-      when :float         then "float"
-      when :decimal       then "dec"
-      when :datetime      then "datetime"
-      when :date          then "date"
-      when :timestamp     then "timest"
-      when :time          then "time"
-      when :text          then "txt"
-      when :string        then "str"
-      when :binary        then "blob"
-      when :boolean       then "bool"
-      else type.to_s
-      end.tap do |desc|
-        desc << " (#{column.limit})" if column.limit != @model.connection.native_database_types[type][:limit]
+      type.to_s.tap do |desc|
+        desc << " (#{limit})" if limit
         desc << " ∗" if mandatory? # Add a hair space + low asterisk (Unicode characters).
       end
+    end
+    
+    # Returns any non-standard limit for this attribute. If a column has no
+    # limit or uses a default database limit, this method returns +nil+.
+    def limit
+      column.limit if column.limit != @model.connection.native_database_types[type][:limit]
     end
   end
 end
