@@ -139,26 +139,46 @@ class RelationshipTest < ActiveSupport::TestCase
     assert_equal [4], domain.relationships.map(&:strength)
   end
   
-  # Cardinality ==============================================================
-  test "cardinality should return one to one for has_one associations" do
+  # Cardinality classes ======================================================
+  test "cardinality should be one to one for has_one associations" do
     create_model "Foo", :bar => :references
     create_model "Bar" do
       has_one :foo
     end
     domain = Domain.generate
+
+    # In these test, we are liberal with the number of assertions per test.
     assert_equal [:one_to_one], domain.relationships.map(&:cardinality).map(&:name)
+
+    assert_equal [true], domain.relationships.map(&:one_to_one?)
+    assert_equal [false], domain.relationships.map(&:one_to_many?)
+    assert_equal [false], domain.relationships.map(&:many_to_many?)
+
+    assert_equal [true], domain.relationships.map(&:one_to?)
+    assert_equal [false], domain.relationships.map(&:many_to?)
+    assert_equal [true], domain.relationships.map(&:to_one?)
+    assert_equal [false], domain.relationships.map(&:to_many?)
   end
   
-  test "cardinality should return one to many for has_many associations" do
+  test "cardinality should be one to many for has_many associations" do
     create_model "Foo", :bar => :references
     create_model "Bar" do
       has_many :foos
     end
     domain = Domain.generate
+
     assert_equal [:one_to_many], domain.relationships.map(&:cardinality).map(&:name)
+    assert_equal [false], domain.relationships.map(&:one_to_one?)
+    assert_equal [true], domain.relationships.map(&:one_to_many?)
+    assert_equal [false], domain.relationships.map(&:many_to_many?)
+
+    assert_equal [true], domain.relationships.map(&:one_to?)
+    assert_equal [false], domain.relationships.map(&:many_to?)
+    assert_equal [false], domain.relationships.map(&:to_one?)
+    assert_equal [true], domain.relationships.map(&:to_many?)
   end
   
-  test "cardinality should return many to many for has_and_belongs_to_many associations" do
+  test "cardinality should be many to many for has_and_belongs_to_many associations" do
     create_table "bars_foos", :foo_id => :integer, :bar_id => :integer
     create_model "Foo" do
       has_and_belongs_to_many :bars
@@ -167,10 +187,20 @@ class RelationshipTest < ActiveSupport::TestCase
       has_and_belongs_to_many :foos
     end
     domain = Domain.generate
+
     assert_equal [:many_to_many], domain.relationships.map(&:cardinality).map(&:name)
+
+    assert_equal [false], domain.relationships.map(&:one_to_one?)
+    assert_equal [false], domain.relationships.map(&:one_to_many?)
+    assert_equal [true], domain.relationships.map(&:many_to_many?)
+
+    assert_equal [false], domain.relationships.map(&:one_to?)
+    assert_equal [true], domain.relationships.map(&:many_to?)
+    assert_equal [false], domain.relationships.map(&:to_one?)
+    assert_equal [true], domain.relationships.map(&:to_many?)
   end
   
-  test "cardinality should return one to many for multiple associations with maximum cardinality of has_many" do
+  test "cardinality should be one to many for multiple associations with maximum cardinality of has_many" do
     create_model "Foo", :bar => :references
     create_model "Bar" do
       has_one :foo
@@ -180,7 +210,7 @@ class RelationshipTest < ActiveSupport::TestCase
     assert_equal [:one_to_many], domain.relationships.map(&:cardinality).map(&:name)
   end
   
-  test "cardinality should return one to many if forward association is missing" do
+  test "cardinality should be one to many if forward association is missing" do
     create_model "Foo", :bar => :references do
       belongs_to :bar
     end
@@ -188,130 +218,4 @@ class RelationshipTest < ActiveSupport::TestCase
     domain = Domain.generate
     assert_equal [:one_to_many], domain.relationships.map(&:cardinality).map(&:name)
   end
-  
-  # test "cardinality should return zero or more for has_many association" do
-  #   create_model "Foo", :bar => :references do
-  #     belongs_to :bar
-  #   end
-  #   create_model "Bar" do
-  #     has_many :foos
-  #   end
-  #   domain = Domain.generate
-  #   assert_equal Cardinality::ZeroOrMore, domain.relationships.first.cardinality
-  # end
-  # 
-  # test "cardinality should return one or more for validated has_many association" do
-  #   create_model "Foo", :bar => :references do
-  #     belongs_to :bar
-  #   end
-  #   create_model "Bar" do
-  #     has_many :foos
-  #     validates :foos, :presence => true
-  #   end
-  #   domain = Domain.generate
-  #   assert_equal Cardinality::OneOrMore, domain.relationships.first.cardinality
-  # end
-  # 
-  # test "cardinality should return zero or more for has_many association with foreign database constraint" do
-  #   create_model "Foo" do
-  #     belongs_to :bar
-  #   end
-  #   add_column :foos, :bar_id, :integer, :null => false, :default => 0
-  #   create_model "Bar" do
-  #     has_many :foos
-  #   end
-  #   domain = Domain.generate
-  #   assert_equal Cardinality::ZeroOrMore, domain.relationships.first.cardinality
-  # end
-  # 
-  # test "cardinality should return zero or one for has_one association" do
-  #   create_model "Foo", :bar => :references do
-  #     belongs_to :bar
-  #   end
-  #   create_model "Bar" do
-  #     has_one :foo
-  #   end
-  #   domain = Domain.generate
-  #   assert_equal Cardinality::ZeroOrOne, domain.relationships.first.cardinality
-  # end
-  # 
-  # test "cardinality should return exactly one for validated has_one association" do
-  #   create_model "Foo", :bar => :references do
-  #     belongs_to :bar
-  #   end
-  #   create_model "Bar" do
-  #     has_one :foo
-  #     validates :foo, :presence => true
-  #   end
-  #   domain = Domain.generate
-  #   assert_equal Cardinality::ExactlyOne, domain.relationships.first.cardinality
-  # end
-  # 
-  # test "cardinality should return exactly one for has_one association with foreign database constraint" do
-  #   create_model "Foo" do
-  #     belongs_to :bar
-  #   end
-  #   add_column :foos, :bar_id, :integer, :null => false, :default => 0
-  #   create_model "Bar" do
-  #     has_one :foo
-  #   end
-  #   domain = Domain.generate
-  #   assert_equal Cardinality::ZeroOrOne, domain.relationships.first.cardinality
-  # end
-  # 
-  # # Reverse cardinality ======================================================
-  # test "reverse_cardinality should return nil if reverse association is missing" do
-  #   create_model "Foo", :bar => :references
-  #   create_model "Bar" do
-  #     has_many :foos
-  #   end
-  #   domain = Domain.generate
-  #   assert_nil domain.relationships.first.reverse_cardinality
-  # end
-  # 
-  # test "reverse_cardinality should return zero or one for has_many association" do
-  #   create_model "Foo", :bar => :references do
-  #     belongs_to :bar
-  #   end
-  #   create_model "Bar" do
-  #     has_many :foos
-  #   end
-  #   domain = Domain.generate
-  #   assert_equal Cardinality::ZeroOrOne, domain.relationships.first.reverse_cardinality
-  # end
-  # 
-  # test "reverse_cardinality should return exactly one for validated has_many association" do
-  #   create_model "Foo", :bar => :references do
-  #     belongs_to :bar
-  #     validates :bar, :presence => true
-  #   end
-  #   create_model "Bar" do
-  #     has_many :foos
-  #   end
-  #   domain = Domain.generate
-  #   assert_equal Cardinality::ExactlyOne, domain.relationships.first.reverse_cardinality
-  # end
-  # 
-  # test "reverse_cardinality should return zero or one for has_one association" do
-  #   create_model "Foo", :bar => :references do
-  #     belongs_to :bar
-  #   end
-  #   create_model "Bar" do
-  #     has_one :foo
-  #   end
-  #   domain = Domain.generate
-  #   assert_equal Cardinality::ZeroOrOne, domain.relationships.first.reverse_cardinality
-  # end
-  # 
-  # test "reverse_cardinality should return exactly one for validated has_one association" do
-  #   create_model "Foo", :bar => :references do
-  #     belongs_to :bar
-  #     validates :bar, :presence => true
-  #   end
-  #   create_model "Bar" do
-  #     has_one :foo
-  #   end
-  #   domain = Domain.generate
-  #   assert_equal Cardinality::ExactlyOne, domain.relationships.first.reverse_cardinality
-  # end
 end

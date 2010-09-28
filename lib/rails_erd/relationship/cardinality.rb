@@ -82,6 +82,14 @@ module RailsERD
           [object_id << 1, source_range.first, source_range.last, destination_range.first, destination_range.last]
       end
       
+      # Returns an array with the cardinality classes for the source and
+      # destination of this cardinality. Possible return values are:
+      # <tt>[1, 1]</tt>, <tt>[1, N]</tt>, <tt>[N, N]</tt>, and (in theory)
+      # <tt>[N, 1]</tt>.
+      def cardinality_class
+        [source_cardinality_class, destination_cardinality_class]
+      end
+      
       protected
 
       # The cardinality class of the source (left side). Either +1+ or +Infinity+.
@@ -92,14 +100,6 @@ module RailsERD
       # The cardinality class of the destination (left side). Either +1+ or +Infinity+.
       def destination_cardinality_class
         destination_range.last == 1 ? 1 : N
-      end
-      
-      # Returns an array with the cardinality classes for the source and
-      # destination of this cardinality. Possible return values are:
-      # <tt>[1, 1]</tt>, <tt>[1, N]</tt>, <tt>[N, N]</tt>, and (in theory)
-      # <tt>[N, 1]</tt>.
-      def cardinality_class
-        [source_cardinality_class, destination_cardinality_class]
       end
       
       private

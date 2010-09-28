@@ -134,8 +134,8 @@ module RailsERD
       # Returns an options hash 
       def relationship_options(relationship)
         {}.tap do |options|
-          options[:arrowhead] = relationship.cardinality.one_to_one?   ? :dot : :normal
-          options[:arrowtail] = relationship.cardinality.many_to_many? ? :normal : :dot
+          options[:arrowhead] = relationship.to_many? ? :normal : :dot
+          options[:arrowtail] = relationship.many_to? ? :normal : :dot
           options[:weight] = relationship.strength
           if relationship.indirect?
             options[:style] = :dotted

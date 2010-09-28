@@ -32,6 +32,8 @@ module RailsERD
     # The destination entity. It corresponds to the model that has defined
     # a +belongs_to+ association with the other model.
     attr_reader :destination
+    
+    delegate :one_to_one?, :one_to_many?, :many_to_many?, :to => :cardinality
   
     def initialize(domain, associations) # @private :nodoc:
       @domain = domain
@@ -50,14 +52,14 @@ module RailsERD
     
     # Returns the cardinality of this relationship.
     def cardinality
-      @forward_associations.collect do |assoc|
+      @cardinality ||= @forward_associations.collect do |assoc|
         l_min = 0
         l_max = assoc.macro == :has_and_belongs_to_many ? N : 1
         r_min = 0
         r_max = assoc.macro == :has_one ? 1 : N
         
         Cardinality.new(l_min..l_max, r_min..r_max)
-      end.max or Cardinality.new(1, 0..N) # TODO, flawed logic
+      end.max || Cardinality.new(1, 0..N) # TODO, flawed logic
     end
     
     # Indicates if a relationship is indirect, that is, if it is defined
@@ -78,6 +80,32 @@ module RailsERD
     # Indicates whether or not this relationship connects an entity with itself.
     def recursive?
       @source == @destination
+    end
+    
+    # Indicates whether the destination cardinality class of this relationship
+    # is equal to one. This is +true+ for one-to-one relationships only.
+    def to_one?
+      cardinality.cardinality_class[1] == 1
+    end
+    
+    # Indicates whether the destination cardinality class of this relationship
+    # is equal to infinity. This is +true+ for one-to-many or
+    # many-to-many relationships only.
+    def to_many?
+      cardinality.cardinality_class[1] != 1
+    end
+    
+    # Indicates whether the source cardinality class of this relationship
+    # is equal to one. This is +true+ for one-to-one or
+    # one-to-many relationships only.
+    def one_to?
+      cardinality.cardinality_class[0] == 1
+    end
+    
+    # Indicates whether the source cardinality class of this relationship
+    # is equal to infinity. This is +true+ for many-to-many relationships only.
+    def many_to?
+      cardinality.cardinality_class[0] != 1
     end
     
     # The strength of a relationship is equal to the number of associations
