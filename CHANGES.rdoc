@@ -3,6 +3,7 @@
 * Changed line widths to 1.0 to avoid invisible node boundaries with older
   versions of Graphviz.
 * Added option to exclude indirect relationships (exclude_indirect).
+* Slightly altered the type descriptions of attributes.
 
 === 0.2.0
 
