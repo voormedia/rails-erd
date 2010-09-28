@@ -1,7 +1,7 @@
 module RailsERD
   class Relationship
     class Cardinality
-      N = Infinity = 1.0/0
+      N = Infinity = 1.0/0 # And beyond.
       
       CARDINALS = {
         [1, 1] => :one_to_one,
@@ -10,27 +10,49 @@ module RailsERD
         [N, N] => :many_to_many
       } # @private :nodoc:
 
+      # Returns a range that indicates the source (left) cardinality.
       attr_reader :source_range
       
+      # Returns a range that indicates the destination (right) cardinality.
       attr_reader :destination_range
 
-      def initialize(source_range, destination_range)
+      # Create a new cardinality based on a source range and a destination
+      # range. These ranges describe which number of values are valid.
+      def initialize(source_range, destination_range) # @private :nodoc:
         @source_range = compose_range(source_range)
         @destination_range = compose_range(destination_range)
       end
       
+      # Returns the type name of this cardinality. Can be any of
+      # +:one_to_one:+, +:one_to_many+, or +:many_to_many+. The type
+      # +:many_to_one+ also exists, but Rails ERD always normalises these
+      # kinds of relationships by inversing them, so they become
+      # +:one_to_many+ associations.
+      #
+      # You can also call the equivalent method with a question mark, which
+      # will return true if the type name corresponds to that method. For
+      # example:
+      #
+      #   cardinality.one_to_one?
+      #   #=> true
+      #   cardinality.one_to_many?
+      #   #=> false
       def name
         CARDINALS[type]
       end
       
+      # Returns +true+ if the source (left side) is not mandatory.
       def source_optional?
         source_range.first < 1
       end
       
+      # Returns +true+ if the destination (right side) is not mandatory.
       def destination_optional?
         destination_range.first < 1
       end
       
+      # Returns the inverse cardinality. Destination becomes source, source
+      # becomes destination.
       def inverse
         self.class.new destination_range, source_range
       end
@@ -62,14 +84,20 @@ module RailsERD
       
       protected
 
+      # The cardinality type of the source (left side). Either +1+ or +Infinity+.
       def source_type
         source_range.last == 1 ? 1 : N
       end
       
+      # The cardinality type of the destination (left side). Either +1+ or +Infinity+.
       def destination_type
         destination_range.last == 1 ? 1 : N
       end
       
+      # A tuple (array with two items) denoting the cardinality type, first
+      # the source, then the destination. Possible return values are:
+      # <tt>[1, 1]</tt>, <tt>[1, N]</tt>, <tt>[N, N]</tt>, and (in theory)
+      # <tt>[N, 1]</tt>.
       def type
         [source_type, destination_type]
       end
