@@ -47,7 +47,7 @@ class CardinalityTest < ActiveSupport::TestCase
       Relationship::Cardinality.new(0..1, 2..Relationship::Cardinality::N)
   end
   
-  # Cardinality types ========================================================
+  # Cardinal names ===========================================================
   test "one_to_one should return true if source and destination are exactly one" do
     assert_equal true, Relationship::Cardinality.new(1, 1).one_to_one?
   end

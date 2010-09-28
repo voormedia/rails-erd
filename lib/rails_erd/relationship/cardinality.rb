@@ -23,22 +23,22 @@ module RailsERD
         @destination_range = compose_range(destination_range)
       end
       
-      # Returns the type name of this cardinality. Can be any of
-      # +:one_to_one:+, +:one_to_many+, or +:many_to_many+. The type
+      # Returns the name of this cardinality, based on its two cardinal
+      # numbers (for source and destination). Can be any of
+      # +:one_to_one:+, +:one_to_many+, or +:many_to_many+. The name
       # +:many_to_one+ also exists, but Rails ERD always normalises these
       # kinds of relationships by inversing them, so they become
       # +:one_to_many+ associations.
       #
       # You can also call the equivalent method with a question mark, which
-      # will return true if the type name corresponds to that method. For
-      # example:
+      # will return true if the name corresponds to that method. For example:
       #
       #   cardinality.one_to_one?
       #   #=> true
       #   cardinality.one_to_many?
       #   #=> false
       def name
-        CARDINALS[type]
+        CARDINALS[cardinal]
       end
       
       # Returns +true+ if the source (left side) is not mandatory.
@@ -57,10 +57,10 @@ module RailsERD
         self.class.new destination_range, source_range
       end
       
-      CARDINALS.each do |type, name|
+      CARDINALS.each do |cardinal, name|
         class_eval <<-RUBY
           def #{name}?
-            type == #{type.inspect}
+            cardinal == #{cardinal.inspect}
           end
         RUBY
       end
@@ -70,7 +70,7 @@ module RailsERD
       end
       
       def <=>(other) # @private :nodoc:
-        (type <=> other.type).nonzero? or
+        (cardinal <=> other.cardinal).nonzero? or
         compare_with(other) { |x| x.source_range.first + x.destination_range.first }.nonzero? or
         compare_with(other) { |x| x.source_range.last + x.destination_range.last }.nonzero? or
         compare_with(other) { |x| x.source_range.last }.nonzero? or
@@ -84,22 +84,22 @@ module RailsERD
       
       protected
 
-      # The cardinality type of the source (left side). Either +1+ or +Infinity+.
-      def source_type
+      # The cardinal number of the source (left side). Either +1+ or +Infinity+.
+      def source_cardinal
         source_range.last == 1 ? 1 : N
       end
       
-      # The cardinality type of the destination (left side). Either +1+ or +Infinity+.
-      def destination_type
+      # The cardinal number of the destination (left side). Either +1+ or +Infinity+.
+      def destination_cardinal
         destination_range.last == 1 ? 1 : N
       end
       
-      # A tuple (array with two items) denoting the cardinality type, first
-      # the source, then the destination. Possible return values are:
+      # Returns an array with the cardinal numbers for the source and
+      # destination of this cardinality. Possible return values are:
       # <tt>[1, 1]</tt>, <tt>[1, N]</tt>, <tt>[N, N]</tt>, and (in theory)
       # <tt>[N, 1]</tt>.
-      def type
-        [source_type, destination_type]
+      def cardinal
+        [source_cardinal, destination_cardinal]
       end
       
       private
