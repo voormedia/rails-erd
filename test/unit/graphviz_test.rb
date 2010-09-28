@@ -29,7 +29,7 @@ class GraphvizTest < ActiveSupport::TestCase
     diagram.graph.get_node(name)
   end
 
-  def find_dot_edges(diagram)
+  def find_dot_node_pairs(diagram)
     [].tap do |edges|
       diagram.graph.each_edge do |edge|
         edges << [edge.node_one, edge.node_two]
@@ -37,6 +37,18 @@ class GraphvizTest < ActiveSupport::TestCase
     end
   end
   
+  def find_dot_edges(diagram)
+    [].tap do |edges|
+      diagram.graph.each_edge do |edge|
+        edges << edge
+      end
+    end
+  end
+  
+  def find_dot_edge_styles(diagram)
+    find_dot_edges(diagram).map { |e| [e[:arrowtail].to_s.tr('"', ''), e[:arrowhead].to_s.tr('"', '')] }
+  end
+
   # Diagram properties =======================================================
   test "file name should depend on file type" do
     create_simple_domain
@@ -147,7 +159,7 @@ class GraphvizTest < ActiveSupport::TestCase
     create_model "Bar", :foo => :references do
       belongs_to :foo
     end
-    assert_equal [["Bar", "Foo"], ["Foo", "Bar"]], find_dot_edges(diagram).sort
+    assert_equal [["Bar", "Foo"], ["Foo", "Bar"]], find_dot_node_pairs(diagram).sort
   end
   
   test "node records should have direction reversing braces for vertical orientation" do
@@ -158,5 +170,65 @@ class GraphvizTest < ActiveSupport::TestCase
   test "node records should not have direction reversing braces for horizontal orientation" do
     create_simple_domain
     assert_match %r(\A<\s*<.*\|.*>\s*>\Z)m, find_dot_node(diagram(:orientation => :horizontal), "Bar")[:label].to_gv
+  end
+  
+  # Simple notation style ====================================================
+  test "generate should use no style for one to one cardinalities with simple notation" do
+    create_one_to_one_assoc_domain
+    assert_equal [["none", "none"]], find_dot_edge_styles(diagram(:notation => :simple))
+  end
+
+  test "generate should use normal arrow head for one to many cardinalities with simple notation" do
+    create_one_to_many_assoc_domain
+    assert_equal [["none", "normal"]], find_dot_edge_styles(diagram(:notation => :simple))
+  end
+
+  test "generate should use normal arrow head and tail for many to many cardinalities with simple notation" do
+    create_many_to_many_assoc_domain
+    assert_equal [["normal", "normal"]], find_dot_edge_styles(diagram(:notation => :simple))
+  end
+
+  # Bachman notation style ===================================================
+  test "generate should use open dots for one to one cardinalities with bachman notation" do
+    create_one_to_one_assoc_domain
+    assert_equal [["odot", "odot"]], find_dot_edge_styles(diagram(:notation => :bachman))
+  end
+
+  test "generate should use dots for mandatory one to one cardinalities with bachman notation" do
+    create_one_to_one_assoc_domain
+    One.class_eval do
+      validates_presence_of :other
+    end
+    assert_equal [["odot", "dot"]], find_dot_edge_styles(diagram(:notation => :bachman))
+  end
+
+  test "generate should use normal arrow and open dot head with dot tail for one to many cardinalities with bachman notation" do
+    create_one_to_many_assoc_domain
+    assert_equal [["odot", "odotnormal"]], find_dot_edge_styles(diagram(:notation => :bachman))
+  end
+
+  test "generate should use normal arrow and dot head for mandatory one to many cardinalities with bachman notation" do
+    create_one_to_many_assoc_domain
+    One.class_eval do
+      validates_presence_of :many
+    end
+    assert_equal [["odot", "dotnormal"]], find_dot_edge_styles(diagram(:notation => :bachman))
+  end
+
+  test "generate should use normal arrow and open dot head and tail for many to many cardinalities with bachman notation" do
+    create_many_to_many_assoc_domain
+    assert_equal [["odotnormal", "odotnormal"]], find_dot_edge_styles(diagram(:notation => :bachman))
+  end
+
+  test "generate should use normal arrow and dot tail and head for mandatory many to many cardinalities with bachman notation" do
+    pending
+    # create_many_to_many_assoc_domain
+    # Many.class_eval do
+    #   validates_presence_of :more
+    # end
+    # More.class_eval do
+    #   validates_presence_of :many
+    # end
+    # assert_equal [["dotnormal", "dotnormal"]], find_dot_edge_styles(diagram(:notation => :bachman))
   end
 end

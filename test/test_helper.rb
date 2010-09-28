@@ -70,6 +70,34 @@ class ActiveSupport::TestCase
     create_model "Bar"
   end
   
+  def create_one_to_one_assoc_domain
+    create_model "One" do
+      has_one :other
+    end
+    create_model "Other", :one => :references do
+      belongs_to :one
+    end
+  end
+
+  def create_one_to_many_assoc_domain
+    create_model "One" do
+      has_many :many
+    end
+    create_model "Many", :one => :references do
+      belongs_to :one
+    end
+  end
+
+  def create_many_to_many_assoc_domain
+    create_model "Many" do
+      has_and_belongs_to_many :more
+    end
+    create_model "More" do
+      has_and_belongs_to_many :many
+    end
+    create_table "many_more", :foo_id => :integer, :bar_id => :integer
+  end
+  
   private
   
   def reset_domain

@@ -33,7 +33,8 @@ module RailsERD
     # a +belongs_to+ association with the other model.
     attr_reader :destination
     
-    delegate :one_to_one?, :one_to_many?, :many_to_many?, :to => :cardinality
+    delegate :one_to_one?, :one_to_many?, :many_to_many?, :source_optional?,
+      :destination_optional?, :to => :cardinality
   
     def initialize(domain, associations) # @private :nodoc:
       @domain = domain
@@ -52,14 +53,11 @@ module RailsERD
     
     # Returns the cardinality of this relationship.
     def cardinality
-      @cardinality ||= @forward_associations.collect do |assoc|
-        l_min = 0
-        l_max = assoc.macro == :has_and_belongs_to_many ? N : 1
-        r_min = 0
-        r_max = assoc.macro == :has_one ? 1 : N
-        
-        Cardinality.new(l_min..l_max, r_min..r_max)
-      end.max || Cardinality.new(1, 0..N) # TODO, flawed logic
+      @cardinality ||= begin
+        forward_range = associations_range(@source.model, @forward_associations)
+        reverse_range = associations_range(@destination.model, @reverse_associations)
+        Cardinality.new(reverse_range, forward_range)
+      end
     end
     
     # Indicates if a relationship is indirect, that is, if it is defined
@@ -120,6 +118,43 @@ module RailsERD
   
     def <=>(other) # @private :nodoc:
       (source.name <=> other.source.name).nonzero? or (destination.name <=> other.destination.name)
+    end
+    
+    private
+
+    def associations_range(model, associations)
+      min = 0
+      max = N
+      associations.each do |assoc|
+        min = [min, association_minimum(model, assoc)].max
+        max = [max, association_maximum(model, assoc)].min
+      end
+      min..max
+    end
+    
+    def association_minimum(model, association)
+      minimum = association_validators(:presence, model, association).any? ? 1 : 0
+      length_validators = association_validators(:length, model, association)
+      length_validators.map { |v| v.options[:minimum] }.compact.max or minimum
+    end
+
+    def association_maximum(model, association)
+      maximum = case association.macro
+      when :belongs_to then 1
+      when :has_one then 1
+      when :has_many then N
+      when :has_and_belongs_to_many then N
+      else
+        domain.warn "Association macro #{association.macro.inspect} unknown, cardinality defaults to infinity"
+        return N
+      end
+      
+      length_validators = association_validators(:length, model, association)
+      length_validators.map { |v| v.options[:maximum] }.compact.min or maximum
+    end
+    
+    def association_validators(kind, model, association)
+      model.validators_on(association.name).select { |v| v.kind == kind }
     end
   end
 end

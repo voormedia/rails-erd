@@ -33,6 +33,9 @@ module RailsERD
     #             is the recommended format. Other formats may render significantly
     #             worse than a PDF file. The available formats depend on your installation
     #             of Graphviz.
+    # notation:: The cardinality notation to be used. Can be +:simple+ or
+    #            +:bachman+. Refer to README.rdoc or to the examples on the project
+    #            homepage for more information and examples.
     # orientation:: The direction of the hierarchy of entities. Either +horizontal+
     #               or +vertical+. Defaults to +horizontal+. The orientation of the
     #               PDF that is generated depends on the amount of hierarchy
@@ -72,6 +75,30 @@ module RailsERD
         :dir => :both,
         :arrowsize => 0.7,
         :penwidth => 1.0
+      }
+      
+      # Define different styles to draw the cardinality of relationships.
+      CARDINALITY_STYLES = {
+        # Closed arrows for to/from many.
+        :simple => lambda { |relationship, options|
+          options[:arrowhead] = relationship.to_many? ? :normal : :none
+          options[:arrowtail] = relationship.many_to? ? :normal : :none
+        },
+
+        # Closed arrow for to/from many, UML ranges at each end.
+        :uml => lambda { |relationship, options|
+          CARDINALITY_STYLES[:simple][relationship, options]
+          # TODO
+        },
+        
+        # Arrow for to/from many, open or closed dots for optional/mandatory.
+        :bachman => lambda { |relationship, options|
+          dst = relationship.destination_optional? ? "odot" : "dot"
+          src = relationship.source_optional? ? "odot" : "dot"
+          dst << "normal" if relationship.to_many?
+          src << "normal" if relationship.many_to?
+          options[:arrowhead], options[:arrowtail] = dst, src
+        }
       }
 
       def graph
@@ -133,14 +160,23 @@ module RailsERD
       
       # Returns an options hash 
       def relationship_options(relationship)
-        {}.tap do |options|
-          options[:arrowhead] = relationship.to_many? ? :normal : :dot
-          options[:arrowtail] = relationship.many_to? ? :normal : :dot
-          options[:weight] = relationship.strength
-          if relationship.indirect?
-            options[:style] = :dotted
-            options[:constraint] = false
-          end
+        relationship_style_options(relationship).tap do |opts|
+          # Edges with a higher weight are optimised to be shorter and straighter.
+          opts[:weight] = relationship.strength
+          
+          # Indirect relationships should not influence node ranks.
+          opts[:constraint] = false if relationship.indirect?
+        end
+      end
+      
+      # Returns an options hash that defines the (cardinality) style for the
+      # relationship.
+      def relationship_style_options(relationship)
+        {}.tap do |opts|
+          opts[:style] = :dotted if relationship.indirect?
+          
+          # Let cardinality style callbacks draw arrow heads and tails.
+          CARDINALITY_STYLES[options.notation || :simple][relationship, opts]
         end
       end
     end

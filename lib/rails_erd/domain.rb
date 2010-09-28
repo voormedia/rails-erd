@@ -68,6 +68,10 @@ module RailsERD
         [object_id << 1, relationships.map { |rel| "#{rel.source} => #{rel.destination}" } * ", "]
     end
     
+    def warn(message) # @private :nodoc:
+      puts "Warning: #{message}" unless options.suppress_warnings
+    end
+    
     private
     
     def entity_mapping
@@ -98,10 +102,6 @@ module RailsERD
       entity_for model
     rescue => e
       warn "Invalid association #{association_description(association)} (#{e.message})"
-    end
-    
-    def warn(message)
-      puts "Warning: #{message}" unless options.suppress_warnings
     end
     
     def association_description(association)
