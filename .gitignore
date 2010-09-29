@@ -1,5 +1,8 @@
+.DS_Store
+.bundle
+.yardoc
+*.pdf
+*.rbc
 doc
 pkg
 rdoc
-*.rbc
-.yardoc

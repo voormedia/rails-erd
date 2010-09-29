@@ -4,14 +4,12 @@
 </table>
 |
 <table border="0" align="left" cellspacing="2" cellpadding="0" width="<%= NODE_WIDTH + 4 %>">
-  <% if attributes.any? %>
-    <% attributes.each do |attribute| %>
-      <tr>
-        <td align="left" width="<%= NODE_WIDTH %>" port="<%= attribute %>"><%= attribute %> <font face="Arial Italic" color="grey60"><%= attribute.type_description %></font></td>
-      </tr>
-    <% end %>
-  <% else %>
+<% if attributes.any? %>
+<%   attributes.each do |attribute| %>
+  <tr><td align="left" width="<%= NODE_WIDTH %>" port="<%= attribute %>"><%= attribute %> <font face="Arial Italic" color="grey60"><%= attribute.type_description %></font></td></tr>
+<%   end %>
+<% else %>
     <tr><td height="6"></td></tr>
-  <% end %>
+<% end %>
 </table>
 <% if vertical? %>}<% end %>

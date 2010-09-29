@@ -40,3 +40,39 @@ begin
   end
 rescue LoadError
 end
+
+desc "Generate diagrams for bundled examples"
+task :examples do
+  require "rubygems"
+  require "bundler"
+  Bundler.require
+  require "rails_erd/diagram/graphviz"
+
+  %w{gemcutter typo}.each do |domain|
+    puts "Generating ERD for #{domain.capitalize}..."
+    begin
+      # Load database schema.
+      ActiveRecord::Base.establish_connection :adapter => "sqlite3", :database => ":memory:"
+      ActiveRecord::Migration.suppress_messages do
+        require File.expand_path("examples/#{domain}/schema.rb", File.dirname(__FILE__))
+      end
+      
+      # Load domain models for this example.
+      Dir["examples/#{domain}/models/**/*.rb"].each do |model|
+        require File.expand_path(model, File.dirname(__FILE__))
+      end
+
+      # Generate ERD for this example.
+      file_name = File.expand_path("examples/#{domain}.pdf", File.dirname(__FILE__))
+      RailsERD::Diagram::Graphviz.create(:file_name => file_name)
+    ensure
+      # Completely remove all loaded Active Record models.
+      ActiveRecord::Base.descendants.each do |model|
+        Object.send :remove_const, model.name.to_sym
+      end
+      ActiveRecord::Base.direct_descendants.clear
+      Arel::Relation.send :class_variable_set, :@@connection_tables_primary_keys, {}
+      ActiveSupport::Dependencies::Reference.clear!
+    end
+  end
+end

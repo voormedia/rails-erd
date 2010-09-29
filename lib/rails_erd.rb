@@ -28,6 +28,7 @@ module RailsERD
     :exclude_primary_keys, true,
     :exclude_timestamps, true,
     :exclude_unconnected, true,
+    :file_name, nil,
     :file_type, :pdf,
     :orientation, :horizontal,
     :suppress_warnings, false

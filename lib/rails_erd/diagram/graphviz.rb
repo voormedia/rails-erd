@@ -29,6 +29,8 @@ module RailsERD
     #
     # The following options are supported:
     #
+    # file_name:: The file name of the generated diagram. Defaults to +ERD.pdf+,
+    #             or any other extension based on the file type.
     # file_type:: The file type of the generated diagram. Defaults to +pdf+, which
     #             is the recommended format. Other formats may render significantly
     #             worse than a PDF file. The available formats depend on your installation
@@ -73,7 +75,7 @@ module RailsERD
         :fontname => "Arial",
         :fontsize => 8,
         :dir => :both,
-        :arrowsize => 0.7,
+        :arrowsize => 0.8,
         :penwidth => 1.0
       }
       
@@ -113,12 +115,13 @@ module RailsERD
           graph[:rankdir] = :TB if vertical?
           
           # Title of the graph itself.
-          graph[:label] = "#{@domain.name} domain model\\n\\n"
+          graph[:label] = "#{title}\\n\\n"
         end
       end
       
       # Save the diagram and return the file name that was written to.
       def save
+        check_version!
         graph.output(options.file_type.to_sym => file_name)
         file_name
       end
@@ -148,9 +151,30 @@ module RailsERD
 
       private
       
+      def check_version!
+        version_output = `dot -V 2>&1`.strip rescue nil
+        version = if version_output =~ %r{graphviz\s+version\s+(\d+\.\d+\.\d+)}i
+          parts = $1.split(".").map(&:to_i)
+          if parts.size >= 2 and parts[0] <= 2 and parts[1] < 22
+            # Graphviz < 2.22 (silently) fails in many cases.
+            warn "Installed Graphviz appears to be older than version 2.22. Diagram generation may be problematic, upgrading is recommended."
+          end
+        end
+      end
+      
+      # Returns the title to be used for the graph.
+      def title
+        if @domain.name then "#{@domain.name} domain model" else "Domain model" end
+      end
+      
       # Returns the file name that will be used when saving the diagram.
       def file_name
-        "ERD.#{options.file_type}"
+        options.file_name or "ERD.#{file_extension}"
+      end
+      
+      # Returns the default file extension to be used when saving the diagram.
+      def file_extension
+        if options.file_type == :none then :dot else options.file_type end
       end
 
       # Returns an options hash based on the given entity and its attributes.

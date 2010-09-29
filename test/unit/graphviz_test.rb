@@ -3,6 +3,7 @@ require File.expand_path("../test_helper", File.dirname(__FILE__))
 class GraphvizTest < ActiveSupport::TestCase
   def setup
     RailsERD.options.file_type = :dot
+    RailsERD.options.suppress_warnings = true
     load "rails_erd/diagram/graphviz.rb"
   end
   
@@ -70,7 +71,7 @@ class GraphvizTest < ActiveSupport::TestCase
   end
   
   # Diagram generation =======================================================
-  test "create should create output based on domain model" do
+  test "create should create output for domain with attributes" do
     create_model "Foo", :bar => :references, :column => :string do
       belongs_to :bar
     end
@@ -79,16 +80,19 @@ class GraphvizTest < ActiveSupport::TestCase
     assert File.exists?("ERD.dot")
   end
 
-  test "create should create output based on domain without attributes" do
-    create_model "Foo", :bar => :references do
-      belongs_to :bar
-    end
-    create_model "Bar"
+  test "create should create output for domain without attributes" do
+    create_simple_domain
     Diagram::Graphviz.create
     assert File.exists?("ERD.dot")
   end
   
-  test "create should create vertical output based on domain model" do
+  test "create should write to file with dot extension if type is none" do
+    create_simple_domain
+    Diagram::Graphviz.create :file_type => :none
+    assert File.exists?("ERD.dot")
+  end
+  
+  test "create should create output for domain with attributes if orientation is vertical" do
     create_model "Foo", :bar => :references, :column => :string do
       belongs_to :bar
     end
@@ -97,11 +101,8 @@ class GraphvizTest < ActiveSupport::TestCase
     assert File.exists?("ERD.dot")
   end
 
-  test "create should create vertical output based on domain without attributes" do
-    create_model "Foo", :bar => :references do
-      belongs_to :bar
-    end
-    create_model "Bar"
+  test "create should create output for domain if orientation is vertical" do
+    create_simple_domain
     Diagram::Graphviz.create(:orientation => :vertical)
     assert File.exists?("ERD.dot")
   end
@@ -121,6 +122,16 @@ class GraphvizTest < ActiveSupport::TestCase
     assert_match /No \(connected\) entities found/, message
   end
   
+  test "create should write to given file name if present" do
+    begin
+      create_simple_domain
+      Diagram::Graphviz.create :file_name => "foobar.zxcv"
+      assert File.exists?("foobar.zxcv")
+    ensure
+      FileUtils.rm "foobar.zxcv" rescue nil
+    end
+  end
+
   # Graphviz output ==========================================================
   test "generate should create directed graph" do
     create_simple_domain

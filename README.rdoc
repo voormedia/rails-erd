@@ -102,8 +102,11 @@ exclude_unconnected:: Excludes entities that are not connected to other
 === Graphviz diagram generation
 
 The following options are supported by the default diagram generator, which
-outputs diagrams created with Graphviz.
+outputs diagrams created with Graphviz. Authors of other diagram generators
+are encouraged to use these option names where applicable.
 
+file_name:: The file name of the generated diagram. Defaults to +ERD.pdf+,
+            or any other extension based on the file type.
 file_type:: The file type of the generated diagram. Defaults to +pdf+, which
             is the recommended format. Other formats may render significantly
             worse than a PDF file. The available formats depend on your installation
