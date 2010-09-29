@@ -138,6 +138,30 @@ class GraphvizTest < ActiveSupport::TestCase
     assert_equal "digraph", diagram.graph.type
   end
   
+  test "generate should add title to graph" do
+    create_simple_domain
+    assert_equal '"Domain model\n\n"', diagram.graph.graph[:label].to_s
+  end
+
+  test "generate should add title with application name to graph" do
+    begin
+      Object::Quux = Module.new
+      Object::Quux::Application = Class.new
+      Object::Rails = Struct.new(:application).new(Object::Quux::Application.new)
+      create_simple_domain
+      assert_equal '"Quux domain model\n\n"', diagram.graph.graph[:label].to_s
+    ensure
+      Object::Quux.send :remove_const, :Application
+      Object.send :remove_const, :Quux
+      Object.send :remove_const, :Rails
+    end
+  end
+
+  test "generate should omit title if set to false" do
+    create_simple_domain
+    assert_equal "", diagram(:title => false).graph.graph[:label].to_s
+  end
+  
   test "generate should create node for each entity" do
     create_model "Foo", :bar => :references do
       belongs_to :bar

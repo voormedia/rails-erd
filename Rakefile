@@ -48,23 +48,31 @@ task :examples do
   Bundler.require
   require "rails_erd/diagram/graphviz"
 
-  %w{gemcutter refinery typo}.each do |domain|
-    puts "Generating ERD for #{domain.capitalize}..."
+  Dir["examples/*/*"].each do |path|
+    name = File.basename(path)
+    puts "Generating ERD for #{name.capitalize}..."
     begin
       # Load database schema.
       ActiveRecord::Base.establish_connection :adapter => "sqlite3", :database => ":memory:"
       ActiveRecord::Migration.suppress_messages do
-        require File.expand_path("examples/#{domain}/schema.rb", File.dirname(__FILE__))
+        begin
+          require File.expand_path("#{path}/schema.rb", File.dirname(__FILE__))
+        rescue LoadError
+        end
       end
       
       # Load domain models for this example.
-      Dir["examples/#{domain}/models/**/*.rb"].each do |model|
+      Dir["#{path}/**/*.rb"].each do |model|
         require File.expand_path(model, File.dirname(__FILE__))
       end
-
+      
+      # Skip empty domain models.
+      next if ActiveRecord::Base.descendants.empty?
+      
       # Generate ERD for this example.
-      file_name = File.expand_path("examples/#{domain}.png", File.dirname(__FILE__))
-      RailsERD::Diagram::Graphviz.create(:file_name => file_name, :file_type => :png, :suppress_warnings => true)
+      file_name = File.expand_path("examples/#{name}.pdf", File.dirname(__FILE__))
+      title = File.exists?("#{path}/name.txt") ? File.read("#{path}/name.txt").strip : name.classify + " domain model"
+      RailsERD::Diagram::Graphviz.create(:file_name => file_name, :suppress_warnings => true, :notation => :simple, :title => title)
     ensure
       # Completely remove all loaded Active Record models.
       ActiveRecord::Base.descendants.each do |model|

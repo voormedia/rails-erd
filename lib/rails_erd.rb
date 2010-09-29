@@ -31,6 +31,7 @@ module RailsERD
     :file_name, nil,
     :file_type, :pdf,
     :orientation, :horizontal,
-    :suppress_warnings, false
+    :suppress_warnings, false,
+    :title, true
   ]
 end

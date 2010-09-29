@@ -41,7 +41,9 @@ module RailsERD
     # orientation:: The direction of the hierarchy of entities. Either +:horizontal+
     #               or +:vertical+. Defaults to +horizontal+. The orientation of the
     #               PDF that is generated depends on the amount of hierarchy
-    #               in your models.    
+    #               in your models.
+    # title:: The title to add at the top of the diagram. Defaults to 
+    #         <tt>"YourApplication domain model"</tt>.
     class Graphviz < Diagram
       NODE_LABEL_TEMPLATE = ERB.new(File.read(File.expand_path("templates/node.erb", File.dirname(__FILE__))), nil, "<>") # @private :nodoc:
 
@@ -115,7 +117,7 @@ module RailsERD
           graph[:rankdir] = :TB if vertical?
           
           # Title of the graph itself.
-          graph[:label] = "#{title}\\n\\n"
+          graph[:label] = "#{title}\\n\\n" if title
         end
       end
       
@@ -164,7 +166,12 @@ module RailsERD
       
       # Returns the title to be used for the graph.
       def title
-        if @domain.name then "#{@domain.name} domain model" else "Domain model" end
+        case options.title
+        when false then nil
+        when true then
+          if @domain.name then "#{@domain.name} domain model" else "Domain model" end
+        else options.title
+        end
       end
       
       # Returns the file name that will be used when saving the diagram.

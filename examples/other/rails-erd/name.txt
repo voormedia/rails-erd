@@ -1,0 +1,1 @@
+Rails ERD domain model
