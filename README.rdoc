@@ -111,6 +111,8 @@ file_type:: The file type of the generated diagram. Defaults to +pdf+, which
             is the recommended format. Other formats may render significantly
             worse than a PDF file. The available formats depend on your installation
             of Graphviz.
+notation:: The cardinality notation to be used. Can be +simple+ or
+           +bachman+.
 orientation:: The direction of the hierarchy of entities. Either +horizontal+
               or +vertical+. Defaults to +horizontal+. The orientation of the
               PDF that is generated depends on the amount of hierarchy

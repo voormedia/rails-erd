@@ -38,8 +38,8 @@ module RailsERD
     # notation:: The cardinality notation to be used. Can be +:simple+ or
     #            +:bachman+. Refer to README.rdoc or to the examples on the project
     #            homepage for more information and examples.
-    # orientation:: The direction of the hierarchy of entities. Either +horizontal+
-    #               or +vertical+. Defaults to +horizontal+. The orientation of the
+    # orientation:: The direction of the hierarchy of entities. Either +:horizontal+
+    #               or +:vertical+. Defaults to +horizontal+. The orientation of the
     #               PDF that is generated depends on the amount of hierarchy
     #               in your models.    
     class Graphviz < Diagram
