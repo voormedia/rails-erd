@@ -48,7 +48,7 @@ task :examples do
   Bundler.require
   require "rails_erd/diagram/graphviz"
 
-  %w{gemcutter typo}.each do |domain|
+  %w{gemcutter refinery typo}.each do |domain|
     puts "Generating ERD for #{domain.capitalize}..."
     begin
       # Load database schema.
@@ -63,12 +63,12 @@ task :examples do
       end
 
       # Generate ERD for this example.
-      file_name = File.expand_path("examples/#{domain}.pdf", File.dirname(__FILE__))
-      RailsERD::Diagram::Graphviz.create(:file_name => file_name)
+      file_name = File.expand_path("examples/#{domain}.png", File.dirname(__FILE__))
+      RailsERD::Diagram::Graphviz.create(:file_name => file_name, :file_type => :png, :suppress_warnings => true)
     ensure
       # Completely remove all loaded Active Record models.
       ActiveRecord::Base.descendants.each do |model|
-        Object.send :remove_const, model.name.to_sym
+        Object.send :remove_const, model.name.to_sym rescue nil
       end
       ActiveRecord::Base.direct_descendants.clear
       Arel::Relation.send :class_variable_set, :@@connection_tables_primary_keys, {}
