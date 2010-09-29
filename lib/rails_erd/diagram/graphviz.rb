@@ -157,7 +157,7 @@ module RailsERD
           parts = $1.split(".").map(&:to_i)
           if parts.size >= 2 and parts[0] <= 2 and parts[1] < 22
             # Graphviz < 2.22 (silently) fails in many cases.
-            warn "Installed Graphviz appears to be older than version 2.22. Diagram generation may be problematic, upgrading is recommended."
+            warn "Graphviz appears to be older than version 2.22. Diagram generation may be problematic, upgrading is recommended."
           end
         end
       end
