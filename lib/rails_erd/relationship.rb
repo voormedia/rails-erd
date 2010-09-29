@@ -3,8 +3,9 @@ require "rails_erd/relationship/cardinality"
 module RailsERD
   # Describes a relationship between two entities. A relationship is detected
   # based on Active Record associations. One relationship may represent more
-  # than one association, however. Associations that share the same foreign
-  # key are grouped together.
+  # than one association, however. Related associations are grouped together.
+  # Associations are related if they share the same foreign key, or the same
+  # join table in the case of many-to-many associations.
   class Relationship
     N = Cardinality::N
     
