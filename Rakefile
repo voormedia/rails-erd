@@ -71,8 +71,10 @@ task :examples do
       
       # Generate ERD for this example.
       file_name = File.expand_path("examples/#{name}.pdf", File.dirname(__FILE__))
-      title = File.exists?("#{path}/name.txt") ? File.read("#{path}/name.txt").strip : name.classify + " domain model"
-      RailsERD::Diagram::Graphviz.create(:file_name => file_name, :suppress_warnings => true, :notation => :simple, :title => title)
+      default_options = { :file_name => file_name, :suppress_warnings => true, :notation => :simple,
+        :title => name.classify + " domain model" }
+      example_options = eval((File.read("#{path}/options.rb") rescue "")) || {}
+      RailsERD::Diagram::Graphviz.create(default_options.merge(example_options))
     ensure
       # Completely remove all loaded Active Record models.
       ActiveRecord::Base.descendants.each do |model|
