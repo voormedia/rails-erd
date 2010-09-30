@@ -3,7 +3,7 @@ PATH
   specs:
     rails-erd (0.2.0)
       activerecord (~> 3.0.0)
-      activesupport (~> 3.0.0)
+      activesupport (~> 3.0)
       ruby-graphviz (~> 0.9.17)
 
 GEM

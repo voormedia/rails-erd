@@ -1,1 +1,1 @@
-{ :title => "User profiles" }
+{ :title => "Heads of state" }
