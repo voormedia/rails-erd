@@ -75,7 +75,12 @@ module RailsERD
     private
     
     def entity_mapping
-      @entity_mapping ||= Hash[@models.collect { |model| [model, Entity.new(self, model)] }]
+      @entity_mapping ||= {}.tap do |mapping|
+        @models.each do |model|
+          # Exclude STI models. We could add inheritance relationships later.
+          mapping[model] = Entity.new(self, model) if model.descends_from_active_record?
+        end
+      end
     end
     
     def relationships_mapping

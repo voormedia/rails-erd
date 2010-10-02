@@ -47,6 +47,22 @@ class DomainTest < ActiveSupport::TestCase
     assert_equal [Bar, Baz, Foo, Qux], Domain.generate.entities.collect(&:model)
   end
   
+  test "entities should exclude single-table inherited entities" do
+    create_model "Foo", :type => :string
+    Object.const_set :SpecialFoo, Class.new(Foo)
+    assert_equal [Foo], Domain.generate.entities.collect(&:model)
+  end
+  
+  test "entities should include other-table inherited entities" do
+    create_model "Foo"
+    Object.const_set :SpecialFoo, Class.new(Foo)
+    SpecialFoo.class_eval do
+      set_table_name "special_foo"
+    end
+    create_table "special_foo", {}, true
+    assert_equal [Foo, SpecialFoo], Domain.generate.entities.collect(&:model)
+  end
+  
   # Relationship processing ==================================================
   test "relationships should return empty array for empty domain" do
     assert_equal [], Domain.generate.relationships
