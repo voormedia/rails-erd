@@ -17,10 +17,10 @@ Jeweler::Tasks.new do |spec|
   spec.add_runtime_dependency "ruby-graphviz", "~> 0.9.17"
   spec.add_development_dependency "sqlite3-ruby"
   
-  # Don't bundle examples in gem.
-  examples = Dir["examples/**/*"]
-  spec.files -= examples
-  spec.test_files -= examples
+  # Don't bundle examples or website in gem.
+  excluded = Dir["{examples,site}/**/*"]
+  spec.files -= excluded
+  spec.test_files -= excluded
 end
 
 Jeweler::GemcutterTasks.new

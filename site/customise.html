@@ -1,0 +1,158 @@
+---
+id: customise
+layout: default
+title: Customisation options
+---
+<p>
+  Rails ERD supports several customisation options, all of which can be
+  provided on the command line.
+  Even if you're completely unhappy with the output, you can still use Rails ERD.
+  It has a powerful API that you can use to inspect your domain models, or to
+  easily generate output in your format of choice.
+</p>
+
+<h2><a name="providing-options">Providing options</a></h2>
+All options that are supported by Rails ERD can be provided on the command line.
+For example...
+
+{% highlight console cssclass=console %}
+% rake erd orientation=vertical exclude_timestamps=false
+{% endhighlight %}
+
+Continue to read for an overview of all supported options.
+
+<h2><a name="available-options">Available options</a></h2>
+
+The following output options are available in Rails ERD.
+<dl>
+  <dt><pre>exclude_foreign_keys      [true|false]</pre><dt>
+  <dd>
+    Excludes foreign key columns from attribute lists. Default value: <tt>true</tt>
+  </dt>
+<!--
+  <dt><pre>exclude_indirect          [true|false]</pre></dt>
+  <dd>
+    Excludes relationships that are indirect. Indirect relationships
+    are defined in Active Record with <tt>has_many :through</tt> associations.
+    Default value: <tt>false</tt>
+  </dd>-->
+  
+  <dt><pre>exclude_primary_keys      [true|false]</pre></dt>
+  <dd>
+    Excludes primary key columns from attribute lists. Default value: <tt>true</tt>
+  </dd>
+  
+  <dt><pre>exclude_timestamps        [true|false]</pre></dt>
+  <dd>
+    Excludes timestamp columns (<tt>created_at/on</tt> and <tt>updated_at/on</tt>)
+    from attribute lists. Default value: <tt>true</tt>
+  </dd>
+  
+  <dt><pre>exclude_unconnected       [true|false]</pre></dt>
+  <dd>
+    Excludes any entities that are not connected to other entities.
+    Default value: <tt>true</tt>
+  </dd>
+  
+  <dt><pre>file_name                 &lt;file path&gt;</pre></dt>
+  <dd>
+    The file name of the generated diagram. Default value: <tt>ERD.&lt;file_type&gt;</tt>
+  </dd>
+  
+  <dt><pre>file_type                 [pdf|none|...]</pre></dt>
+  <dd>
+    The file type of the generated diagram. PDF output is strongly recommended,
+    other formats may render significantly worse. The available formats depend
+    on your installation of Graphviz. If you set the file type to <tt>none</tt>,
+    raw Graphviz instructions are saved in <tt>dot</tt> format. This does not
+    require Graphviz to be installed. Default value: <tt>pdf</tt>
+  </dt>
+<!--
+  <dt><pre>notation                  [simple|uml]</pre></dt>
+  <dd>
+    The ideal diagram notation may not be the same for everyone.
+    Rails ERD defaults to simple arrows, without indication of cardinalities.
+    This a classic way to draw entity-relationship diagrams, and
+    easy to understand. If you prefer cardinalities to be displayed, try
+    setting this option to <tt>uml</tt>. Default value: <tt>simple</tt>
+  </dd>
+-->
+  <dt><pre>orientation               [horizontal|vertical]</pre></dt>
+  <dd>
+    Diagrams display entities in a hierarchical way. The hierarchy
+    is defined by the associations on your models. A model that <tt>has_one</tt>
+    or <tt>has_many</tt> other models will be higher in the hierarchy.
+    This option causes the hierarchy to run either horizontally or vertically.
+    Which of the two is most appropriate depends on your models, be sure to
+    try both. Default value: <tt>horizontal</tt>
+  </dd>
+
+  <dt><pre>suppress_warnings         [true|false]</pre></dt>
+  <dd>
+    When set to <tt>true</tt>, no warnings are printed to the command line
+    while processing models and drawing the diagram. Default value: <tt>false</tt>
+  </dd>
+<!--
+  <dt><pre>title                     [true|false|&lt;string&gt;]</pre></dt>
+  <dd>
+    By default, a title is displayed at the top of the diagram:
+    <tt>&quot;&lt;application&gt; domain model&quot;</tt>. You can change the
+    title by setting this option. If set to <tt>false</tt>, no title will be
+    displayed at all. Default value: <tt>true</tt>
+  </dd>
+-->
+</dl>
+
+<h2><a name="custum-output">Custom output</a></h2>
+
+<p>
+  Rails ERD provides an abstract class that you can use to implement your
+  own diagram generation code. The following example generates code that can be
+  used with <a href="http://yuml.me/">yUML</a>, an online UML diagram service...
+</p>
+
+{% highlight ruby %}
+require "rails_erd/diagram"
+
+class YumlDiagram < RailsERD::Diagram
+  def process_relationship(relationship)  # Invoked once for each relationship
+    return if relationship.indirect?
+
+    arrow = case
+    when relationship.one_to_one?   then "1-1>"
+    when relationship.one_to_many?  then "1-*>"
+    when relationship.many_to_many? then "*-*>"
+    end
+
+    (@instructions ||= []) << "[#{rel.source}] #{arrow} [#{rel.destination}]"
+  end
+
+  def save  # Should save or return the generated diagram
+    @instructions * "\n"
+  end
+end
+{% endhighlight %}
+
+<p>
+  Only 15 lines of code! Then, simply call...
+</p>
+
+{% highlight ruby %}
+YumlDiagram.create
+#=> "[Rubygem] 1-*> [Ownership]
+#    [Rubygem] 1-*> [Subscription]
+#    [Rubygem] 1-*> [Version]
+#    [Rubygem] 1-1> [Linkset]
+#    [Rubygem] 1-*> [Dependency]
+#    [Version] 1-*> [Dependency]
+#    [User] 1-*> [Ownership]
+#    [User] 1-*> [Subscription]
+#    [User] 1-*> [WebHook]"
+{% endhighlight %}
+
+<p>
+  You can paste the resulting code at <a href="http://yuml.me/">yuml.me</a> to
+  generate a diagram. <a href="http://yuml.me/diagram/scruffy/class/%5BRubygem%5D%201-*%3E%20%5BOwnership%5D,%20%5BRubygem%5D%201-*%3E%20%5BSubscription%5D,%20%5BRubygem%5D%201-*%3E%20%5BVersion%5D,%20%5BRubygem%5D%201-1%3E%20%5BLinkset%5D,%20%5BRubygem%5D%201-*%3E%20%5BDependency%5D,%20%5BVersion%5D%201-*%3E%20%5BDependency%5D,%20%5BUser%5D%201-*%3E%20%5BOwnership%5D,%20%5BUser%5D%201-*%3E%20%5BSubscription%5D,%20%5BUser%5D%201-*%3E%20%5BWebHook%5D">Here's an example</a>.
+</p>
+
+<!--<h2><a name="api">Domain model API</a></h2>-->
