@@ -1,15 +1,4 @@
-/* 
-
-VOORMEDIA APPLICATION STYLESHEET
-Copyright © 2010 Voormedia.
-
-This stylesheet is intellectual property of Voormedia. Nothing may be changed without
-prior consent. Having the rights to use this stylesheet for your business does not imply
-rights to add, change or modify styles in this file under any circumstance.
-
-WWW.VOORMEDIA.COM
- 
-*/
+/* Copyright © 2010 Voormedia. - WWW.VOORMEDIA.COM */
 
 html { height: 100%; overflow-y: scroll; }
 body { height: 100%; margin: 0; line-height: 145%; color: #07192b; background-color: #327eba; font-family: Arial, sans-serif; }
