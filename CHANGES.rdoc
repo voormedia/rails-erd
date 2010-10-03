@@ -1,4 +1,4 @@
-=== To be released:
+=== 0.3.0:
 
 * Added the ability to support multiple styles of cardinality notations.
   Currently supported types are 'simple' and 'advanced'.
