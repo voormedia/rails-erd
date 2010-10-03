@@ -124,11 +124,11 @@ class YumlDiagram < RailsERD::Diagram
     when relationship.many_to_many? then "*-*>"
     end
 
-    (@instructions ||= []) << "[#{rel.source}] #{arrow} [#{rel.destination}]"
+    (@edges ||= []) << "[#{relationship.source}] #{arrow} [#{relationship.destination}]"
   end
 
   def save  # Should save or return the generated diagram
-    @instructions * "\n"
+    @edges * "\n"
   end
 end
 {% endhighlight %}
