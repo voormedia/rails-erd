@@ -97,7 +97,7 @@ module RailsERD
         source_range.last == 1 ? 1 : N
       end
       
-      # The cardinality class of the destination (left side). Either +1+ or +Infinity+.
+      # The cardinality class of the destination (right side). Either +1+ or +Infinity+.
       def destination_cardinality_class
         destination_range.last == 1 ? 1 : N
       end
