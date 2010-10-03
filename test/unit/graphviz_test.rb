@@ -208,7 +208,7 @@ class GraphvizTest < ActiveSupport::TestCase
     create_model "Lid", :jar => :references do
       belongs_to :jar
     end
-    assert_not_match %r{contents}, find_dot_node(diagram(:attributes => false), "Jar")[:label].to_gv
+    assert_no_match %r{contents}, find_dot_node(diagram(:attributes => false), "Jar")[:label].to_gv
   end
 
   test "generate should create edge for each relationship" do
