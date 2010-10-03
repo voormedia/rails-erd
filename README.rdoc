@@ -11,228 +11,23 @@ easy to use the API to build your own diagrams.
 
 Rails ERD was created specifically for Rails 3. It uses Active Record's
 built-in reflection capabilities to figure out how your models are associated.
-For older Rails applications, you may want to try
-Railroad[http://railroad.rubyforge.org/].
 
-== Links
+== Reference
 
 Homepage:
 http://rails-erd.rubyforge.org/
 
-Current documentation:
+Example entity-relationship diagrams:
+http://rails-erd.rubyforge.org/gallery.html
+
+Installation instructions:
+http://rails-erd.rubyforge.org/install.html
+
+API documentation:
 http://rails-erd.rubyforge.org/doc/
 
 Source code at Github:
 http://github.com/voormedia/rails-erd
-
-== Example output
-
-This is an example diagram from an actual Rails application.
-
-http://rails-erd.rubyforge.org/examples/event-forms.png
-
-{Download generated PDF}[http://rails-erd.rubyforge.org/examples/event-forms.pdf]
-
-Typo is a blogging application built in Rails. This is an excerpt from the
-diagram that was generated from the Rails 3 branch (which is currently still
-in development).
-
-http://rails-erd.rubyforge.org/examples/typo-blog.png
-
-{Download complete diagram as PDF}[http://rails-erd.rubyforge.org/examples/typo-blog.pdf]
-
-== Getting started
-
-In its most simple form, Rails ERD is a plugin for Rails 3 that provides you
-with a Rake task to create an Entity-Relationship Diagram. It depends on the
-Graphviz[http://www.graphviz.org/] visualisation library. In order to create
-PDF files (the default), you should install or compile Graphviz with support
-for Pango and Cairo.
-
-For example, to install Graphviz with Homebrew[http://mxcl.github.com/homebrew/]:
-
-  % brew install cairo pango graphviz
-
-Or with MacPorts[http://www.macports.org/]:
-
-  % sudo port install graphviz
-
-Next, install Rails ERD. Open your +Gemfile+, and add the following:
-
-  group :development do
-    gem 'rails-erd'
-  end
-
-Tell Bundler[http://gembundler.com/] to install Rails ERD:
-
-  % bundle install
-
-You now have access to Rails ERD through Rake. Generate a new
-Entity-Relationship Diagram for your Rails application:
-
-  % rake erd
-
-All done! You will now have a file named <tt>ERD.pdf</tt> in your application root.
-
-== Customisation
-
-Rails ERD has several options that you can use to customise its behaviour.
-All options can be provided on the command line. For example:
-
-  % rake erd orientation=vertical exclude_timestamps=false
-
-=== Diagram generation
-
-The following options are supported by the diagram generation module. Any
-diagram generator will automatically honour these options.
-
-exclude_foreign_keys:: Excludes foreign key columns from attribute lists.
-                       Defaults to +true+.
-exclude_indirect:: Excludes relationships that are indirect. Indirect relationships
-                   are defined in Active Record with <tt>has_many :through</tt>
-                   associations.
-exclude_primary_keys:: Excludes primary key columns from attribute lists.
-                       Defaults to +true+.
-exclude_timestamps:: Excludes timestamp columns (<tt>created_at/on</tt> and
-                     <tt>updated_at/on</tt>) from attribute lists. Defaults
-                     to +true+.
-exclude_unconnected:: Excludes entities that are not connected to other
-                      entities from the diagram. Defaults to +true+.
-
-=== Graphviz diagram generation
-
-The following options are supported by the default diagram generator, which
-outputs diagrams created with Graphviz. Authors of other diagram generators
-are encouraged to use these option names where applicable.
-
-file_name:: The file name of the generated diagram. Defaults to +ERD.pdf+,
-            or any other extension based on the file type.
-file_type:: The file type of the generated diagram. Defaults to +pdf+, which
-            is the recommended format. Other formats may render significantly
-            worse than a PDF file. The available formats depend on your installation
-            of Graphviz.
-notation:: The cardinality notation to be used. Can be +simple+ or
-           +bachman+.
-orientation:: The direction of the hierarchy of entities. Either +horizontal+
-              or +vertical+. Defaults to +horizontal+. The orientation of the
-              PDF that is generated depends on the amount of hierarchy
-              in your models.
-
-=== General options
-
-The following options are used by any part of Rails ERD.
-
-suppress_warnings:: When set to +true+, no warnings are printed to the
-                    command line while processing the domain model. Defaults
-                    to +false+.
-
-== Custom diagrams
-
-If you're completely unsatisfied with the diagrams that Rails ERD creates,
-you can still use it to create your own diagrams. It provides you with an easy
-way to create any kind of diagram based on your application's domain model.
-
-As an example, a diagram class that generates code that can be used with
-yUML (http://yuml.me) can be as simple as:
-
-  require "rails_erd/diagram"
-
-  class YumlDiagram < RailsERD::Diagram
-    def process_relationship(rel)
-      return if rel.indirect?
-
-      arrow = case
-      when rel.cardinality.one_to_one?   then "1-1>"
-      when rel.cardinality.one_to_many?  then "1-*>"
-      when rel.cardinality.many_to_many? then "*-*>"
-      end
-
-      instructions << "[#{rel.source}] #{arrow} [#{rel.destination}]"
-    end
-
-    def save
-      instructions * "\n"
-    end
-
-    def instructions
-      @instructions ||= []
-    end
-  end
-
-Only 18 lines of code! Then, to generate the diagram (example based on the
-domain model of Gemcutter):
-
-  YumlDiagram.create
-  #=> "[Rubygem] 1-*> [Ownership]
-  #    [Rubygem] 1-*> [Subscription]
-  #    [Rubygem] 1-*> [Version]
-  #    [Rubygem] 1-1> [Linkset]
-  #    [Rubygem] 1-*> [Dependency]
-  #    [Version] 1-*> [Dependency]
-  #    [User] 1-*> [Ownership]
-  #    [User] 1-*> [Subscription]
-  #    [User] 1-*> [WebHook]"
-
-{See what that would look like}[http://yuml.me/diagram/scruffy/class/%5BRubygem%5D%201-*%3E%20%5BOwnership%5D,%20%5BRubygem%5D%201-*%3E%20%5BSubscription%5D,%20%5BRubygem%5D%201-*%3E%20%5BVersion%5D,%20%5BRubygem%5D%201-1%3E%20%5BLinkset%5D,%20%5BRubygem%5D%201-*%3E%20%5BDependency%5D,%20%5BVersion%5D%201-*%3E%20%5BDependency%5D,%20%5BUser%5D%201-*%3E%20%5BOwnership%5D,%20%5BUser%5D%201-*%3E%20%5BSubscription%5D,%20%5BUser%5D%201-*%3E%20%5BWebHook%5D].
-
-== Internal API
-
-Rails ERD also allows you to use its internal API to inspect your Rails domain
-model. It is easy to generate alternative presentations of your Active Record
-models this way. If used outside of Rails, install Rails ERD as a gem:
-
-  % gem install rails-erd
-
-Suppose we have the following models:
-
-  class User < ActiveRecord::Base
-    has_many :posts
-    has_many :comments
-  end
-  
-  class Post < ActiveRecord::Base
-    belongs_to :user
-    has_many :comments
-  end
-  
-  class Comment < ActiveRecord::Base
-    belongs_to :user
-    belongs_to :post
-  end
-
-Then you can inspect your domain model like this:
-
-  require "rails_erd/domain"
-
-  domain = RailsERD::Domain.generate
-  domain.entities
-  #=> [ #<RailsERD::Entity @model=Comment>,
-  #     #<RailsERD::Entity @model=Post>,
-  #     #<RailsERD::Entity @model=User> ]
-  
-  domain.entities.first.connected?
-  #=> true
-  
-  domain.relationships
-  #=> [ #<RailsERD::Relationship @source=Post @destination=Comment>,
-  #     #<RailsERD::Relationship @source=User @destination=Comment>,
-  #     #<RailsERD::Relationship @source=User @destination=Post> ]
-  
-  domain.relationships.first.destination
-  #=> Comment
-  
-  domain.relationships.first.mutual?
-  #=> true
-  
-  domain.relationships.first.cardinality
-  #=> RailsERD::Relationship::Cardinality::OneToMany
-
-The above is just a sample of what is possible. See the API documentation for
-more details:
-http://rails-erd.rubyforge.org/doc/
-
-Please note that before the 1.0 release, the API may change subtly between
-minor versions.
 
 == About Rails ERD
 

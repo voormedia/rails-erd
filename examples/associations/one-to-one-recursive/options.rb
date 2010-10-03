@@ -1,1 +1,1 @@
-{ :title => "Roman emperors" }
+{ :title => false }

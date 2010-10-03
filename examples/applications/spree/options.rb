@@ -1,1 +1,1 @@
-{ :orientation => :vertical }
+{ :attributes => false }

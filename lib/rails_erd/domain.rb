@@ -12,9 +12,9 @@ module RailsERD
   #
   # The following options are available:
   #
-  # suppress_warnings:: When set to +true+, no warnings are printed to the
-  #                     command line while processing the domain model. Defaults
-  #                     to +false+.
+  # warn:: When set to +false+, no warnings are printed to the
+  #        command line while processing the domain model. Defaults
+  #        to +true+.
   class Domain
     class << self
       # Generates a domain model object based on all loaded subclasses of
@@ -45,7 +45,7 @@ module RailsERD
     
     # Returns all entities of your domain model.
     def entities
-      @entities ||= entity_mapping.values.sort
+      @entities ||= Entity.from_models(self, @models)
     end
     
     # Returns all relationships in your domain model.
@@ -55,7 +55,7 @@ module RailsERD
     
     # Returns a specific entity object for the given Active Record model.
     def entity_for(model) # @private :nodoc:
-      entity_mapping[model] or raise "model #{model} exists, but is not included in the domain"
+      entity_mapping[model] or raise "model #{model} exists, but is not included in domain"
     end
     
     # Returns an array of relationships for the given Active Record model.
@@ -69,16 +69,15 @@ module RailsERD
     end
     
     def warn(message) # @private :nodoc:
-      puts "Warning: #{message}" unless options.suppress_warnings
+      puts "Warning: #{message}" if options.warn
     end
     
     private
     
     def entity_mapping
       @entity_mapping ||= {}.tap do |mapping|
-        @models.each do |model|
-          # Exclude STI models. We could add inheritance relationships later.
-          mapping[model] = Entity.new(self, model) if model.descends_from_active_record?
+        entities.each do |entity|
+          mapping[entity.model] = entity
         end
       end
     end
@@ -106,7 +105,7 @@ module RailsERD
       # Raises error if model is not in the domain.
       entity_for model
     rescue => e
-      warn "Invalid association #{association_description(association)} (#{e.message})"
+      warn "Ignoring invalid association #{association_description(association)} (#{e.message})"
     end
     
     def association_description(association)

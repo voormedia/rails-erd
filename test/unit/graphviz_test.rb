@@ -2,13 +2,13 @@ require File.expand_path("../test_helper", File.dirname(__FILE__))
 
 class GraphvizTest < ActiveSupport::TestCase
   def setup
-    RailsERD.options.file_type = :dot
-    RailsERD.options.suppress_warnings = true
+    RailsERD.options.filetype = :png
+    RailsERD.options.warn = false
     load "rails_erd/diagram/graphviz.rb"
   end
   
   def teardown
-    FileUtils.rm "ERD.dot" rescue nil
+    FileUtils.rm Dir["ERD.*"] rescue nil
     RailsERD::Diagram.send :remove_const, :Graphviz
   end
   
@@ -54,7 +54,7 @@ class GraphvizTest < ActiveSupport::TestCase
   test "file name should depend on file type" do
     create_simple_domain
     begin
-      assert_equal "ERD.svg", Diagram::Graphviz.create(:file_type => :svg)
+      assert_equal "ERD.svg", Diagram::Graphviz.create(:filetype => :svg)
     ensure
       FileUtils.rm "ERD.svg" rescue nil
     end
@@ -77,19 +77,36 @@ class GraphvizTest < ActiveSupport::TestCase
     end
     create_model "Bar", :column => :string
     Diagram::Graphviz.create
-    assert File.exists?("ERD.dot")
+    assert File.exists?("ERD.png")
   end
 
   test "create should create output for domain without attributes" do
     create_simple_domain
     Diagram::Graphviz.create
-    assert File.exists?("ERD.dot")
+    assert File.exists?("ERD.png")
   end
   
-  test "create should write to file with dot extension if type is none" do
+  test "create should write to file with dot extension if type is dot" do
     create_simple_domain
-    Diagram::Graphviz.create :file_type => :none
+    Diagram::Graphviz.create :filetype => :dot
     assert File.exists?("ERD.dot")
+  end
+
+  test "create should write to file with dot extension without requiring graphviz" do
+    create_simple_domain
+    begin
+      GraphViz.class_eval do
+        alias_method :old_output_and_errors_from_command, :output_and_errors_from_command
+        def output_and_errors_from_command(*args); raise end
+      end
+      assert_nothing_raised do
+        Diagram::Graphviz.create :filetype => :dot
+      end
+    ensure
+      GraphViz.class_eval do
+        alias_method :output_and_errors_from_command, :old_output_and_errors_from_command
+      end
+    end
   end
   
   test "create should create output for domain with attributes if orientation is vertical" do
@@ -98,18 +115,18 @@ class GraphvizTest < ActiveSupport::TestCase
     end
     create_model "Bar", :column => :string
     Diagram::Graphviz.create(:orientation => :vertical)
-    assert File.exists?("ERD.dot")
+    assert File.exists?("ERD.png")
   end
 
   test "create should create output for domain if orientation is vertical" do
     create_simple_domain
     Diagram::Graphviz.create(:orientation => :vertical)
-    assert File.exists?("ERD.dot")
+    assert File.exists?("ERD.png")
   end
 
   test "create should not create output if there are no connected models" do
     Diagram::Graphviz.create rescue nil
-    assert !File.exists?("ERD.dot")
+    assert !File.exists?("ERD.png")
   end
 
   test "create should abort and complain if there are no connected models" do
@@ -119,16 +136,16 @@ class GraphvizTest < ActiveSupport::TestCase
     rescue => e
       message = e.message
     end
-    assert_match /No \(connected\) entities found/, message
+    assert_match /No entities found/, message
   end
   
-  test "create should write to given file name if present" do
+  test "create should write to given file name plus extension if present" do
     begin
       create_simple_domain
-      Diagram::Graphviz.create :file_name => "foobar.zxcv"
-      assert File.exists?("foobar.zxcv")
+      Diagram::Graphviz.create :filename => "foobar"
+      assert File.exists?("foobar.png")
     ensure
-      FileUtils.rm "foobar.zxcv" rescue nil
+      FileUtils.rm "foobar.png" rescue nil
     end
   end
 
@@ -186,6 +203,13 @@ class GraphvizTest < ActiveSupport::TestCase
     assert_match %r{<\w+.*?>column <\w+.*?>string</\w+.*?>}, find_dot_node(diagram, "Bar")[:label].to_gv
   end
 
+  test "generate should not add any attributes to entity labels if attributes is set to false" do
+    create_model "Jar", :contents => :string
+    create_model "Lid", :jar => :references do
+      belongs_to :jar
+    end
+    assert_not_match %r{contents}, find_dot_node(diagram(:attributes => false), "Jar")[:label].to_gv
+  end
 
   test "generate should create edge for each relationship" do
     create_model "Foo", :bar => :references do
@@ -198,13 +222,19 @@ class GraphvizTest < ActiveSupport::TestCase
   end
   
   test "node records should have direction reversing braces for vertical orientation" do
-    create_simple_domain
-    assert_match %r(\A<\{\s*<.*\|.*>\s*\}>\Z)m, find_dot_node(diagram(:orientation => :vertical), "Bar")[:label].to_gv
+    create_model "Book", :author => :references do
+      belongs_to :author
+    end
+    create_model "Author", :name => :string
+    assert_match %r(\A<\{\s*<.*\|.*>\s*\}>\Z)m, find_dot_node(diagram(:orientation => :vertical), "Author")[:label].to_gv
   end
 
   test "node records should not have direction reversing braces for horizontal orientation" do
-    create_simple_domain
-    assert_match %r(\A<\s*<.*\|.*>\s*>\Z)m, find_dot_node(diagram(:orientation => :horizontal), "Bar")[:label].to_gv
+    create_model "Book", :author => :references do
+      belongs_to :author
+    end
+    create_model "Author", :name => :string
+    assert_match %r(\A<\s*<.*\|.*>\s*>\Z)m, find_dot_node(diagram(:orientation => :horizontal), "Author")[:label].to_gv
   end
   
   # Simple notation style ====================================================
@@ -223,39 +253,39 @@ class GraphvizTest < ActiveSupport::TestCase
     assert_equal [["normal", "normal"]], find_dot_edge_styles(diagram(:notation => :simple))
   end
 
-  # Bachman notation style ===================================================
-  test "generate should use open dots for one to one cardinalities with bachman notation" do
+  # Advanced notation style ===================================================
+  test "generate should use open dots for one to one cardinalities with advanced notation" do
     create_one_to_one_assoc_domain
-    assert_equal [["odot", "odot"]], find_dot_edge_styles(diagram(:notation => :bachman))
+    assert_equal [["odot", "odot"]], find_dot_edge_styles(diagram(:notation => :advanced))
   end
 
-  test "generate should use dots for mandatory one to one cardinalities with bachman notation" do
+  test "generate should use dots for mandatory one to one cardinalities with advanced notation" do
     create_one_to_one_assoc_domain
     One.class_eval do
       validates_presence_of :other
     end
-    assert_equal [["odot", "dot"]], find_dot_edge_styles(diagram(:notation => :bachman))
+    assert_equal [["odot", "dot"]], find_dot_edge_styles(diagram(:notation => :advanced))
   end
 
-  test "generate should use normal arrow and open dot head with dot tail for one to many cardinalities with bachman notation" do
+  test "generate should use normal arrow and open dot head with dot tail for one to many cardinalities with advanced notation" do
     create_one_to_many_assoc_domain
-    assert_equal [["odot", "odotnormal"]], find_dot_edge_styles(diagram(:notation => :bachman))
+    assert_equal [["odot", "odotnormal"]], find_dot_edge_styles(diagram(:notation => :advanced))
   end
 
-  test "generate should use normal arrow and dot head for mandatory one to many cardinalities with bachman notation" do
+  test "generate should use normal arrow and dot head for mandatory one to many cardinalities with advanced notation" do
     create_one_to_many_assoc_domain
     One.class_eval do
       validates_presence_of :many
     end
-    assert_equal [["odot", "dotnormal"]], find_dot_edge_styles(diagram(:notation => :bachman))
+    assert_equal [["odot", "dotnormal"]], find_dot_edge_styles(diagram(:notation => :advanced))
   end
 
-  test "generate should use normal arrow and open dot head and tail for many to many cardinalities with bachman notation" do
+  test "generate should use normal arrow and open dot head and tail for many to many cardinalities with advanced notation" do
     create_many_to_many_assoc_domain
-    assert_equal [["odotnormal", "odotnormal"]], find_dot_edge_styles(diagram(:notation => :bachman))
+    assert_equal [["odotnormal", "odotnormal"]], find_dot_edge_styles(diagram(:notation => :advanced))
   end
 
-  test "generate should use normal arrow and dot tail and head for mandatory many to many cardinalities with bachman notation" do
+  test "generate should use normal arrow and dot tail and head for mandatory many to many cardinalities with advanced notation" do
     create_many_to_many_assoc_domain
     Many.class_eval do
       validates_presence_of :more
@@ -263,6 +293,6 @@ class GraphvizTest < ActiveSupport::TestCase
     More.class_eval do
       validates_presence_of :many
     end
-    assert_equal [["dotnormal", "dotnormal"]], find_dot_edge_styles(diagram(:notation => :bachman))
+    assert_equal [["dotnormal", "dotnormal"]], find_dot_edge_styles(diagram(:notation => :advanced))
   end
 end

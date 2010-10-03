@@ -3,8 +3,6 @@
 html { height: 100%; overflow-y: scroll; }
 body { height: 100%; margin: 0; line-height: 145%; color: #07192b; background-color: #327eba; font-family: Arial, sans-serif; }
 
-h2 { margin: 50px 0 10px; font-size: 130%; font-weight: bold; }
-
 div.container { width: 750px; margin: 0 auto; }
 
 div.header h1 { margin: 0; padding: 65px 0 25px; font-size: 240%; font-weight: bold; }
@@ -35,17 +33,28 @@ div.footer { margin: 0; padding: 20px 0 180px; background: #327eba url(/images/b
 div.footer a { color: #fff; text-decoration: none; }
 div.footer p { margin: 0 0 15px; }
 
-h2 a { text-decoration: none; color: #07192b; }
+h2 { margin: 50px 0 10px; font-size: 130%; font-weight: bold; }
+h3 { margin: 30px 0 5px; font-size: 100%; font-weight: bold; }
+
+h2 a, h3 a, h4 a, h5 a { text-decoration: none; color: #07192b; }
 a { color: #cb771f; }
 p { margin: 16px 0; padding: 0; }
 p.jumpto { margin: 42px 0; font-weight: bold; }
 tt { padding: 0 3px; font-family: Courier, fixed; font-size: 105%; }
-pre { margin: 16px 0; padding: 10px 15px; border: 1px solid #cb771f; background-color: #fff; -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px; font-family: Courier, fixed; font-size: 110%; line-height: 115%; }
+
+table.combined, pre { margin: 16px 0; padding: 10px 15px; border: 1px solid #cb771f; background-color: #fff; -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px; font-family: Courier, fixed; }
+pre { font-size: 110%; line-height: 115%; }
+table.combined { width: 100%; font-size: 100%; }
+table.combined pre { border: 0; margin: 0; padding: 0; }
+table.combined img.erd { float: right; border: 0; margin: 0; padding: 0; }
 div.console pre { border: 0; background-color: #327eba; color: #fff; font-size: 125%; }
 img.erd { padding: 14px; border: 1px solid #cb771f; background-color: #fff; -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px; }
+
 dl dt { margin: 10px 0; }
 dl dd { margin: 10px 0 20px 40px; }
 dl dt pre { margin: 0; padding: 0; border: 0; background: transparent; font-family: Courier, fixed; font-size: 110%; font-weight: bold; }
+dl dl dt { display: block; float: left; margin: 0; width: 150px; }
+dl dl dd { display: block; margin: 10px 0 10px 10px; }
 
 div.clearfix:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
 div.clearfix { display: inline-block; display: block; }

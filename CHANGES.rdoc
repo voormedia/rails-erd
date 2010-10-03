@@ -1,20 +1,21 @@
 === To be released:
 
 * Added the ability to support multiple styles of cardinality notations.
-  Currently supported types are 'simple' and 'bachman'. See the documentation
-  and project homepage for details.
-* Added option to exclude indirect relationships (exclude_indirect).
-* Slightly altered the type descriptions of attributes.
+  Currently supported types are 'simple' and 'advanced'.
+* Added option to exclude indirect relationships (indirect=false).
+* Added option to change or disable the diagram title (title='Custom title').
+* Altered the type descriptions of attributes.
+* Renamed options for flexibility and clarity.
 * Improved internal logic to determine the cardinality of relationships.
 * More versatile API that allows you to inspect relationships and their
   cardinalities.
 * Changed line widths to 1.0 to avoid invisible node boundaries with older
   versions of Graphviz.
+* Bundled examples based on actual applications.
 
 === 0.2.0
 
-* Added simple way to create your own type of diagrams with a tiny amount of
-  code.
+* Added simple way to create your own type of diagrams with a tiny amount of code.
 * Improved internal API and documentation.
 * Subtle changes in diagram style.
 * Fixed error where non-mutual relationships might be inadvertently classified

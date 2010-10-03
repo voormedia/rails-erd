@@ -1,1 +1,1 @@
-{ :orientation => :vertical }
+{ :disconnected => false, :orientation => :vertical }

@@ -12,24 +12,20 @@ module RailsERD
   #   require "rails_erd/diagram"
   #
   #   class YumlDiagram < RailsERD::Diagram
-  #     def process_relationship(rel)
-  #       return if rel.indirect?
+  #     def process_relationship(relationship)
+  #       return if relationship.indirect?
   #
   #       arrow = case
-  #       when rel.cardinality.one_to_one?   then "1-1>"
-  #       when rel.cardinality.one_to_many?  then "1-*>"
-  #       when rel.cardinality.many_to_many? then "*-*>"
+  #       when relationship.one_to_one?   then "1-1>"
+  #       when relationship.one_to_many?  then "1-*>"
+  #       when relationship.many_to_many? then "*-*>"
   #       end
   #
-  #       instructions << "[#{rel.source}] #{arrow} [#{rel.destination}]"
+  #       (@edges ||= []) << "[#{relationship.source}] #{arrow} [#{relationship.destination}]"
   #     end
   #
   #     def save
   #       instructions * "\n"
-  #     end
-  #
-  #     def instructions
-  #       @instructions ||= []
   #     end
   #   end
   #
@@ -54,21 +50,16 @@ module RailsERD
   # The following options are available and will by automatically used by any
   # diagram generator inheriting from this class.
   #
-  # exclude_foreign_keys:: Excludes foreign key columns from attribute lists.
-  #                        Defaults to +true+.
-  # exclude_indirect:: Excludes relationships that are indirect. Indirect relationships
-  #                    are defined in Active Record with <tt>has_many :through</tt>
-  #                    associations.
-  # exclude_primary_keys:: Excludes primary key columns from attribute lists.
-  #                        Defaults to +true+.
-  # exclude_timestamps:: Excludes timestamp columns (<tt>created_at/on</tt> and
-  #                      <tt>updated_at/on</tt>) from attribute lists. Defaults
-  #                      to +true+.
-  # exclude_unconnected:: Excludes entities that are not connected to other
-  #                       entities from the diagram. Defaults to +true+.
-  # suppress_warnings:: When set to +true+, no warnings are printed to the
-  #                     command line while processing the domain model. Defaults
-  #                     to +false+.
+  # attributes:: Selects which attributes to display. Can be any combination of
+  #              +:regular+, +:primary_keys+, +:foreign_keys+, or +:timestamps+.
+  # disconnected:: Set to +false+ to exclude entities that are not connected to other
+  #                entities. Defaults to +false+.
+  # indirect:: Set to +false+ to exclude relationships that are indirect.
+  #            Indirect relationships are defined in Active Record with
+  #            <tt>has_many :through</tt> associations.
+  # warn:: When set to +false+, no warnings are printed to the
+  #        command line while processing the domain model. Defaults
+  #        to +true+.
   class Diagram
     class << self
       # Generates a new domain model based on all <tt>ActiveRecord::Base</tt>
@@ -132,33 +123,31 @@ module RailsERD
     private
     
     def filtered_entities
-      @domain.entities.collect do |entity|
-        if options.exclude_unconnected && !entity.connected?
-          warn "Skipping unconnected model #{entity.name} (use exclude_unconnected=false to include)"
-        else
-          entity
-        end
-      end.compact.tap do |entities|
-        raise "No (connected) entities found; create your models first!" if entities.empty?
+      @domain.entities.reject { |entity|
+        entity.descendant? or
+        !options.disconnected && entity.disconnected?
+      }.compact.tap do |entities|
+        raise "No entities found; create your models first!" if entities.empty?
       end
     end
     
     def filtered_relationships
       @domain.relationships.reject { |relationship|
-        options.exclude_indirect && relationship.indirect?
+        relationship.source.descendant? or
+        relationship.destination.descendant? or
+        !options.indirect && relationship.indirect?
       }
     end
     
     def filtered_attributes(entity)
-      entity.attributes.reject { |attribute|
-        options.exclude_primary_keys && attribute.primary_key? or
-        options.exclude_foreign_keys && attribute.foreign_key? or
-        options.exclude_timestamps && attribute.timestamp?
+      entity.attributes.select { |attribute|
+        # Select attributes that satisfy the conditions in the :attributes option.
+        options.attributes and [*options.attributes].any? { |type| attribute.send(:"#{type.to_s.chomp('s')}?") }
       }
     end
 
     def warn(message)
-      puts "Warning: #{message}" unless options.suppress_warnings
+      puts "Warning: #{message}" if options.warn
     end
   end
 end

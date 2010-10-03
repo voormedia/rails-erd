@@ -1,7 +1,7 @@
 source "http://rubygems.org"
 
 gem "rails-erd", :path => "."
-gem "activesupport", :require => "active_support"
+gem "activesupport", :require => false
 gem "activerecord", :require => "active_record"
 gem "rake"
 gem "jeweler"

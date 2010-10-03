@@ -4,7 +4,7 @@ ActiveRecord::Schema.define do
   end
 
   create_table "entities", :force => true do |t|
-    t.references :domain
+    t.references :domain, :null => false
     t.string :name, :null => false
   end
 
@@ -17,14 +17,14 @@ ActiveRecord::Schema.define do
   end
   
   create_table "attributes", :force => true do |t|
-    t.references :entity
+    t.references :entity, :null => false
     t.string :name, :null => false
     t.string :type, :null => false
     t.boolean :mandatory, :null => false
   end
   
   create_table "cardinalities", :force => true do |t|
-    t.references :relationship
+    t.references :relationship, :null => false
     t.integer :source_minimum, :null => false
     t.integer :source_maximum
     t.integer :destination_minimum, :null => false

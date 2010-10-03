@@ -4,11 +4,11 @@ layout: default
 title: Customisation options
 ---
 <p>
-  Rails ERD supports several customisation options, all of which can be
-  provided on the command line.
+  Rails ERD supports several <strong>customisation options</strong>, all of
+  which can be provided on the command line.
   Even if you're completely unhappy with the output, you can still use Rails ERD.
-  It has a powerful API that you can use to inspect your domain models, or to
-  easily generate output in your format of choice.
+  It has a <strong>powerful API</strong> that you can use to inspect your domain models, or to
+  easily generate output in the format of your choice.
 </p>
 
 <h2><a name="providing-options">Providing options</a></h2>
@@ -16,7 +16,7 @@ All options that are supported by Rails ERD can be provided on the command line.
 For example...
 
 {% highlight console cssclass=console %}
-% rake erd orientation=vertical exclude_timestamps=false
+% rake erd orientation=vertical title='My model diagram'
 {% endhighlight %}
 
 Continue to read for an overview of all supported options.
@@ -25,59 +25,63 @@ Continue to read for an overview of all supported options.
 
 The following output options are available in Rails ERD.
 <dl>
-  <dt><pre>exclude_foreign_keys      [true|false]</pre><dt>
+  <dt><pre>attributes             &lt;type,...&gt; | false</pre></dt>
   <dd>
-    Excludes foreign key columns from attribute lists. Default value: <tt>true</tt>
-  </dt>
-<!--
-  <dt><pre>exclude_indirect          [true|false]</pre></dt>
-  <dd>
-    Excludes relationships that are indirect. Indirect relationships
-    are defined in Active Record with <tt>has_many :through</tt> associations.
-    Default value: <tt>false</tt>
-  </dd>-->
-  
-  <dt><pre>exclude_primary_keys      [true|false]</pre></dt>
-  <dd>
-    Excludes primary key columns from attribute lists. Default value: <tt>true</tt>
+    Specifies which attributes to include in the diagram output. This can be any
+    combination of the following attribute types:
+    <dl>
+      <dt><pre>foreign_keys</pre></dt><dd>any foreign key column in use for associations</dd>
+      <dt><pre>primary_keys</pre></dt><dd>the primary key column (typically <tt>id</tt>)</dd>
+      <dt><pre>timestamps</pre></dt><dd>any of the 'magic' timestamp columns (<tt>created_at/on</tt>, <tt>updated_at/on</tt>)</dd>
+      <dt><pre>regular</pre></dt><dd>all other columns</dd>
+    </dl>
+    To hide attributes altogether, set this option to <tt>false</tt>.
+    Default value: <tt>regular</tt>
   </dd>
-  
-  <dt><pre>exclude_timestamps        [true|false]</pre></dt>
+
+  <dt><pre>disconnected           true | false</pre></dt>
   <dd>
-    Excludes timestamp columns (<tt>created_at/on</tt> and <tt>updated_at/on</tt>)
-    from attribute lists. Default value: <tt>true</tt>
-  </dd>
-  
-  <dt><pre>exclude_unconnected       [true|false]</pre></dt>
-  <dd>
-    Excludes any entities that are not connected to other entities.
+    Specifies whether or not to display disconnected entities. An entity is
+    disconnected if it has no relationships with any other entity.
     Default value: <tt>true</tt>
   </dd>
   
-  <dt><pre>file_name                 &lt;file path&gt;</pre></dt>
+  <dt><pre>filename               &lt;string&gt;</pre></dt>
   <dd>
-    The file name of the generated diagram. Default value: <tt>ERD.&lt;file_type&gt;</tt>
+    The file basename of the generated diagram. Together with the file type, this
+    will determine the file name of the output. Default value: <tt>ERD</tt>
   </dd>
   
-  <dt><pre>file_type                 [pdf|none|...]</pre></dt>
+  <dt><pre>filetype               pdf | dot | ...</pre></dt>
   <dd>
     The file type of the generated diagram. PDF output is strongly recommended,
     other formats may render significantly worse. The available formats depend
-    on your installation of Graphviz. If you set the file type to <tt>none</tt>,
+    on your installation of Graphviz. If you set the file type to <tt>dot</tt>,
     raw Graphviz instructions are saved in <tt>dot</tt> format. This does not
     require Graphviz to be installed. Default value: <tt>pdf</tt>
   </dt>
-<!--
-  <dt><pre>notation                  [simple|uml]</pre></dt>
+
+  <dt><pre>indirect               true | false</pre></dt>
+  <dd>
+    Specifies whether or not to display relationships that are indirect.
+    Indirect relationships are defined in Active Record by
+    <tt>has_many :through</tt> associations. Older versions of Graphviz may
+    have trouble drawing diagrams with indirect relationships.
+    Default value: <tt>true</tt>
+  </dd>
+  
+  <dt><pre>notation               simple | advanced</pre></dt>
   <dd>
     The ideal diagram notation may not be the same for everyone.
     Rails ERD defaults to simple arrows, without indication of cardinalities.
-    This a classic way to draw entity-relationship diagrams, and
-    easy to understand. If you prefer cardinalities to be displayed, try
-    setting this option to <tt>uml</tt>. Default value: <tt>simple</tt>
+    This the classic way to draw entity-relationship diagrams, proposed by
+    Charles Bachman in 1969, and easy to understand.
+    If you prefer cardinalities to be displayed, try
+    setting this option to <tt>advanced</tt>. For notation examples,
+    browse the <a href="/gallery.html">gallery</a>. Default value: <tt>simple</tt>
   </dd>
--->
-  <dt><pre>orientation               [horizontal|vertical]</pre></dt>
+
+  <dt><pre>orientation            horizontal | vertical</pre></dt>
   <dd>
     Diagrams display entities in a hierarchical way. The hierarchy
     is defined by the associations on your models. A model that <tt>has_one</tt>
@@ -87,20 +91,19 @@ The following output options are available in Rails ERD.
     try both. Default value: <tt>horizontal</tt>
   </dd>
 
-  <dt><pre>suppress_warnings         [true|false]</pre></dt>
-  <dd>
-    When set to <tt>true</tt>, no warnings are printed to the command line
-    while processing models and drawing the diagram. Default value: <tt>false</tt>
-  </dd>
-<!--
-  <dt><pre>title                     [true|false|&lt;string&gt;]</pre></dt>
+  <dt><pre>title                  true | false | &lt;string&gt;</pre></dt>
   <dd>
     By default, a title is displayed at the top of the diagram:
     <tt>&quot;&lt;application&gt; domain model&quot;</tt>. You can change the
     title by setting this option. If set to <tt>false</tt>, no title will be
     displayed at all. Default value: <tt>true</tt>
   </dd>
--->
+
+  <dt><pre>warn                   true | false</pre></dt>
+  <dd>
+    When set to <tt>false</tt>, no warnings are printed to the command line
+    while processing models and drawing the diagram. Default value: <tt>true</tt>
+  </dd>
 </dl>
 
 <h2><a name="custum-output">Custom output</a></h2>
@@ -155,4 +158,73 @@ YumlDiagram.create
   generate a diagram. <a href="http://yuml.me/diagram/scruffy/class/%5BRubygem%5D%201-*%3E%20%5BOwnership%5D,%20%5BRubygem%5D%201-*%3E%20%5BSubscription%5D,%20%5BRubygem%5D%201-*%3E%20%5BVersion%5D,%20%5BRubygem%5D%201-1%3E%20%5BLinkset%5D,%20%5BRubygem%5D%201-*%3E%20%5BDependency%5D,%20%5BVersion%5D%201-*%3E%20%5BDependency%5D,%20%5BUser%5D%201-*%3E%20%5BOwnership%5D,%20%5BUser%5D%201-*%3E%20%5BSubscription%5D,%20%5BUser%5D%201-*%3E%20%5BWebHook%5D">Here's an example</a>.
 </p>
 
-<!--<h2><a name="api">Domain model API</a></h2>-->
+<h2><a name="api">Domain model API</a></h2>
+<p>
+  Rails ERD allows you to use its internal API to inspect your domain model.
+  We give some examples here, but for a complete and up-to-date reference,
+  please see the <a href="/doc">API documentation</a>.
+</p>
+<p>
+  Suppose we have the following domain model...
+</p>
+
+{% highlight ruby %}
+class User < ActiveRecord::Base
+  has_many :posts
+  has_many :comments
+end
+
+class Post < ActiveRecord::Base
+  belongs_to :user
+  has_many :comments
+end
+
+class Comment < ActiveRecord::Base
+  belongs_to :user
+  belongs_to :post
+end
+{% endhighlight %}
+
+<p>
+  We can use Rails ERD to discover some attributes of our domain model.
+</p>
+
+{% highlight ruby %}
+require "rails_erd/domain"
+
+# Discover all models that are currently loaded...
+domain = RailsERD::Domain.generate
+
+# Which entities do we have? Each entity corresponds to a model.
+domain.entities
+#=> [ #<RailsERD::Entity @model=Comment>,
+#     #<RailsERD::Entity @model=Post>,
+#     #<RailsERD::Entity @model=User> ]
+
+# Does an entity have relationships with other entities?
+domain.entities.first.connected?
+#=> true
+
+# Let's see all relationships...
+domain.relationships
+#=> [ #<RailsERD::Relationship @source=Post @destination=Comment>,
+#     #<RailsERD::Relationship @source=User @destination=Comment>,
+#     #<RailsERD::Relationship @source=User @destination=Post> ]
+
+# What is the destination entity of the first relationship?
+domain.relationships.first.destination
+#=> Comment
+
+# Does the relationship run in both directions?
+domain.relationships.first.mutual?
+#=> true
+
+# Is the relationship a one-to-many relationship?
+domain.relationships.first.one_to_many?
+#=> true
+{% endhighlight %}
+
+<p>
+  Please note that before the 1.0 release, the API may change subtly between
+  minor versions.
+</p>

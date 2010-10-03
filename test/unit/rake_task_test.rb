@@ -7,8 +7,8 @@ class RakeTaskTest < ActiveSupport::TestCase
     require "rake"
     load "rails_erd/tasks.rake"
 
-    RailsERD.options.file_type = :dot
-    RailsERD.options.suppress_warnings = true
+    RailsERD.options.filetype = :dot
+    RailsERD.options.warn = false
     Rake.application.options.silent = true
   end
 
@@ -27,5 +27,48 @@ class RakeTaskTest < ActiveSupport::TestCase
   test "generate task should not create output if there are no connected models" do
     Rake::Task["erd:generate"].execute rescue nil
     assert !File.exists?("ERD.dot")
+  end
+  
+  # Option processing ========================================================
+  test "options task should ignore unknown command line options" do
+    ENV["unknownoption"] = "value"
+    Rake::Task["erd:options"].execute
+    assert_nil RailsERD.options.unknownoption
+  end
+
+  test "options task should set known command line options" do
+    ENV["filetype"] = "myfiletype"
+    Rake::Task["erd:options"].execute
+    assert_equal :myfiletype, RailsERD.options.filetype
+  end
+
+  test "options task should set known boolean command line options if false" do
+    ENV["title"] = "false"
+    Rake::Task["erd:options"].execute
+    assert_equal false, RailsERD.options.title
+  end
+
+  test "options task should set known boolean command line options if true" do
+    ENV["title"] = "true"
+    Rake::Task["erd:options"].execute
+    assert_equal true, RailsERD.options.title
+  end
+
+  test "options task should set known boolean command line options if no" do
+    ENV["title"] = "no"
+    Rake::Task["erd:options"].execute
+    assert_equal false, RailsERD.options.title
+  end
+
+  test "options task should set known boolean command line options if yes" do
+    ENV["title"] = "yes"
+    Rake::Task["erd:options"].execute
+    assert_equal true, RailsERD.options.title
+  end
+  
+  test "options task should set known array command line options" do
+    ENV["attributes"] = "regular,timestamps"
+    Rake::Task["erd:options"].execute
+    assert_equal [:regular, :timestamps], RailsERD.options.attributes
   end
 end

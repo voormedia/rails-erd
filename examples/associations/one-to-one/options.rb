@@ -1,1 +1,1 @@
-{ :title => "Heads of state" }
+{ :title => false, :orientation => :vertical }

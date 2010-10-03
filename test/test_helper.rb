@@ -87,7 +87,7 @@ class ActiveSupport::TestCase
     create_model "More" do
       has_and_belongs_to_many :many
     end
-    create_table "many_more", :many_id => :integer, :more_id => :integer
+    create_table "manies_mores", :many_id => :integer, :more_id => :integer
   end
   
   private

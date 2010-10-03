@@ -47,22 +47,6 @@ class DomainTest < ActiveSupport::TestCase
     assert_equal [Bar, Baz, Foo, Qux], Domain.generate.entities.collect(&:model)
   end
   
-  test "entities should exclude single-table inherited entities" do
-    create_model "Foo", :type => :string
-    Object.const_set :SpecialFoo, Class.new(Foo)
-    assert_equal [Foo], Domain.generate.entities.collect(&:model)
-  end
-  
-  test "entities should include other-table inherited entities" do
-    create_model "Foo"
-    Object.const_set :SpecialFoo, Class.new(Foo)
-    SpecialFoo.class_eval do
-      set_table_name "special_foo"
-    end
-    create_table "special_foo", {}, true
-    assert_equal [Foo, SpecialFoo], Domain.generate.entities.collect(&:model)
-  end
-  
   # Relationship processing ==================================================
   test "relationships should return empty array for empty domain" do
     assert_equal [], Domain.generate.relationships
@@ -105,14 +89,14 @@ class DomainTest < ActiveSupport::TestCase
     create_model "Foo" do
       has_many :flabs
     end
-    assert_equal [], Domain.generate(:suppress_warnings => true).relationships
+    assert_equal [], Domain.generate(:warn => false).relationships
   end
   
   test "relationships should omit bad has_many through association" do
     create_model "Foo" do
       has_many :flabs, :through => :bars
     end
-    assert_equal [], Domain.generate(:suppress_warnings => true).relationships
+    assert_equal [], Domain.generate(:warn => false).relationships
   end
   
   test "relationships should omit association to model outside domain" do
@@ -120,7 +104,7 @@ class DomainTest < ActiveSupport::TestCase
       has_many :bars
     end
     create_model "Bar", :foo => :references
-    assert_equal [], Domain.new([Foo], :suppress_warnings => true).relationships
+    assert_equal [], Domain.new([Foo], :warn => false).relationships
   end
 
   test "relationships should output a warning when a bad association is encountered" do
@@ -130,7 +114,7 @@ class DomainTest < ActiveSupport::TestCase
     output = collect_stdout do
       Domain.generate.relationships
     end
-    assert_match /Invalid association :flabs on Foo/, output
+    assert_match /Ignoring invalid association :flabs on Foo/, output
   end
 
   test "relationships should output a warning when an association to model outside domain is encountered" do
@@ -141,15 +125,15 @@ class DomainTest < ActiveSupport::TestCase
     output = collect_stdout do
       Domain.new([Foo]).relationships
     end
-    assert_match /model Bar exists, but is not included in the domain/, output
+    assert_match /model Bar exists, but is not included in domain/, output
   end
 
-  test "relationships should suppress warnings when a bad association is encountered if warning suppression is enabled" do
+  test "relationships should not warn when a bad association is encountered if warnings are disabled" do
     create_model "Foo" do
       has_many :flabs
     end
     output = collect_stdout do
-      Domain.generate(:suppress_warnings => true).relationships
+      Domain.generate(:warn => false).relationships
     end
     assert_equal "", output
   end

@@ -1,1 +1,1 @@
-{ :title => "Sorcery" }
+{ :title => false, :orientation => :vertical }

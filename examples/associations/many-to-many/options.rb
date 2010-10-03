@@ -1,1 +1,1 @@
-{ :title => "Film genres" }
+{ :title => false, :orientation => :vertical }

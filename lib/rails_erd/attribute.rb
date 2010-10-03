@@ -28,6 +28,12 @@ module RailsERD
       column.type
     end
     
+    # Returns +true+ if this attribute has no special meaning, that is, if it
+    # is not a primary key, foreign key, or timestamp.
+    def regular?
+      !primary_key? and !foreign_key? and !timestamp?
+    end
+    
     # Returns +true+ if this attribute is mandatory. Mandatory attributes
     # either have a presence validation (+validates_presence_of+), or have a
     # <tt>NOT NULL</tt> database constraint.

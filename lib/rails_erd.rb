@@ -8,13 +8,13 @@ require "rails_erd/railtie" if defined? Rails
 # You can specify the option on the command line if you use Rails ERD with
 # Rake:
 #
-#   % rake erd orientation=vertical exclude_timestamps=false
+#   % rake erd orientation=vertical title='My model diagram'
 #
 # When using Rails ERD from within Ruby, you can set the options on the
 # RailsERD namespace module:
 #
 #   RailsERD.options.orientation = :vertical
-#   RailsERD.options.exclude_timestamps = false
+#   RailsERD.options.title = "My model diagram"
 module RailsERD
   class << self
     # Access to default options. Any instance of RailsERD::Domain and
@@ -23,15 +23,14 @@ module RailsERD
   end
 
   self.options = ActiveSupport::OrderedOptions[
-    :exclude_foreign_keys, true,
-    :exclude_indirect, false,
-    :exclude_primary_keys, true,
-    :exclude_timestamps, true,
-    :exclude_unconnected, true,
-    :file_name, nil,
-    :file_type, :pdf,
+    :attributes, :regular,
+    :disconnected, true,
+    :filename, "ERD",
+    :filetype, :pdf,
+    :indirect, true,
+    :notation, :simple,
     :orientation, :horizontal,
-    :suppress_warnings, false,
+    :warn, true,
     :title, true
   ]
 end

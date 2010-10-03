@@ -1,1 +1,1 @@
-{ :title => "Naval warfare" }
+{ :title => false, :orientation => :vertical }

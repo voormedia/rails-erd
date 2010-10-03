@@ -39,10 +39,6 @@ module RailsERD
   
     def initialize(domain, associations) # @private :nodoc:
       @domain = domain
-      associations.each do |assoc|
-        raise "FOO" if assoc.klass.nil? or assoc.active_record.nil?
-      end
-      
       @reverse_associations, @forward_associations = *unless any_habtm?(associations)
         associations.partition(&:belongs_to?)
       else
@@ -66,9 +62,9 @@ module RailsERD
     # Returns the cardinality of this relationship.
     def cardinality
       @cardinality ||= begin
-        reverse_maximum = any_habtm?(associations) ? N : 1
+        reverse_max = any_habtm?(associations) ? N : 1
         forward_range = associations_range(@source.model, @forward_associations, N)
-        reverse_range = associations_range(@destination.model, @reverse_associations, reverse_maximum)
+        reverse_range = associations_range(@destination.model, @reverse_associations, reverse_max)
         Cardinality.new(reverse_range, forward_range)
       end
     end
@@ -152,7 +148,8 @@ module RailsERD
     end
     
     def association_minimum(model, association)
-      minimum = association_validators(:presence, model, association).any? ? 1 : 0
+      minimum = association_validators(:presence, model, association).any? ||
+        foreign_key_required?(model, association) ? 1 : 0
       length_validators = association_validators(:length, model, association)
       length_validators.map { |v| v.options[:minimum] }.compact.max or minimum
     end
@@ -169,6 +166,12 @@ module RailsERD
     
     def any_habtm?(associations)
       associations.any? { |association| association.macro == :has_and_belongs_to_many }
+    end
+    
+    def foreign_key_required?(model, association)
+      if association.belongs_to?
+        key = model.arel_table.columns.find { |column| column.name == association.primary_key_name } and !key.null
+      end
     end
   end
 end

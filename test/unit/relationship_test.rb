@@ -161,6 +161,17 @@ class RelationshipTest < ActiveSupport::TestCase
     assert_equal [Relationship::Cardinality.new(0..1, 0..N)], domain_cardinalities
   end
 
+  test "cardinality should be one to zero-many for one to many associations with not null foreign key" do
+    create_model "One" do
+      has_many :many
+    end
+    create_model "Many" do
+      belongs_to :one
+    end
+    add_column :manies, :one_id, :integer, :null => false, :default => 0
+    assert_equal [Relationship::Cardinality.new(1, 0..N)], domain_cardinalities
+  end
+
   test "cardinality should be one to one-many for mutually mandatory one to many associations" do
     create_one_to_many_assoc_domain
     One.class_eval do
@@ -213,12 +224,12 @@ class RelationshipTest < ActiveSupport::TestCase
     assert_equal [Relationship::Cardinality.new(0..1, 5..17)], domain_cardinalities
   end
   
-  test "cardinality should be zero-n to zero-n for optional many to many associations" do
+  test "cardinality should be zero-many to zero-many for optional many to many associations" do
     create_many_to_many_assoc_domain
     assert_equal [Relationship::Cardinality.new(0..N, 0..N)], domain_cardinalities
   end
 
-  test "cardinality should be one-n to one-n for mutually mandatory many to many associations" do
+  test "cardinality should be one-many to one-many for mutually mandatory many to many associations" do
     create_many_to_many_assoc_domain
     Many.class_eval do
       validates_presence_of :more

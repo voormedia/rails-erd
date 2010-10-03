@@ -2,6 +2,12 @@ module RailsERD
   # Entities represent your Active Record models. Entities may be connected
   # to other entities.
   class Entity
+    class << self
+      def from_models(domain, models) # @private :nodoc:
+        models.collect { |model| new domain, model }.sort
+      end
+    end
+    
     # The domain in which this entity resides.
     attr_reader :domain
     
@@ -23,10 +29,27 @@ module RailsERD
       @domain.relationships_for(@model)
     end
     
+    # Returns the parent entity, if this entity is a descendant.
+    def parent
+      @domain.entity_for(@model.superclass) if descendant?
+    end
+    
     # Returns +true+ if this entity has any relationships with other models,
     # +false+ otherwise.
     def connected?
       relationships.any?
+    end
+
+    # Returns +true+ if this entity has no relationships with any other models,
+    # +false+ otherwise. Opposite of +connected?+.
+    def disconnected?
+      relationships.none?
+    end
+    
+    # Returns +true+ if this entity descends from another entity, and is
+    # represented in the same table as its parent.
+    def descendant?
+      !@model.descends_from_active_record?
     end
   
     # Returns the name of this entity, which is the class name of the

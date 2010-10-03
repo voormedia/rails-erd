@@ -6,8 +6,9 @@ namespace :erd do
   task :options do
     (RailsERD.options.keys.map(&:to_s) & ENV.keys).each do |option|
       RailsERD.options[option.to_sym] = case ENV[option]
-      when "true" then true
-      when "false" then false
+      when "true", "yes" then true
+      when "false", "no" then false
+      when /,/ then ENV[option].split(/\s*,\s*/).map(&:to_sym)
       else ENV[option].to_sym
       end
     end

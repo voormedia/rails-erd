@@ -1,3 +1,4 @@
+# encoding: utf-8
 require "rails_erd/diagram"
 require "graphviz"
 require "erb"
@@ -29,14 +30,14 @@ module RailsERD
     #
     # The following options are supported:
     #
-    # file_name:: The file name of the generated diagram. Defaults to +ERD.pdf+,
-    #             or any other extension based on the file type.
-    # file_type:: The file type of the generated diagram. Defaults to +pdf+, which
-    #             is the recommended format. Other formats may render significantly
-    #             worse than a PDF file. The available formats depend on your installation
-    #             of Graphviz.
+    # filename:: The file basename of the generated diagram. Defaults to +ERD+,
+    #            or any other extension based on the file type.
+    # filetype:: The file type of the generated diagram. Defaults to +pdf+, which
+    #            is the recommended format. Other formats may render significantly
+    #            worse than a PDF file. The available formats depend on your installation
+    #            of Graphviz.
     # notation:: The cardinality notation to be used. Can be +:simple+ or
-    #            +:bachman+. Refer to README.rdoc or to the examples on the project
+    #            +:advanced+. Refer to README.rdoc or to the examples on the project
     #            homepage for more information and examples.
     # orientation:: The direction of the hierarchy of entities. Either +:horizontal+
     #               or +:vertical+. Defaults to +horizontal+. The orientation of the
@@ -53,8 +54,9 @@ module RailsERD
       GRAPH_ATTRIBUTES = {
         :rankdir => :LR,
         :ranksep => 0.5,
-        :nodesep => 0.35,
-        :margin => "0.4,0.4",
+        :nodesep => 0.4,
+        :pad => "0.4,0.4",
+        :margin => "0,0",
         :concentrate => true,
         :labelloc => :t,
         :fontsize => 13,
@@ -77,8 +79,11 @@ module RailsERD
         :fontname => "Arial",
         :fontsize => 8,
         :dir => :both,
-        :arrowsize => 0.8,
-        :penwidth => 1.0
+        :arrowsize => 0.9,
+        :penwidth => 1.0,
+        :labelangle => 32,
+        :labeldistance => 1.8,
+        :fontsize => 7  
       }
       
       # Define different styles to draw the cardinality of relationships.
@@ -91,16 +96,26 @@ module RailsERD
 
         # Closed arrow for to/from many, UML ranges at each end.
         :uml => lambda { |relationship, options|
-          CARDINALITY_STYLES[:simple][relationship, options]
-          # TODO
+          options[:arrowsize] = 0.7
+          options[:arrowhead] = relationship.to_many? ? :vee : :none
+          options[:arrowtail] = relationship.many_to? ? :vee : :none
+          ranges = [relationship.cardinality.destination_range, relationship.cardinality.source_range].map do |range|
+            if range.min == range.max
+              "#{range.min}"
+            else
+              "#{range.min}..#{range.max == Relationship::Cardinality::Infinity ? "∗" : range.max}"
+            end
+          end
+          options[:headlabel], options[:taillabel] = *ranges
         },
         
         # Arrow for to/from many, open or closed dots for optional/mandatory.
-        :bachman => lambda { |relationship, options|
+        :advanced => lambda { |relationship, options|
           dst = relationship.destination_optional? ? "odot" : "dot"
           src = relationship.source_optional? ? "odot" : "dot"
           dst << "normal" if relationship.to_many?
           src << "normal" if relationship.many_to?
+          options[:arrowsize] = 0.6
           options[:arrowhead], options[:arrowtail] = dst, src
         }
       }
@@ -112,8 +127,7 @@ module RailsERD
           NODE_ATTRIBUTES.each  { |attribute, value| graph.node[attribute] = value }
           EDGE_ATTRIBUTES.each  { |attribute, value| graph.edge[attribute] = value }
 
-          # Switch rank direction if we're told to create a vertically
-          # oriented graph.
+          # Switch rank direction if we're creating a vertically oriented graph.
           graph[:rankdir] = :TB if vertical?
           
           # Title of the graph itself.
@@ -123,9 +137,10 @@ module RailsERD
       
       # Save the diagram and return the file name that was written to.
       def save
-        check_version!
-        graph.output(options.file_type.to_sym => file_name)
-        file_name
+        graph.output(filetype => filename)
+        filename
+      rescue StandardError => e
+        raise "Saving diagram failed. Verify that Graphviz is installed or select filetype=dot."
       end
 
       protected
@@ -153,17 +168,6 @@ module RailsERD
 
       private
       
-      def check_version!
-        version_output = `dot -V 2>&1`.strip rescue nil
-        version = if version_output =~ %r{graphviz\s+version\s+(\d+\.\d+\.\d+)}i
-          parts = $1.split(".").map(&:to_i)
-          if parts.size >= 2 and parts[0] <= 2 and parts[1] < 22
-            # Graphviz < 2.22 (silently) fails in many cases.
-            warn "Graphviz appears to be older than version 2.22. Diagram generation may be problematic, upgrading is recommended."
-          end
-        end
-      end
-      
       # Returns the title to be used for the graph.
       def title
         case options.title
@@ -175,13 +179,13 @@ module RailsERD
       end
       
       # Returns the file name that will be used when saving the diagram.
-      def file_name
-        options.file_name or "ERD.#{file_extension}"
+      def filename
+        "#{options.filename}.#{options.filetype}"
       end
       
       # Returns the default file extension to be used when saving the diagram.
-      def file_extension
-        if options.file_type == :none then :dot else options.file_type end
+      def filetype
+        if options.filetype.to_sym == :dot then :none else options.filetype.to_sym end
       end
 
       # Returns an options hash based on the given entity and its attributes.
@@ -207,7 +211,7 @@ module RailsERD
           opts[:style] = :dotted if relationship.indirect?
           
           # Let cardinality style callbacks draw arrow heads and tails.
-          CARDINALITY_STYLES[options.notation || :simple][relationship, opts]
+          CARDINALITY_STYLES[options.notation][relationship, opts]
         end
       end
     end

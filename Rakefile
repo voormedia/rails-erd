@@ -55,7 +55,7 @@ task :examples do
 
   Dir["examples/*/*"].each do |path|
     name = File.basename(path)
-    puts "Generating ERD for #{name.capitalize}..."
+    print "==> Generating ERD for #{name.capitalize}... "
     begin
       # Load database schema.
       ActiveRecord::Base.establish_connection :adapter => "sqlite3", :database => ":memory:"
@@ -73,13 +73,19 @@ task :examples do
       
       # Skip empty domain models.
       next if ActiveRecord::Base.descendants.empty?
-      
-      # Generate ERD for this example.
-      file_name = File.expand_path("examples/#{name}.pdf", File.dirname(__FILE__))
-      default_options = { :file_name => file_name, :suppress_warnings => true, :notation => :simple,
-        :title => name.classify + " domain model" }
-      example_options = eval((File.read("#{path}/options.rb") rescue "")) || {}
-      RailsERD::Diagram::Graphviz.create(default_options.merge(example_options))
+
+      puts "#{ActiveRecord::Base.descendants.length} models"
+      [:simple, :advanced].each do |notation|
+        filename = File.expand_path("examples/#{name}#{notation != :simple ? "-#{notation}" : ""}", File.dirname(__FILE__))
+
+        default_options = { :notation => notation, :filename => filename, :attributes => [:regular],
+          :title => name.classify + " domain model" }
+
+        specific_options = eval((File.read("#{path}/options.rb") rescue "")) || {}
+
+        # Generate ERD.
+        RailsERD::Diagram::Graphviz.create(default_options.merge(specific_options))
+      end
     ensure
       # Completely remove all loaded Active Record models.
       ActiveRecord::Base.descendants.each do |model|
