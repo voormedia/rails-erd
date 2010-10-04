@@ -1,4 +1,5 @@
 require "rails_erd/relationship/cardinality"
+require "active_support/core_ext/module/delegation"
 
 module RailsERD
   # Describes a relationship between two entities. A relationship is detected
@@ -170,7 +171,7 @@ module RailsERD
     
     def foreign_key_required?(model, association)
       if association.belongs_to?
-        key = model.arel_table.columns.find { |column| column.name == association.primary_key_name } and !key.null
+        key = model.arel_table[association.primary_key_name] and !key.column.null
       end
     end
   end

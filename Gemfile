@@ -1,8 +1,8 @@
 source "http://rubygems.org"
 
 gem "rails-erd", :path => "."
-gem "activesupport", :require => false
-gem "activerecord", :require => "active_record"
+gem "activerecord"
+gem "activesupport"
 gem "rake"
 gem "jeweler"
 

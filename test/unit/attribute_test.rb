@@ -20,28 +20,28 @@ class AttributeTest < ActiveSupport::TestCase
   end
   
   def create_attribute(model, name)
-    Attribute.new(Domain.generate, model, model.arel_table.attributes[name].column)
+    Attribute.new(Domain.generate, model, model.arel_table[name].column)
   end
   
   # Attribute ================================================================
   test "column should return database column" do
     create_model "Foo", :my_column => :string
-    assert_equal Foo.arel_table.attributes["my_column"].column,
+    assert_equal Foo.arel_table["my_column"].column,
       Attribute.from_model(Domain.new, Foo).reject(&:primary_key?).first.column
   end
   
   test "spaceship should sort attributes by name" do
     create_model "Foo", :a => :string, :b => :string, :c => :string
-    a = Attribute.new(Domain.new, Foo, Foo.arel_table.attributes["a"].column)
-    b = Attribute.new(Domain.new, Foo, Foo.arel_table.attributes["b"].column)
-    c = Attribute.new(Domain.new, Foo, Foo.arel_table.attributes["c"].column)
+    a = create_attribute(Foo, "a")
+    b = create_attribute(Foo, "b")
+    c = create_attribute(Foo, "c")
     assert_equal [a, b, c], [c, a, b].sort
   end
   
   test "inspect should show column" do
     create_model "Foo", :my_column => :string
     assert_match %r{#<RailsERD::Attribute:.* @column="my_column" @type=:string>},
-      Attribute.new(Domain.new, Foo, Foo.arel_table.attributes["my_column"].column).inspect
+      Attribute.new(Domain.new, Foo, Foo.arel_table["my_column"].column).inspect
   end
   
   test "type should return attribute type" do

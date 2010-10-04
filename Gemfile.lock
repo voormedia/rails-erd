@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     rails-erd (0.3.0)
-      activerecord (~> 3.0.0)
+      activerecord (~> 3.0)
       activesupport (~> 3.0)
       ruby-graphviz (~> 0.9.17)
 

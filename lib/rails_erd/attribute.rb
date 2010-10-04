@@ -7,7 +7,14 @@ module RailsERD
 
     class << self
       def from_model(domain, model) # @private :nodoc:
-        model.arel_table.columns.collect { |column| Attribute.new(domain, model, column) }.sort
+        database_columns = if model.arel_table.respond_to? :attributes
+          # Arel 1.0 returns a list of database columns directly.
+          model.arel_table.columns
+        else
+          # Arel 2.0 wraps columns in an Attribute class, unwrap it.
+          model.arel_table.columns.map(&:column)
+        end
+        database_columns.collect { |column| Attribute.new(domain, model, column) }.sort
       end
     end
 
@@ -43,7 +50,14 @@ module RailsERD
     
     # Returns +true+ if this attribute is the primary key of the entity.
     def primary_key?
-      @model.arel_table.primary_key == name
+      primary_key = @model.arel_table.primary_key
+      if primary_key.respond_to? :column
+        # Arel 2.0 returns an attribute, compare its database column with our own.
+        primary_key.column == column
+      else
+        # Arel 1.0 returns the primary key column name as string.
+        primary_key == name
+      end
     end
   
     # Returns +true+ if this attribute is used as a foreign key for any

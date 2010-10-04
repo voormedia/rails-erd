@@ -1,7 +1,8 @@
 require "rubygems"
-require "bundler"
-Bundler.require
+require "bundler/setup"
+# Bundler.require
 
+require "active_record"
 require "test/unit"
 require "rails_erd/domain"
 
