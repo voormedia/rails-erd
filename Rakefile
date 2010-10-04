@@ -49,13 +49,14 @@ end
 desc "Generate diagrams for bundled examples"
 task :examples do
   require "rubygems"
-  require "bundler"
-  Bundler.require
+  require "bundler/setup"
+
+  require "active_record"
   require "rails_erd/diagram/graphviz"
 
   Dir["examples/*/*"].each do |path|
     name = File.basename(path)
-    print "==> Generating ERD for #{name.capitalize}... "
+    print "==> Generating diagram for #{name.capitalize}... "
     begin
       # Load database schema.
       ActiveRecord::Base.establish_connection :adapter => "sqlite3", :database => ":memory:"
@@ -84,8 +85,11 @@ task :examples do
         specific_options = eval((File.read("#{path}/options.rb") rescue "")) || {}
 
         # Generate ERD.
-        RailsERD::Diagram::Graphviz.create(default_options.merge(specific_options))
+        outfile = RailsERD::Diagram::Graphviz.create(default_options.merge(specific_options))
+
+        puts "    - #{notation} notation saved to #{outfile}"
       end
+      puts
     ensure
       # Completely remove all loaded Active Record models.
       ActiveRecord::Base.descendants.each do |model|
