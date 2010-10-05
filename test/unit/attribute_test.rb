@@ -20,13 +20,13 @@ class AttributeTest < ActiveSupport::TestCase
   end
   
   def create_attribute(model, name)
-    Attribute.new(Domain.generate, model, model.arel_table[name].column)
+    Attribute.new(Domain.generate, model, model.columns_hash[name])
   end
   
   # Attribute ================================================================
   test "column should return database column" do
     create_model "Foo", :my_column => :string
-    assert_equal Foo.arel_table["my_column"].column,
+    assert_equal Foo.columns_hash["my_column"],
       Attribute.from_model(Domain.new, Foo).reject(&:primary_key?).first.column
   end
   
