@@ -9,7 +9,7 @@ class GraphvizTest < ActiveSupport::TestCase
   
   def teardown
     FileUtils.rm Dir["ERD.*"] rescue nil
-    RailsERD::Diagram.send :remove_const, :Graphviz
+    RailsERD::Diagram.send :remove_const, :Graphviz rescue nil
   end
   
   def diagram(options = {})
