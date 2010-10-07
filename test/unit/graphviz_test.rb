@@ -148,6 +148,17 @@ class GraphvizTest < ActiveSupport::TestCase
       FileUtils.rm "foobar.png" rescue nil
     end
   end
+  
+  test "create should abort and complain if output directory does not exist" do
+    message = nil
+    begin
+      create_simple_domain
+      Diagram::Graphviz.create :filename => "does_not_exist/foo"
+    rescue => e
+      message = e.message
+    end
+    assert_match /Output directory 'does_not_exist' does not exist/, message
+  end
 
   # Graphviz output ==========================================================
   test "generate should create directed graph" do

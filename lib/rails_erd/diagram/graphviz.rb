@@ -137,10 +137,13 @@ module RailsERD
       
       # Save the diagram and return the file name that was written to.
       def save
-        graph.output(filetype => filename)
-        filename
-      rescue StandardError => e
-        raise "Saving diagram failed. Verify that Graphviz is installed or select filetype=dot."
+        raise "Saving diagram failed. Output directory '#{File.dirname(filename)}' does not exist." unless File.directory?(File.dirname(filename))
+        begin
+          graph.output(filetype => filename)
+          filename
+        rescue StandardError => e
+          raise "Saving diagram failed. Verify that Graphviz is installed or select filetype=dot."
+        end
       end
 
       protected
