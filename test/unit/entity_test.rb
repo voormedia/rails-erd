@@ -60,7 +60,7 @@ class EntityTest < ActiveSupport::TestCase
     assert_nil Entity.new(Domain.new, Foo).parent
   end
 
-  test "parent should return nil for descended models with distinct tables" do
+  test "parent should return nil for specialized entities with distinct tables" do
     create_model "Foo", :type => :string
     Object.const_set :SpecialFoo, Class.new(Foo)
     SpecialFoo.class_eval do
@@ -70,14 +70,14 @@ class EntityTest < ActiveSupport::TestCase
     assert_nil Entity.new(Domain.new, SpecialFoo).parent
   end
 
-  test "parent should return parent entity for child entities" do
+  test "parent should return parent entity for specialized entities" do
     create_model "Foo", :type => :string
     Object.const_set :SpecialFoo, Class.new(Foo)
     domain = Domain.generate
     assert_equal domain.entity_for(Foo), Entity.new(domain, SpecialFoo).parent
   end
 
-  test "parent should return parent entity for children of child entities" do
+  test "parent should return parent entity for specializations of specialized entities" do
     create_model "Foo", :type => :string
     Object.const_set :SpecialFoo, Class.new(Foo)
     Object.const_set :VerySpecialFoo, Class.new(SpecialFoo)
@@ -112,32 +112,32 @@ class EntityTest < ActiveSupport::TestCase
     assert_equal [false, false], Domain.generate.entities.map(&:disconnected?)
   end
   
-  test "descendant should return false for regular entities" do
+  test "specialized should return false for regular entities" do
     create_model "Foo"
-    assert_equal false, Entity.new(Domain.new, Foo).descendant?
+    assert_equal false, Entity.new(Domain.new, Foo).specialized?
   end
 
-  test "descendant should return false for descended models with distinct tables" do
+  test "specialized should return false for specialized entities with distinct tables" do
     create_model "Foo", :type => :string
     Object.const_set :SpecialFoo, Class.new(Foo)
     SpecialFoo.class_eval do
       set_table_name "special_foo"
     end
     create_table "special_foo", {}, true
-    assert_equal false, Entity.new(Domain.new, SpecialFoo).descendant?
+    assert_equal false, Entity.new(Domain.new, SpecialFoo).specialized?
   end
 
-  test "descendant should return true for child entities" do
+  test "specialized should return true for specialized entities" do
     create_model "Foo", :type => :string
     Object.const_set :SpecialFoo, Class.new(Foo)
-    assert_equal true, Entity.new(Domain.new, SpecialFoo).descendant?
+    assert_equal true, Entity.new(Domain.new, SpecialFoo).specialized?
   end
 
-  test "descendant should return true for children of child entities" do
+  test "specialized should return true for specialations of specialized entities" do
     create_model "Foo", :type => :string
     Object.const_set :SpecialFoo, Class.new(Foo)
     Object.const_set :VerySpecialFoo, Class.new(SpecialFoo)
-    assert_equal true, Entity.new(Domain.new, VerySpecialFoo).descendant?
+    assert_equal true, Entity.new(Domain.new, VerySpecialFoo).specialized?
   end
   
   # Attribute processing =====================================================

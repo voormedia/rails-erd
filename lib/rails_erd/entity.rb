@@ -31,7 +31,7 @@ module RailsERD
     
     # Returns the parent entity, if this entity is a descendant.
     def parent
-      @domain.entity_for(@model.superclass) if descendant?
+      @domain.entity_for(@model.superclass) if specialized?
     end
     
     # Returns +true+ if this entity has any relationships with other models,
@@ -47,8 +47,10 @@ module RailsERD
     end
     
     # Returns +true+ if this entity descends from another entity, and is
-    # represented in the same table as its parent.
-    def descendant?
+    # represented in the same table as its parent. In Rails this concept is
+    # referred to as single-table inheritance. In entity-relationship
+    # diagrams it is called specialization.
+    def specialized?
       !@model.descends_from_active_record?
     end
   

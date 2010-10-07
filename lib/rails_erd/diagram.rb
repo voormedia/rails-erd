@@ -124,7 +124,7 @@ module RailsERD
     
     def filtered_entities
       @domain.entities.reject { |entity|
-        entity.descendant? or
+        entity.specialized? or
         !options.disconnected && entity.disconnected?
       }.compact.tap do |entities|
         raise "No entities found; create your models first!" if entities.empty?
@@ -133,8 +133,8 @@ module RailsERD
     
     def filtered_relationships
       @domain.relationships.reject { |relationship|
-        relationship.source.descendant? or
-        relationship.destination.descendant? or
+        relationship.source.specialized? or
+        relationship.destination.specialized? or
         !options.indirect && relationship.indirect?
       }
     end

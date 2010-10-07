@@ -111,13 +111,13 @@ class DiagramTest < ActiveSupport::TestCase
     assert_equal [Foo], retrieve_entities(:disconnected => true).map(&:model)
   end
 
-  test "generate should filter descendant entities" do
+  test "generate should filter specialized entities" do
     create_model "Foo", :type => :string
     Object.const_set :SpecialFoo, Class.new(Foo)
     assert_equal [Foo], retrieve_entities.map(&:model)
   end
   
-  test "generate should yield descended entities with distinct tables" do
+  test "generate should yield specialized entities with distinct tables" do
     create_model "Foo"
     Object.const_set :SpecialFoo, Class.new(Foo)
     SpecialFoo.class_eval do
@@ -163,7 +163,7 @@ class DiagramTest < ActiveSupport::TestCase
     assert_equal [false, false], retrieve_relationships(:indirect => false).map(&:indirect?)
   end
 
-  test "generate should filter relationships from descendant entities" do
+  test "generate should filter relationships from specialized entities" do
     create_model "Foo", :bar => :references
     create_model "Bar", :type => :string
     Object.const_set :SpecialBar, Class.new(Bar)
@@ -173,7 +173,7 @@ class DiagramTest < ActiveSupport::TestCase
     assert_equal [], retrieve_relationships
   end
   
-  test "generate should filter relationships to descendant entities" do
+  test "generate should filter relationships to specialized entities" do
     create_model "Foo", :type => :string, :bar => :references
     Object.const_set :SpecialFoo, Class.new(Foo)
     create_model "Bar" do
