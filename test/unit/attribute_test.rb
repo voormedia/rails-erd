@@ -126,6 +126,19 @@ class AttributeTest < ActiveSupport::TestCase
     assert_equal true, create_attribute(Foo, "alternative").inheritance?
   end
   
+  test "content should return true by default" do
+    create_model "Foo", :my_first_column => :string
+    assert_equal true, create_attribute(Foo, "my_first_column").content?
+  end
+
+  test "content should return false for primary keys, foreign keys, timestamps and inheritance columns" do
+    create_model "Book", :type => :string, :created_at => :datetime, :case => :references do
+      belongs_to :case
+    end
+    create_model "Case"
+    assert_equal [false] * 4, %w{id type created_at case_id}.map { |a| create_attribute(Book, a).content? }
+  end
+  
   # Type descriptions ========================================================
   test "type_description should return short type description" do
     create_model "Foo", :a => :binary

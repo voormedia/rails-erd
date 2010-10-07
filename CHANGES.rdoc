@@ -6,7 +6,7 @@
   and therefore now called 'bachman'.
 * Added compatibility for Active Record 3.1, removed version dependency on Arel.
 * Restructured classes.
-* Renamed some API properties.
+* Renamed several API properties and methods.
 
 === 0.3.0:
 

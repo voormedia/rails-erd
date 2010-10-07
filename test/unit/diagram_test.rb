@@ -252,7 +252,7 @@ class DiagramTest < ActiveSupport::TestCase
   end
 
   # Attribute filtering ======================================================
-  test "generate should yield regular attributes by default" do
+  test "generate should yield content attributes by default" do
     create_model "Book", :title => :string, :created_at => :datetime, :author => :references do
       belongs_to :author
     end
@@ -291,7 +291,7 @@ class DiagramTest < ActiveSupport::TestCase
     end
     create_model "Author"
     assert_equal %w{created_at title},
-      retrieve_attribute_lists(:attributes => [:regular, :timestamps])[Book].map(&:name)
+      retrieve_attribute_lists(:attributes => [:content, :timestamps])[Book].map(&:name)
   end
   
   test "generate should yield no attributes for specialized entities" do

@@ -51,7 +51,7 @@ module RailsERD
   # diagram generator inheriting from this class.
   #
   # attributes:: Selects which attributes to display. Can be any combination of
-  #              +:regular+, +:primary_keys+, +:foreign_keys+, +:timestamps+, or
+  #              +:content+, +:primary_keys+, +:foreign_keys+, +:timestamps+, or
   #              +:inheritance+.
   # disconnected:: Set to +false+ to exclude entities that are not connected to other
   #                entities. Defaults to +false+.

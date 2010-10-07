@@ -32,9 +32,9 @@ module RailsERD
         column.type
       end
     
-      # Returns +true+ if this attribute has no special meaning, that is, if it
+      # Returns +true+ if this attribute is a content column, that is, if it
       # is not a primary key, foreign key, timestamp, or inheritance column.
-      def regular?
+      def content?
         !primary_key? and !foreign_key? and !timestamp? and !inheritance?
       end
     

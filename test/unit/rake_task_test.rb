@@ -67,8 +67,8 @@ class RakeTaskTest < ActiveSupport::TestCase
   end
   
   test "options task should set known array command line options" do
-    ENV["attributes"] = "regular,timestamps"
+    ENV["attributes"] = "content,timestamps"
     Rake::Task["erd:options"].execute
-    assert_equal [:regular, :timestamps], RailsERD.options.attributes
+    assert_equal [:content, :timestamps], RailsERD.options.attributes
   end
 end

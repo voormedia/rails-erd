@@ -36,7 +36,7 @@ module RailsERD
   end
 
   self.options = ActiveSupport::OrderedOptions[
-    :attributes, :regular,
+    :attributes, :content,
     :disconnected, true,
     :filename, "ERD",
     :filetype, :pdf,
