@@ -4,7 +4,7 @@ PATH
     rails-erd (0.3.0)
       activerecord (~> 3.0)
       activesupport (~> 3.0)
-      ruby-graphviz (~> 0.9.17)
+      ruby-graphviz (~> 0.9.18)
 
 GEM
   remote: http://rubygems.org/
@@ -36,7 +36,7 @@ GEM
       bouncy-castle-java
     json_pure (1.4.6)
     rake (0.8.7)
-    ruby-graphviz (0.9.17)
+    ruby-graphviz (0.9.18)
     rubyforge (2.0.4)
       json_pure (>= 1.1.7)
     sqlite3-ruby (1.3.1)
