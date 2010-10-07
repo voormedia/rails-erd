@@ -37,7 +37,7 @@ module RailsERD
     #            worse than a PDF file. The available formats depend on your installation
     #            of Graphviz.
     # notation:: The cardinality notation to be used. Can be +:simple+ or
-    #            +:advanced+. Refer to README.rdoc or to the examples on the project
+    #            +:bachman+. Refer to README.rdoc or to the examples on the project
     #            homepage for more information and examples.
     # orientation:: The direction of the hierarchy of entities. Either +:horizontal+
     #               or +:vertical+. Defaults to +horizontal+. The orientation of the
@@ -103,16 +103,18 @@ module RailsERD
             if range.min == range.max
               "#{range.min}"
             else
-              "#{range.min}..#{range.max == Relationship::Cardinality::Infinity ? "∗" : range.max}"
+              "#{range.min}..#{range.max == Domain::Relationship::N ? "∗" : range.max}"
             end
           end
           options[:headlabel], options[:taillabel] = *ranges
         },
         
         # Arrow for to/from many, open or closed dots for optional/mandatory.
-        :advanced => lambda { |relationship, options|
-          dst = relationship.destination_optional? ? "odot" : "dot"
-          src = relationship.source_optional? ? "odot" : "dot"
+        :bachman => lambda { |relationship, options|
+          # Participation is "look-here".
+          dst = relationship.source_optional? ? "odot" : "dot"
+          src = relationship.destination_optional? ? "odot" : "dot"
+          # Cardinality is "look-across".
           dst << "normal" if relationship.to_many?
           src << "normal" if relationship.many_to?
           options[:arrowsize] = 0.6

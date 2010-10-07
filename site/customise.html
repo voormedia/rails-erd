@@ -82,15 +82,18 @@ The following output options are available in Rails ERD.
     Default value: <tt>false</tt>
   </dd>
   
-  <dt><pre>notation               simple | advanced</pre></dt>
+  <dt><pre>notation               simple | bachman</pre></dt>
   <dd>
-    The ideal diagram notation may not be the same for everyone.
-    Rails ERD defaults to simple arrows, without indication of cardinalities.
-    This the classic way to draw entity-relationship diagrams, proposed by
-    Charles Bachman in 1969, and easy to understand.
-    If you prefer cardinalities to be displayed, try
-    setting this option to <tt>advanced</tt>. For notation examples,
-    browse the <a href="/gallery.html">gallery</a>. Default value: <tt>simple</tt>
+    The ideal diagram notation may not be the same for everyone. Rails ERD
+    defaults to simple arrows to indicate cardinalities. No difference is made
+    for optional and mandatory relationships (sometimes referred to as
+    <em>participation</em>). This a classic way to draw data structures. It is
+    easy to understand, and provides enough information in most cases.<br/>
+    If you prefer to see the cardinality as well as the participation, try
+    setting this option to <tt>bachman</tt>. This is a more advanced notation,
+    devised by Charles Bachman in 1992.<br/>
+    For notation examples, browse the <a href="/gallery.html">gallery</a>.
+    Default value: <tt>simple</tt>
   </dd>
 
   <dt><pre>orientation            horizontal | vertical</pre></dt>

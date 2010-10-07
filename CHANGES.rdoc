@@ -1,5 +1,9 @@
 === To be released:
 
+* Support to optionally display single table inheritance relationships
+  (specialization).
+* Adjustments to 'advanced' style so that it matches original Bachman style,
+  and therefore now called 'bachman'.
 * Added compatibility for Active Record 3.1, removed version dependency on Arel.
 * Restructured classes.
 * Renamed some API properties.

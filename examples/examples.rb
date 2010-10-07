@@ -28,7 +28,7 @@ Dir["#{File.dirname(__FILE__)}/*/*"].each do |path|
     next if ActiveRecord::Base.descendants.empty?
 
     puts "#{ActiveRecord::Base.descendants.length} models"
-    [:simple, :advanced].each do |notation|
+    [:simple, :bachman].each do |notation|
       filename = File.expand_path("#{output_dir}/#{name}#{notation != :simple ? "-#{notation}" : ""}", File.dirname(__FILE__))
 
       default_options = { :notation => notation, :filename => filename, :attributes => [:regular],

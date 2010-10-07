@@ -265,38 +265,38 @@ class GraphvizTest < ActiveSupport::TestCase
   end
 
   # Advanced notation style ===================================================
-  test "generate should use open dots for one to one cardinalities with advanced notation" do
+  test "generate should use open dots for one to one cardinalities with bachman notation" do
     create_one_to_one_assoc_domain
-    assert_equal [["odot", "odot"]], find_dot_edge_styles(diagram(:notation => :advanced))
+    assert_equal [["odot", "odot"]], find_dot_edge_styles(diagram(:notation => :bachman))
   end
 
-  test "generate should use dots for mandatory one to one cardinalities with advanced notation" do
+  test "generate should use dots for mandatory one to one cardinalities with bachman notation" do
     create_one_to_one_assoc_domain
     One.class_eval do
       validates_presence_of :other
     end
-    assert_equal [["odot", "dot"]], find_dot_edge_styles(diagram(:notation => :advanced))
+    assert_equal [["dot", "odot"]], find_dot_edge_styles(diagram(:notation => :bachman))
   end
 
-  test "generate should use normal arrow and open dot head with dot tail for one to many cardinalities with advanced notation" do
+  test "generate should use normal arrow and open dot head with dot tail for one to many cardinalities with bachman notation" do
     create_one_to_many_assoc_domain
-    assert_equal [["odot", "odotnormal"]], find_dot_edge_styles(diagram(:notation => :advanced))
+    assert_equal [["odot", "odotnormal"]], find_dot_edge_styles(diagram(:notation => :bachman))
   end
 
-  test "generate should use normal arrow and dot head for mandatory one to many cardinalities with advanced notation" do
+  test "generate should use normal arrow and dot head for mandatory one to many cardinalities with bachman notation" do
     create_one_to_many_assoc_domain
     One.class_eval do
       validates_presence_of :many
     end
-    assert_equal [["odot", "dotnormal"]], find_dot_edge_styles(diagram(:notation => :advanced))
+    assert_equal [["dot", "odotnormal"]], find_dot_edge_styles(diagram(:notation => :bachman))
   end
 
-  test "generate should use normal arrow and open dot head and tail for many to many cardinalities with advanced notation" do
+  test "generate should use normal arrow and open dot head and tail for many to many cardinalities with bachman notation" do
     create_many_to_many_assoc_domain
-    assert_equal [["odotnormal", "odotnormal"]], find_dot_edge_styles(diagram(:notation => :advanced))
+    assert_equal [["odotnormal", "odotnormal"]], find_dot_edge_styles(diagram(:notation => :bachman))
   end
 
-  test "generate should use normal arrow and dot tail and head for mandatory many to many cardinalities with advanced notation" do
+  test "generate should use normal arrow and dot tail and head for mandatory many to many cardinalities with bachman notation" do
     create_many_to_many_assoc_domain
     Many.class_eval do
       validates_presence_of :more
@@ -304,6 +304,6 @@ class GraphvizTest < ActiveSupport::TestCase
     More.class_eval do
       validates_presence_of :many
     end
-    assert_equal [["dotnormal", "dotnormal"]], find_dot_edge_styles(diagram(:notation => :advanced))
+    assert_equal [["dotnormal", "dotnormal"]], find_dot_edge_styles(diagram(:notation => :bachman))
   end
 end
