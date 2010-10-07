@@ -20,14 +20,14 @@ class AttributeTest < ActiveSupport::TestCase
   end
   
   def create_attribute(model, name)
-    Attribute.new(Domain.generate, model, model.columns_hash[name])
+    Domain::Attribute.new(Domain.generate, model, model.columns_hash[name])
   end
   
   # Attribute ================================================================
   test "column should return database column" do
     create_model "Foo", :my_column => :string
     assert_equal Foo.columns_hash["my_column"],
-      Attribute.from_model(Domain.new, Foo).reject(&:primary_key?).first.column
+      Domain::Attribute.from_model(Domain.new, Foo).reject(&:primary_key?).first.column
   end
   
   test "spaceship should sort attributes by name" do
@@ -40,8 +40,8 @@ class AttributeTest < ActiveSupport::TestCase
   
   test "inspect should show column" do
     create_model "Foo", :my_column => :string
-    assert_match %r{#<RailsERD::Attribute:.* @column="my_column" @type=:string>},
-      Attribute.new(Domain.new, Foo, Foo.arel_table["my_column"].column).inspect
+    assert_match %r{#<RailsERD::Domain::Attribute:.* @column="my_column" @type=:string>},
+      Domain::Attribute.new(Domain.new, Foo, Foo.arel_table["my_column"].column).inspect
   end
   
   test "type should return attribute type" do

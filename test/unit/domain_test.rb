@@ -39,7 +39,7 @@ class DomainTest < ActiveSupport::TestCase
   
   test "entities should return domain entities" do
     create_models "Foo", "Bar"
-    assert_equal [Entity] * 2, Domain.generate.entities.collect(&:class)
+    assert_equal [Domain::Entity] * 2, Domain.generate.entities.collect(&:class)
   end
   
   test "entities should return all domain entities sorted by name" do
@@ -61,7 +61,7 @@ class DomainTest < ActiveSupport::TestCase
     create_model "Bar", :baz => :references do
       belongs_to :baz
     end
-    assert_equal [Relationship] * 3, Domain.generate.relationships.collect(&:class)
+    assert_equal [Domain::Relationship] * 3, Domain.generate.relationships.collect(&:class)
   end
   
   test "relationships should count mutual relationship as one" do
@@ -71,7 +71,7 @@ class DomainTest < ActiveSupport::TestCase
     create_model "Bar" do
       has_many :foos
     end
-    assert_equal [Relationship], Domain.generate.relationships.collect(&:class)
+    assert_equal [Domain::Relationship], Domain.generate.relationships.collect(&:class)
   end
   
   test "relationships should count relationship between same models with distinct foreign key seperately" do
@@ -81,7 +81,7 @@ class DomainTest < ActiveSupport::TestCase
     create_model "Bar" do
       has_many :foos, :foreign_key => :special_bar_id
     end
-    assert_equal [Relationship] * 2, Domain.generate.relationships.collect(&:class)
+    assert_equal [Domain::Relationship] * 2, Domain.generate.relationships.collect(&:class)
   end
   
   # Erroneous associations ===================================================

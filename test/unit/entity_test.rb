@@ -4,28 +4,28 @@ class EntityTest < ActiveSupport::TestCase
   # Entity ===================================================================
   test "model should return active record model" do
     create_models "Foo"
-    assert_equal Foo, Entity.new(Domain.new, Foo).model
+    assert_equal Foo, Domain::Entity.new(Domain.new, Foo).model
   end
   
   test "name should return model name" do
     create_models "Foo"
-    assert_equal "Foo", Entity.new(Domain.new, Foo).name
+    assert_equal "Foo", Domain::Entity.new(Domain.new, Foo).name
   end
 
   test "spaceship should sort entities by name" do
     create_models "Foo", "Bar"
-    foo, bar = Entity.new(Domain.new, Foo), Entity.new(Domain.new, Bar)
+    foo, bar = Domain::Entity.new(Domain.new, Foo), Domain::Entity.new(Domain.new, Bar)
     assert_equal [bar, foo], [foo, bar].sort
   end
   
   test "to_s should equal name" do
     create_models "Foo"
-    assert_equal "Foo", Entity.new(Domain.new, Foo).to_s
+    assert_equal "Foo", Domain::Entity.new(Domain.new, Foo).to_s
   end
 
   test "inspect should show name" do
     create_models "Foo"
-    assert_match %r{#<RailsERD::Entity:.* @model=Foo>}, Entity.new(Domain.new, Foo).inspect
+    assert_match %r{#<RailsERD::Domain::Entity:.* @model=Foo>}, Domain::Entity.new(Domain.new, Foo).inspect
   end
 
   test "relationships should return relationships for this model" do
@@ -57,7 +57,7 @@ class EntityTest < ActiveSupport::TestCase
 
   test "parent should return nil for regular entities" do
     create_model "Foo"
-    assert_nil Entity.new(Domain.new, Foo).parent
+    assert_nil Domain::Entity.new(Domain.new, Foo).parent
   end
 
   test "parent should return nil for specialized entities with distinct tables" do
@@ -67,14 +67,14 @@ class EntityTest < ActiveSupport::TestCase
       set_table_name "special_foo"
     end
     create_table "special_foo", {}, true
-    assert_nil Entity.new(Domain.new, SpecialFoo).parent
+    assert_nil Domain::Entity.new(Domain.new, SpecialFoo).parent
   end
 
   test "parent should return parent entity for specialized entities" do
     create_model "Foo", :type => :string
     Object.const_set :SpecialFoo, Class.new(Foo)
     domain = Domain.generate
-    assert_equal domain.entity_for(Foo), Entity.new(domain, SpecialFoo).parent
+    assert_equal domain.entity_for(Foo), Domain::Entity.new(domain, SpecialFoo).parent
   end
 
   test "parent should return parent entity for specializations of specialized entities" do
@@ -82,7 +82,7 @@ class EntityTest < ActiveSupport::TestCase
     Object.const_set :SpecialFoo, Class.new(Foo)
     Object.const_set :VerySpecialFoo, Class.new(SpecialFoo)
     domain = Domain.generate
-    assert_equal domain.entity_for(SpecialFoo), Entity.new(domain, VerySpecialFoo).parent
+    assert_equal domain.entity_for(SpecialFoo), Domain::Entity.new(domain, VerySpecialFoo).parent
   end
 
   # Entity properties ========================================================
@@ -114,7 +114,7 @@ class EntityTest < ActiveSupport::TestCase
   
   test "specialized should return false for regular entities" do
     create_model "Foo"
-    assert_equal false, Entity.new(Domain.new, Foo).specialized?
+    assert_equal false, Domain::Entity.new(Domain.new, Foo).specialized?
   end
 
   test "specialized should return false for specialized entities with distinct tables" do
@@ -124,30 +124,30 @@ class EntityTest < ActiveSupport::TestCase
       set_table_name "special_foo"
     end
     create_table "special_foo", {}, true
-    assert_equal false, Entity.new(Domain.new, SpecialFoo).specialized?
+    assert_equal false, Domain::Entity.new(Domain.new, SpecialFoo).specialized?
   end
 
   test "specialized should return true for specialized entities" do
     create_model "Foo", :type => :string
     Object.const_set :SpecialFoo, Class.new(Foo)
-    assert_equal true, Entity.new(Domain.new, SpecialFoo).specialized?
+    assert_equal true, Domain::Entity.new(Domain.new, SpecialFoo).specialized?
   end
 
   test "specialized should return true for specialations of specialized entities" do
     create_model "Foo", :type => :string
     Object.const_set :SpecialFoo, Class.new(Foo)
     Object.const_set :VerySpecialFoo, Class.new(SpecialFoo)
-    assert_equal true, Entity.new(Domain.new, VerySpecialFoo).specialized?
+    assert_equal true, Domain::Entity.new(Domain.new, VerySpecialFoo).specialized?
   end
   
   # Attribute processing =====================================================
   test "attributes should return list of attributes" do
     create_model "Bar", :some_column => :integer, :another_column => :string
-    assert_equal [Attribute] * 3, Entity.new(Domain.new, Bar).attributes.collect(&:class)
+    assert_equal [Domain::Attribute] * 3, Domain::Entity.new(Domain.new, Bar).attributes.collect(&:class)
   end
 
   test "attributes should return attributes sorted by name" do
     create_model "Bar", :some_column => :integer, :another_column => :string
-    assert_equal ["another_column", "id", "some_column"], Entity.new(Domain.new, Bar).attributes.collect(&:name)
+    assert_equal ["another_column", "id", "some_column"], Domain::Entity.new(Domain.new, Bar).attributes.collect(&:name)
   end
 end

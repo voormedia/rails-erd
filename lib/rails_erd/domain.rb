@@ -1,8 +1,7 @@
-require "set"
 require "rails_erd"
-require "rails_erd/entity"
-require "rails_erd/relationship"
-require "rails_erd/attribute"
+require "rails_erd/domain/entity"
+require "rails_erd/domain/relationship"
+require "rails_erd/domain/attribute"
 
 module RailsERD
   # The domain describes your Rails domain model. This class is the starting
