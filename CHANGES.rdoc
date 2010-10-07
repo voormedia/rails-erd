@@ -1,6 +1,8 @@
 === To be released:
 
 * Added compatibility for Active Record 3.1 and Arel 2.0.
+* Restructured classes.
+* Renamed some API properties.
 
 === 0.3.0:
 
