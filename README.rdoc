@@ -29,11 +29,16 @@ http://rails-erd.rubyforge.org/gallery.html
 Installation instructions:
 http://rails-erd.rubyforge.org/install.html
 
+== Resources
+
 Internal API documentation:
 http://rails-erd.rubyforge.org/doc/
 
 Source code at Github:
 http://github.com/voormedia/rails-erd
+
+Rubygem page:
+http://rubygems.org/gems/rails-erd
 
 == About Rails ERD
 
