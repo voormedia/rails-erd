@@ -33,9 +33,9 @@ module RailsERD
       end
     
       # Returns +true+ if this attribute has no special meaning, that is, if it
-      # is not a primary key, foreign key, or timestamp.
+      # is not a primary key, foreign key, timestamp, or inheritance column.
       def regular?
-        !primary_key? and !foreign_key? and !timestamp?
+        !primary_key? and !foreign_key? and !timestamp? and !inheritance?
       end
     
       # Returns +true+ if this attribute is mandatory. Mandatory attributes
@@ -55,7 +55,13 @@ module RailsERD
       def foreign_key?
         @domain.relationships_for(@model).map(&:associations).flatten.map(&:primary_key_name).include?(name)
       end
-    
+
+      # Returns +true+ if this attribute is used for single table inheritance.
+      # These attributes are typically named +type+.
+      def inheritance?
+        @model.inheritance_column == name
+      end
+
       # Returns +true+ if this attribute is one of the standard 'magic' Rails
       # timestamp columns, being +created_at+, +updated_at+, +created_on+ or
       # +updated_on+.

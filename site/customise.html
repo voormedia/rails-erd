@@ -33,6 +33,7 @@ The following output options are available in Rails ERD.
       <dt><pre>foreign_keys</pre></dt><dd>any foreign key column in use for associations</dd>
       <dt><pre>primary_keys</pre></dt><dd>the primary key column (typically <tt>id</tt>)</dd>
       <dt><pre>timestamps</pre></dt><dd>any of the 'magic' timestamp columns (<tt>created_at/on</tt>, <tt>updated_at/on</tt>)</dd>
+      <dt><pre>inheritance</pre></dt><dd>the single table inheritance column (typically <tt>type</tt>)</dd>
       <dt><pre>regular</pre></dt><dd>all other columns</dd>
     </dl>
     To hide attributes altogether, set this option to <tt>false</tt>.
@@ -68,6 +69,17 @@ The following output options are available in Rails ERD.
     <tt>has_many :through</tt> associations. Older versions of Graphviz may
     have trouble drawing diagrams with indirect relationships.
     Default value: <tt>true</tt>
+  </dd>
+
+  <dt><pre>inheritance            true | false</pre></dt>
+  <dd>
+    Specifies whether or not to display inheritance hierarchies. Single table
+    inheritance in Rails is usually transparent and uninteresting in an
+    entity-relationship diagram. In some cases inheritance is central to the
+    domain model, however. For example, subtypes may have their own
+    relationships, which would be hidden otherwise. In those cases it makes
+    a lot of sense to display all subtypes.
+    Default value: <tt>false</tt>
   </dd>
   
   <dt><pre>notation               simple | advanced</pre></dt>

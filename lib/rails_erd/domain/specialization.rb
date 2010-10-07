@@ -1,7 +1,7 @@
 module RailsERD
   class Domain
     # Describes the specialization of an entity. Specialized entites correspond
-    # to inheritance. In Rails, specialization is referred to as single-table
+    # to inheritance. In Rails, specialization is referred to as single table
     # inheritance.
     class Specialization
       class << self

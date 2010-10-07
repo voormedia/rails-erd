@@ -12,7 +12,9 @@ module RailsERD
   #   require "rails_erd/diagram"
   #
   #   class YumlDiagram < RailsERD::Diagram
-  #     def process_relationship(relationship)
+  #     setup { @edges = [] }
+  #
+  #     each_relationship do |relationship|
   #       return if relationship.indirect?
   #
   #       arrow = case
@@ -21,12 +23,10 @@ module RailsERD
   #       when relationship.many_to_many? then "*-*>"
   #       end
   #
-  #       (@edges ||= []) << "[#{relationship.source}] #{arrow} [#{relationship.destination}]"
+  #       @edges << "[#{relationship.source}] #{arrow} [#{relationship.destination}]"
   #     end
   #
-  #     def save
-  #       instructions * "\n"
-  #     end
+  #     save { @edges * "\n" }
   #   end
   #
   # Then, to generate the diagram (example based on the domain model of Gemcutter):
@@ -51,14 +51,15 @@ module RailsERD
   # diagram generator inheriting from this class.
   #
   # attributes:: Selects which attributes to display. Can be any combination of
-  #              +:regular+, +:primary_keys+, +:foreign_keys+, or +:timestamps+.
+  #              +:regular+, +:primary_keys+, +:foreign_keys+, +:timestamps+, or
+  #              +:inheritance+.
   # disconnected:: Set to +false+ to exclude entities that are not connected to other
   #                entities. Defaults to +false+.
   # indirect:: Set to +false+ to exclude relationships that are indirect.
   #            Indirect relationships are defined in Active Record with
   #            <tt>has_many :through</tt> associations.
   # indirect:: Set to +true+ to include specializations, which corresponds to
-  #            Rails single-table inheritance.
+  #            Rails single table inheritance.
   # warn:: When set to +false+, no warnings are printed to the
   #        command line while processing the domain model. Defaults
   #        to +true+.

@@ -195,15 +195,12 @@ module RailsERD
         if options.filetype.to_sym == :dot then :none else options.filetype.to_sym end
       end
 
-      # Returns an options hash based on the given entity and its attributes.
       def entity_options(entity, attributes)
-        {}.tap do |opts|
+        entity_style_options(entity, attributes).tap do |opts|
           opts[:label] = "<#{NODE_LABEL_TEMPLATE.result(binding)}>"
-          opts[:fontcolor] = opts[:color] = :grey60 if entity.specialized?
         end
       end
       
-      # Returns an options hash 
       def relationship_options(relationship)
         relationship_style_options(relationship).tap do |opts|
           # Edges with a higher weight are optimised to be shorter and straighter.
@@ -211,6 +208,20 @@ module RailsERD
           
           # Indirect relationships should not influence node ranks.
           opts[:constraint] = false if relationship.indirect?
+        end
+      end
+
+      def specialization_options(specialization)
+        specialization_style_options(specialization)
+      end
+      
+      # The style options below are only used for notation-specific properties
+      # of the diagram. They may be overridden in subclasses.
+      
+      # Style of entity nodes.
+      def entity_style_options(entity, attributes)
+        {}.tap do |opts|
+          opts[:fontcolor] = opts[:color] = :grey60 if entity.specialized?
         end
       end
       
@@ -225,7 +236,8 @@ module RailsERD
         end
       end
       
-      def specialization_options(specialization)
+      # Style of specializations.
+      def specialization_style_options(specialization)
         { :color => :grey60, :arrowtail => :onormal, :arrowhead => :none, :arrowsize => 1.2 }
       end
     end

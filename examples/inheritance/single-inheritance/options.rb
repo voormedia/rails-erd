@@ -1,1 +1,1 @@
-{ :inheritance => true, :orientation => :vertical }
+{ :title => false, :inheritance => true, :orientation => :vertical }
