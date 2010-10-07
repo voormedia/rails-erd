@@ -127,3 +127,23 @@ class SpellMastery < ActiveRecord::Base
 end
 {% endhighlight %}
 </td><td><img src="/images/many-to-many-indirect.png" class="erd" alt="Indirect many-to-many relationship example"/></td></tr></table>
+
+<p>
+  Rails ERD can also draw <strong>single table inheritance</strong>, often
+  referred to as <em>specialization</em>. Specialized entities are displayed
+  in grey, because they do not have their own table in the database. An open
+  arrow points to their parent entity. Inheritance is not enabled by default,
+  add <tt>inheritance=true</tt> to turn it on.
+</p>
+<table class="combined" cellspacing="0"><tr><td>
+{% highlight ruby %}
+class Beverage < ActiveRecord::Base
+end
+
+class Beer < Beverage
+end
+
+class Whisky < Beverage
+end
+{% endhighlight %}
+</td><td><img src="/images/single-inheritance.png" class="erd" alt="Single table inheritance example"/></td></tr></table>

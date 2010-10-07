@@ -28,15 +28,17 @@ title: Installation instructions
 {% endhighlight %}
 
 <p>
-  Graphviz 2.22+ is recommended. Earlier versions may work, but many bugs
-  have been fixed since. If you have trouble with earlier versions,
+  <strong>Graphviz 2.22+ is recommended</strong>. Earlier versions may work,
+  but many bugs have been fixed since. If you have trouble with earlier versions,
   you may wish to disable indirect relationships.
   <a href="/customise.html#available-options">Learn more</a>.
 </p>
 
 <h2><a name="install-rails-erd">Install Rails ERD</a></h2>
 <p>
-  Next, add Rails ERD as a plugin to your Ruby on Rails 3 application. In your <tt>Gemfile</tt>...
+  Rails ERD runs on all Rails 3 platforms: Ruby 1.8.7, Ruby 1.9.2, Rubinius 1.1,
+  or JRuby 1.5 all work fine. Add Rails ERD as a plugin to your Ruby on Rails
+  3 application. In your <tt>Gemfile</tt>...
 </p>
 
 {% highlight ruby %}
@@ -51,7 +53,6 @@ end
 {% highlight console cssclass=console %}
 % bundle install
 {% endhighlight %}
-
 
 <h2><a name="generate">Generate your first diagram</a></h2>
 <p>
@@ -79,3 +80,24 @@ require "rails_erd/diagram/graphviz"
 
 RailsERD::Diagram::Graphviz.create
 {% endhighlight %}
+
+<h2><a name="trouble">Having trouble?</a></h2>
+<p>
+  If Rails ERD doesn't work like you expected it to, don't give up immediately.
+  First of all, check if you can generate a graph without rendering it...
+</p>
+{% highlight console cssclass=console %}
+% rake erd filetype=dot
+{% endhighlight %}
+<p>
+  Check for a file named <tt>ERD.dot</tt>, and see if it's not empty. If everything
+  worked so far, Rails ERD is probably working fine. You can either tweak the
+  output before processing it with <tt>dot</tt> (the command line tool that
+  ships with Graphviz), or you can try with a very recent version of
+  <a href="http://graphviz.org/">Graphviz</a>, <strong>preferrably 2.26+</strong>.
+</p>
+<p>
+  If things are still not running smoothly, I'd love to hear from you.
+  You can either create a <a href="http://github.com/voormedia/rails-erd/issues">new issue</a>,
+  or drop me a line at <b>r.timmermans <em>at</em> voormedia.com</b>.
+</p>
