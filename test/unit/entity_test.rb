@@ -117,7 +117,7 @@ class EntityTest < ActiveSupport::TestCase
     assert_equal false, Domain::Entity.new(Domain.new, Foo).specialized?
   end
 
-  test "specialized should return false for specialized entities with distinct tables" do
+  test "specialized should return false for child entities with distinct tables" do
     create_model "Foo", :type => :string
     Object.const_set :SpecialFoo, Class.new(Foo)
     SpecialFoo.class_eval do

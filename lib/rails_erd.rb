@@ -21,6 +21,19 @@ module RailsERD
     # RailsERD::Diagram will use these options unless overridden.
     attr_accessor :options
   end
+  
+  module Inspectable # @private :nodoc:
+    def inspect_with(*attributes)
+      attribute_inspection = attributes.collect { |attribute|
+        " @#{attribute}=\#{[Symbol, String].include?(#{attribute}.class) ? #{attribute}.inspect : #{attribute}}"
+      }.join
+      class_eval <<-RUBY
+        def inspect
+          "#<\#{self.class}:0x%.14x#{attribute_inspection}>" % (object_id << 1)
+        end
+      RUBY
+    end
+  end
 
   self.options = ActiveSupport::OrderedOptions[
     :attributes, :regular,
@@ -28,6 +41,7 @@ module RailsERD
     :filename, "ERD",
     :filetype, :pdf,
     :indirect, true,
+    :inheritance, false,
     :notation, :simple,
     :orientation, :horizontal,
     :warn, true,

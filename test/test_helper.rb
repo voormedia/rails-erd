@@ -90,6 +90,11 @@ class ActiveSupport::TestCase
     create_table "manies_mores", :many_id => :integer, :more_id => :integer
   end
   
+  def create_specialization
+    create_model "Beverage", :type => :string
+    Object.const_set :Beer, Class.new(Beverage)
+  end
+
   private
   
   def reset_domain

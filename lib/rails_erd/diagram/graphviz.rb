@@ -119,24 +119,25 @@ module RailsERD
           options[:arrowhead], options[:arrowtail] = dst, src
         }
       }
+      
+      attr_accessor :graph
 
-      def graph
-        @graph ||= GraphViz.digraph(@domain.name) do |graph|
-          # Set all default attributes.
-          GRAPH_ATTRIBUTES.each { |attribute, value| graph[attribute] = value }
-          NODE_ATTRIBUTES.each  { |attribute, value| graph.node[attribute] = value }
-          EDGE_ATTRIBUTES.each  { |attribute, value| graph.edge[attribute] = value }
+      setup do
+        self.graph = GraphViz.digraph(domain.name)
 
-          # Switch rank direction if we're creating a vertically oriented graph.
-          graph[:rankdir] = :TB if vertical?
-          
-          # Title of the graph itself.
-          graph[:label] = "#{title}\\n\\n" if title
-        end
+        # Set all default attributes.
+        GRAPH_ATTRIBUTES.each { |attribute, value| graph[attribute] = value }
+        NODE_ATTRIBUTES.each  { |attribute, value| graph.node[attribute] = value }
+        EDGE_ATTRIBUTES.each  { |attribute, value| graph.edge[attribute] = value }
+
+        # Switch rank direction if we're creating a vertically oriented graph.
+        graph[:rankdir] = :TB if vertical?
+        
+        # Title of the graph itself.
+        graph[:label] = "#{title}\\n\\n" if title
       end
       
-      # Save the diagram and return the file name that was written to.
-      def save
+      save do
         raise "Saving diagram failed. Output directory '#{File.dirname(filename)}' does not exist." unless File.directory?(File.dirname(filename))
         begin
           graph.output(filetype => filename)
@@ -146,17 +147,22 @@ module RailsERD
         end
       end
 
-      protected
-
-      def process_entity(entity, attributes)
+      each_entity do |entity, attributes|
         graph.add_node entity.name, entity_options(entity, attributes)
       end
 
-      def process_relationship(relationship)
+      each_relationship do |relationship|
         graph.add_edge graph.get_node(relationship.source.name), graph.get_node(relationship.destination.name),
           relationship_options(relationship)
       end
+      
+      each_specialization do |specialization|
+        graph.add_edge graph.get_node(specialization.generalized.name), graph.get_node(specialization.specialized.name),
+          specialization_options(specialization)
+      end
 
+      private
+      
       # Returns +true+ if the layout or hierarchy of the diagram should be
       # horizontally oriented.
       def horizontal?
@@ -169,14 +175,12 @@ module RailsERD
         !horizontal?
       end
 
-      private
-      
       # Returns the title to be used for the graph.
       def title
         case options.title
         when false then nil
         when true then
-          if @domain.name then "#{@domain.name} domain model" else "Domain model" end
+          if domain.name then "#{domain.name} domain model" else "Domain model" end
         else options.title
         end
       end
@@ -193,7 +197,10 @@ module RailsERD
 
       # Returns an options hash based on the given entity and its attributes.
       def entity_options(entity, attributes)
-        { :label => "<#{NODE_LABEL_TEMPLATE.result(binding)}>" }
+        {}.tap do |opts|
+          opts[:label] = "<#{NODE_LABEL_TEMPLATE.result(binding)}>"
+          opts[:fontcolor] = opts[:color] = :grey60 if entity.specialized?
+        end
       end
       
       # Returns an options hash 
@@ -216,6 +223,10 @@ module RailsERD
           # Let cardinality style callbacks draw arrow heads and tails.
           CARDINALITY_STYLES[options.notation][relationship, opts]
         end
+      end
+      
+      def specialization_options(specialization)
+        { :color => :grey60, :arrowtail => :onormal, :arrowhead => :none, :arrowsize => 1.2 }
       end
     end
   end

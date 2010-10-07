@@ -25,6 +25,9 @@ module RailsERD
           Set[identifier, assoc.active_record, assoc.klass]
         end
       end
+      
+      extend Inspectable
+      inspect_with :source, :destination
 
       # The domain in which this relationship is defined.
       attr_reader :domain
@@ -124,10 +127,6 @@ module RailsERD
         associations.size
       end
 
-      def inspect # @private :nodoc:
-        "#<#{self.class}:0x%.14x @source=#{source} @destination=#{destination}>" % (object_id << 1)
-      end
-  
       def <=>(other) # @private :nodoc:
         (source.name <=> other.source.name).nonzero? or (destination.name <=> other.destination.name)
       end

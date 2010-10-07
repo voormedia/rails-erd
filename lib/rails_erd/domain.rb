@@ -1,7 +1,8 @@
 require "rails_erd"
+require "rails_erd/domain/attribute"
 require "rails_erd/domain/entity"
 require "rails_erd/domain/relationship"
-require "rails_erd/domain/attribute"
+require "rails_erd/domain/specialization"
 
 module RailsERD
   # The domain describes your Rails domain model. This class is the starting
@@ -52,6 +53,11 @@ module RailsERD
       @relationships ||= Relationship.from_associations(self, associations)
     end
     
+    # Returns all specializations in your domain model.
+    def specializations
+      @specializations ||= Specialization.from_models(self, @models)
+    end
+    
     # Returns a specific entity object for the given Active Record model.
     def entity_for(model) # @private :nodoc:
       entity_mapping[model] or raise "model #{model} exists, but is not included in domain"
@@ -61,7 +67,7 @@ module RailsERD
     def relationships_for(model) # @private :nodoc:
       relationships_mapping[model] or []
     end
-  
+    
     def inspect # @private :nodoc:
       "#<#{self.class}:0x%.14x {%s}>" %
         [object_id << 1, relationships.map { |rel| "#{rel.source} => #{rel.destination}" } * ", "]

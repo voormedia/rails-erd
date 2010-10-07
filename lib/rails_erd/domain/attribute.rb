@@ -11,6 +11,9 @@ module RailsERD
           model.columns.collect { |column| Attribute.new(domain, model, column) }.sort
         end
       end
+      
+      extend Inspectable
+      inspect_with :name, :type
 
       attr_reader :column # @private :nodoc:
   
@@ -62,10 +65,6 @@ module RailsERD
     
       def <=>(other) # @private :nodoc:
         name <=> other.name
-      end
-    
-      def inspect # @private :nodoc:
-        "#<#{self.class.name}:0x%.14x @column=#{name.inspect} @type=#{type.inspect}>" % (object_id << 1)
       end
   
       def to_s # @private :nodoc:

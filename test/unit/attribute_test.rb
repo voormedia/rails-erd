@@ -40,7 +40,7 @@ class AttributeTest < ActiveSupport::TestCase
   
   test "inspect should show column" do
     create_model "Foo", :my_column => :string
-    assert_match %r{#<RailsERD::Domain::Attribute:.* @column="my_column" @type=:string>},
+    assert_match %r{#<RailsERD::Domain::Attribute:.* @name="my_column" @type=:string>},
       Domain::Attribute.new(Domain.new, Foo, Foo.arel_table["my_column"].column).inspect
   end
   

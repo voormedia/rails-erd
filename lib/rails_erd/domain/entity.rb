@@ -8,6 +8,9 @@ module RailsERD
           models.collect { |model| new domain, model }.sort
         end
       end
+      
+      extend Inspectable
+      inspect_with :model
     
       # The domain in which this entity resides.
       attr_reader :domain
@@ -59,10 +62,6 @@ module RailsERD
       # corresponding model.
       def name
         model.name
-      end
-  
-      def inspect # @private :nodoc:
-        "#<#{self.class}:0x%.14x @model=#{name}>" % (object_id << 1)
       end
     
       def to_s # @private :nodoc:

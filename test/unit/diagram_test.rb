@@ -9,23 +9,11 @@ class DiagramTest < ActiveSupport::TestCase
     RailsERD.send :remove_const, :Diagram
   end
   
-  def retrieve_relationships(options = {})
-    klass = Class.new(Diagram)
-    [].tap do |relationships|
-      klass.class_eval do
-        define_method :process_relationship do |relationship|
-          relationships << relationship
-        end
-      end
-      klass.create(options)
-    end
-  end
-
   def retrieve_entities(options = {})
     klass = Class.new(Diagram)
     [].tap do |entities|
       klass.class_eval do
-        define_method :process_entity do |entity, attributes|
+        each_entity do |entity, attributes|
           entities << entity
         end
       end
@@ -33,11 +21,35 @@ class DiagramTest < ActiveSupport::TestCase
     end
   end
   
+  def retrieve_relationships(options = {})
+    klass = Class.new(Diagram)
+    [].tap do |relationships|
+      klass.class_eval do
+        each_relationship do |relationship|
+          relationships << relationship
+        end
+      end
+      klass.create(options)
+    end
+  end
+  
+  def retrieve_specializations(options = {})
+    klass = Class.new(Diagram)
+    [].tap do |specializations|
+      klass.class_eval do
+        each_specialization do |specialization|
+          specializations << specialization
+        end
+      end
+      klass.create(options)
+    end
+  end
+
   def retrieve_attribute_lists(options = {})
     klass = Class.new(Diagram)
     {}.tap do |attribute_lists|
       klass.class_eval do
-        define_method :process_entity do |entity, attributes|
+        each_entity do |entity, attributes|
           attribute_lists[entity.model] = attributes
         end
       end
@@ -46,10 +58,56 @@ class DiagramTest < ActiveSupport::TestCase
   end
   
   # Diagram ==================================================================
+  test "domain sould return given domain" do
+    domain = Object.new
+    assert_same domain, Class.new(Diagram).new(domain).domain
+  end
+
+  # Diagram DSL ==============================================================
+  test "create should succeed silently if called on abstract class" do
+    create_simple_domain
+    assert_nothing_raised do
+      Diagram.create
+    end
+  end
+
+  test "create should succeed if called on subclass" do
+    create_simple_domain
+    assert_nothing_raised do
+      Class.new(Diagram).create
+    end
+  end
+
+  test "create should call callbacks in instance in specific order" do
+    create_simple_domain
+    executed_calls = Class.new(Diagram) do
+      setup do
+        calls << :setup
+      end
+      
+      each_entity do
+        calls << :entity
+      end
+      
+      each_relationship do
+        calls << :relationship
+      end
+      
+      save do
+        calls << :save
+      end
+      
+      def calls
+        @calls ||= []
+      end
+    end.create
+    assert_equal [:setup, :entity, :entity, :relationship, :save], executed_calls
+  end
+
   test "create class method should return result of save" do
     create_simple_domain
     subclass = Class.new(Diagram) do
-      def save
+      save do
         "foobar"
       end
     end
@@ -59,36 +117,11 @@ class DiagramTest < ActiveSupport::TestCase
   test "create should return result of save" do
     create_simple_domain
     diagram = Class.new(Diagram) do
-      def save
+      save do
         "foobar"
       end
     end.new(Domain.generate)
     assert_equal "foobar", diagram.create
-  end
-  
-  test "domain sould return given domain" do
-    domain = Object.new
-    assert_same domain, Class.new(Diagram).new(domain).domain
-  end
-
-  # Diagram abstractness =====================================================
-  test "create should succeed silently if called on abstract class" do
-    create_simple_domain
-    assert_nothing_raised do
-      Diagram.create
-    end
-  end
-
-  test "create should succeed if called on class that implements process_entity and process_relationship" do
-    create_simple_domain
-    assert_nothing_raised do
-      Class.new(Diagram) do
-        def process_entity(*args)
-        end
-        def process_relationship(*args)
-        end
-      end.create
-    end
   end
   
   # Entity filtering =========================================================
@@ -117,6 +150,12 @@ class DiagramTest < ActiveSupport::TestCase
     assert_equal [Foo], retrieve_entities.map(&:model)
   end
   
+  test "generate should yield specialized entities if inheritance is true" do
+    create_model "Foo", :type => :string
+    Object.const_set :SpecialFoo, Class.new(Foo)
+    assert_equal [Foo, SpecialFoo], retrieve_entities(:inheritance => true).map(&:model)
+  end
+
   test "generate should yield specialized entities with distinct tables" do
     create_model "Foo"
     Object.const_set :SpecialFoo, Class.new(Foo)
@@ -182,6 +221,36 @@ class DiagramTest < ActiveSupport::TestCase
     assert_equal [], retrieve_relationships
   end
 
+  test "generate should yield relationships from specialized entities if inheritance is true" do
+    create_model "Foo", :bar => :references
+    create_model "Bar", :type => :string
+    Object.const_set :SpecialBar, Class.new(Bar)
+    SpecialBar.class_eval do
+      has_many :foos
+    end
+    assert_equal 1, retrieve_relationships(:inheritance => true).length
+  end
+  
+  test "generate should yield relationships to specialized entities if inheritance is true" do
+    create_model "Foo", :type => :string, :bar => :references
+    Object.const_set :SpecialFoo, Class.new(Foo)
+    create_model "Bar" do
+      has_many :special_foos
+    end
+    assert_equal 1, retrieve_relationships(:inheritance => true).length
+  end
+
+  # Specialization filtering =================================================
+  test "generate should not yield specializations" do
+    create_specialization
+    assert_equal [], retrieve_specializations
+  end
+  
+  test "generate should yield specializations if inheritance is true" do
+    create_specialization
+    assert_equal ["Beer"], retrieve_specializations(:inheritance => true).map { |s| s.specialized.name }
+  end
+
   # Attribute filtering ======================================================
   test "generate should yield regular attributes by default" do
     create_model "Book", :title => :string, :created_at => :datetime, :author => :references do
@@ -223,5 +292,11 @@ class DiagramTest < ActiveSupport::TestCase
     create_model "Author"
     assert_equal %w{created_at title},
       retrieve_attribute_lists(:attributes => [:regular, :timestamps])[Book].map(&:name)
+  end
+  
+  test "generate should yield no attributes for specialized entities" do
+    create_model "Beverage", :type => :string, :name => :string, :distillery => :string, :age => :integer
+    Object.const_set :Whisky, Class.new(Beverage)
+    assert_equal [], retrieve_attribute_lists(:inheritance => true)[Whisky].map(&:name)
   end
 end

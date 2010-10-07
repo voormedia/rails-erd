@@ -84,6 +84,27 @@ class DomainTest < ActiveSupport::TestCase
     assert_equal [Domain::Relationship] * 2, Domain.generate.relationships.collect(&:class)
   end
   
+  # Specialization processing ================================================
+  test "specializations should return empty array for empty domain" do
+    assert_equal [], Domain.generate.specializations
+  end
+
+  test "specializations should return empty array for domain without single table inheritance" do
+    create_simple_domain
+    assert_equal [], Domain.generate.specializations
+  end
+
+  test "specializations should return specializations in domain model" do
+    create_specialization
+    assert_equal [Domain::Specialization], Domain.generate.specializations.collect(&:class)
+  end
+
+  test "specializations should return specializations of specializations in domain model" do
+    create_specialization
+    Object.const_set :BelgianBeer, Class.new(Beer)
+    assert_equal [Domain::Specialization] * 2, Domain.generate.specializations.collect(&:class)
+  end
+  
   # Erroneous associations ===================================================
   test "relationships should omit bad has_many associations" do
     create_model "Foo" do

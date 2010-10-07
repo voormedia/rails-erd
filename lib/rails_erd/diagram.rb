@@ -57,6 +57,8 @@ module RailsERD
   # indirect:: Set to +false+ to exclude relationships that are indirect.
   #            Indirect relationships are defined in Active Record with
   #            <tt>has_many :through</tt> associations.
+  # indirect:: Set to +true+ to include specializations, which corresponds to
+  #            Rails single-table inheritance.
   # warn:: When set to +false+, no warnings are printed to the
   #        command line while processing the domain model. Defaults
   #        to +true+.
@@ -67,6 +69,34 @@ module RailsERD
       # the domain generation and the diagram generation.
       def create(options = {})
         new(Domain.generate(options), options).create
+      end
+      
+      protected
+      
+      def setup(&block)
+        callbacks[:setup] = block
+      end
+      
+      def each_entity(&block)
+        callbacks[:each_entity] = block
+      end
+
+      def each_relationship(&block)
+        callbacks[:each_relationship] = block
+      end
+
+      def each_specialization(&block)
+        callbacks[:each_specialization] = block
+      end
+      
+      def save(&block)
+        callbacks[:save] = block
+      end
+
+      private
+
+      def callbacks
+        @callbacks ||= Hash.new { proc {} }
       end
     end
 
@@ -90,41 +120,34 @@ module RailsERD
     # Generates the diagram, but does not save the output. It is called
     # internally by Diagram#create.
     def generate
+      instance_eval &callbacks[:setup]
+
       filtered_entities.each do |entity|
-        process_entity entity, filtered_attributes(entity)
+        instance_exec entity, filtered_attributes(entity), &callbacks[:each_entity]
       end
 
       filtered_relationships.each do |relationship|
-        process_relationship relationship
+        instance_exec relationship, &callbacks[:each_relationship]
+      end
+
+      filtered_specializations.each do |specialization|
+        instance_exec specialization, &callbacks[:each_specialization]
       end
     end
-
-    # Saves the diagram. Can be overridden in subclasses to write to an output
-    # file. It is called internally by Diagram#create.
-    def save
-    end
-        
-    protected
-
-    # Process a given entity and its attributes. This method should be implemented
-    # by subclasses. It is intended to add a representation of the entity to
-    # the diagram. This method will be called once for each entity that should
-    # be displayed, typically in alphabetic order.
-    def process_entity(entity, attributes)
-    end
     
-    # Process a given relationship. This method should be implemented by
-    # subclasses. It should add a representation of the relationship to
-    # the diagram. This method will be called once for eacn relationship
-    # that should be displayed.
-    def process_relationship(relationship)
+    def save
+      instance_eval &callbacks[:save]
     end
     
     private
     
+    def callbacks
+      @callbacks ||= self.class.send(:callbacks)
+    end
+    
     def filtered_entities
       @domain.entities.reject { |entity|
-        entity.specialized? or
+        !options.inheritance && entity.specialized? or
         !options.disconnected && entity.disconnected?
       }.compact.tap do |entities|
         raise "No entities found; create your models first!" if entities.empty?
@@ -133,19 +156,23 @@ module RailsERD
     
     def filtered_relationships
       @domain.relationships.reject { |relationship|
-        relationship.source.specialized? or
-        relationship.destination.specialized? or
+        !options.inheritance && (relationship.source.specialized? || relationship.destination.specialized?) or
         !options.indirect && relationship.indirect?
       }
     end
     
+    def filtered_specializations
+      if options.inheritance then @domain.specializations else [] end
+    end
+    
     def filtered_attributes(entity)
-      entity.attributes.select { |attribute|
+      entity.attributes.reject { |attribute|
         # Select attributes that satisfy the conditions in the :attributes option.
-        options.attributes and [*options.attributes].any? { |type| attribute.send(:"#{type.to_s.chomp('s')}?") }
+        !options.attributes or entity.specialized? or
+        [*options.attributes].none? { |type| attribute.send(:"#{type.to_s.chomp('s')}?") }
       }
     end
-
+    
     def warn(message)
       puts "Warning: #{message}" if options.warn
     end
