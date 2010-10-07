@@ -28,6 +28,9 @@ module RailsERD
       end
     end
     
+    extend Inspectable
+    inspect_with
+    
     # The options that are used to generate this domain model.
     attr_reader :options
 
@@ -66,11 +69,6 @@ module RailsERD
     # Returns an array of relationships for the given Active Record model.
     def relationships_for(model) # @private :nodoc:
       relationships_mapping[model] or []
-    end
-    
-    def inspect # @private :nodoc:
-      "#<#{self.class}:0x%.14x {%s}>" %
-        [object_id << 1, relationships.map { |rel| "#{rel.source} => #{rel.destination}" } * ", "]
     end
     
     def warn(message) # @private :nodoc:

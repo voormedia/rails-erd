@@ -2,6 +2,9 @@ module RailsERD
   class Domain
     class Relationship
       class Cardinality
+        extend Inspectable
+        inspect_with :source_range, :destination_range
+        
         N = Infinity = 1.0/0 # And beyond.
       
         CLASSES = {
@@ -76,11 +79,6 @@ module RailsERD
           compare_with(other) { |x| x.source_range.last + x.destination_range.last }.nonzero? or
           compare_with(other) { |x| x.source_range.last }.nonzero? or
           compare_with(other) { |x| x.destination_range.last }
-        end
-      
-        def inspect # @private :nodoc:
-          "#<#{self.class}:0x%.14x (%s,%s) => (%s,%s)>" %
-            [object_id << 1, source_range.first, source_range.last, destination_range.first, destination_range.last]
         end
       
         # Returns an array with the cardinality classes for the source and

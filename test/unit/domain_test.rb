@@ -23,12 +23,12 @@ class DomainTest < ActiveSupport::TestCase
     assert_nil Domain.generate.name
   end
   
-  test "inspect should display relationships" do
+  test "inspect should display object id only" do
     create_model "Foo", :bar => :references do
       belongs_to :bar
     end
     create_model "Bar"
-    assert_match %r{#<RailsERD::Domain:.* \{Bar => Foo\}>}, Domain.generate.inspect
+    assert_match %r{#<RailsERD::Domain:.*>}, Domain.generate.inspect
   end
   
   # Entity processing ========================================================

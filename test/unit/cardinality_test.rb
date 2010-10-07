@@ -5,6 +5,12 @@ class CardinalityTest < ActiveSupport::TestCase
     @n = Domain::Relationship::Cardinality::N
   end
   
+  # Cardinality ==============================================================
+  test "inspect should show source and destination ranges" do
+    assert_match %r{#<RailsERD::Domain::Relationship::Cardinality:.* @source_range=1\.\.1 @destination_range=1\.\.Infinity>},
+      Domain::Relationship::Cardinality.new(1, 1..@n).inspect
+  end
+
   # Cardinality construction =================================================
   test "new should return cardinality object" do
     assert_kind_of Domain::Relationship::Cardinality, Domain::Relationship::Cardinality.new(1, 1..@n)
