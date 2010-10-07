@@ -3,6 +3,7 @@ require "bundler/setup"
 
 require "active_record"
 require "rails_erd/diagram/graphviz"
+require "active_support/dependencies"
 
 output_dir = File.expand_path("output", ".")
 FileUtils.mkdir_p output_dir
@@ -20,7 +21,8 @@ Dir["#{File.dirname(__FILE__)}/*/*"].each do |path|
     end
     
     # Load domain models for this example.
-    Dir["#{path}/**/*.rb"].each do |model|
+    ActiveSupport::Dependencies.autoload_paths = ["#{path}/models"]
+    Dir["#{path}/{lib,models}/**/*.rb"].each do |model|
       require File.expand_path(model, File.dirname(__FILE__))
     end
     
