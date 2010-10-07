@@ -1,0 +1,6 @@
+This directory contains some examples of domain models that can be displayed
+in a diagram with Rails ERD. Some domain models are copied from actual
+applications. Copyright on those models and the database schemas belongs to
+their respective authors. Please see the LICENSE files in each of the
+application's directories for details about the author's copyright and the
+terms under which the code has been licensed.
