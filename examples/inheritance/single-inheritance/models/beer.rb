@@ -1,0 +1,2 @@
+class Beer < Beverage
+end

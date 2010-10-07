@@ -22,7 +22,7 @@ module RailsERD
       # The destination entity.
       attr_reader :specialized
       
-      def initialize(domain, specialized_model)
+      def initialize(domain, specialized_model) # @private :nodoc:
         @domain = domain
         @generalized, @specialized = @domain.entity_for(specialized_model.base_class), @domain.entity_for(specialized_model)
       end

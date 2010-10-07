@@ -1,0 +1,1 @@
+{ :inheritance => true, :orientation => :vertical }
