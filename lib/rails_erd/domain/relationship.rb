@@ -94,6 +94,12 @@ module RailsERD
       def recursive?
         @source == @destination
       end
+      
+      # Indicated whether or not this relationship is connected to a specialized
+      # entity.
+      def specialized?
+        source.specialized? or destination.specialized?
+      end
     
       # Indicates whether the destination cardinality class of this relationship
       # is equal to one. This is +true+ for one-to-one relationships only.

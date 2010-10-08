@@ -157,7 +157,7 @@ module RailsERD
     
     def filtered_relationships
       @domain.relationships.reject { |relationship|
-        !options.inheritance && (relationship.source.specialized? || relationship.destination.specialized?) or
+        !options.inheritance && relationship.specialized? or
         !options.indirect && relationship.indirect?
       }
     end

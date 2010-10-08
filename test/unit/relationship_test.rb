@@ -139,6 +139,29 @@ class RelationshipTest < ActiveSupport::TestCase
     assert_equal [4], Domain.generate.relationships.map(&:strength)
   end
   
+  test "specialized should return false by default" do
+    create_simple_domain
+    assert_equal [false], Domain.generate.relationships.map(&:specialized?)
+  end
+  
+  test "specialized should return true if source is specialized" do
+    create_model "Beverage", :type => :string
+    create_model "Whisky", Beverage
+    create_model "Bottle", :whisky => :references do
+      belongs_to :whisky
+    end
+    assert_equal [true], Domain.generate.relationships.map(&:specialized?)
+  end
+  
+  test "specialized should return true if destination is specialized" do
+    create_model "Beverage", :type => :string, :distillery => :references
+    create_model "Whisky", Beverage
+    create_model "Distillery" do
+      has_many :whiskies
+    end
+    assert_equal [true], Domain.generate.relationships.map(&:specialized?)
+  end
+  
   # Cardinalities ============================================================
   test "cardinality should be zero-one to zero-one for optional one to one associations" do
     create_one_to_one_assoc_domain

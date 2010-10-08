@@ -33,10 +33,14 @@ class ActiveSupport::TestCase
     end
   end
 
-  def create_model(name, columns = {}, &block)
-    klass = Object.const_set name.to_sym, Class.new(ActiveRecord::Base)
+  def create_model(name, *args, &block)
+    superklass = args.first.kind_of?(Class) ? args.shift : ActiveRecord::Base
+    columns = args.first || {}
+    klass = Object.const_set name.to_sym, Class.new(superklass)
     klass.class_eval(&block) if block_given?
-    create_table Object.const_get(name.to_sym).table_name, columns, Object.const_get(name.to_sym).primary_key rescue nil
+    if superklass == ActiveRecord::Base
+      create_table Object.const_get(name.to_sym).table_name, columns, Object.const_get(name.to_sym).primary_key rescue nil
+    end
   end
     
   def create_models(*names)
