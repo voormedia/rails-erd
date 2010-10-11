@@ -12,6 +12,7 @@
 * Added new edge type to describe single table inheritance and polymorphic
   associations: Specialization.
 * Added compatibility for Active Record 3.1 (beta), removed dependency on Arel.
+* Rubinius compatibility.
 
 === 0.3.0:
 
