@@ -1,3 +1,3 @@
-class Cannon < ActiveRecord::Base
+class Soldier < ActiveRecord::Base
   belongs_to :defensible, :polymorphic => true
 end

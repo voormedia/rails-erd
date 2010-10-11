@@ -1,8 +1,8 @@
 ActiveRecord::Schema.define do
-  create_table "galleons", :force => true do |t|
+  create_table "barricades", :force => true do |t|
     t.string :name, :null => false
-    t.integer :mast_count, :null => false
-    t.date :completed_on
+    t.string :location
+    t.boolean :upheld, :null => false
   end
 
   create_table "strongholds", :force => true do |t|
@@ -11,9 +11,9 @@ ActiveRecord::Schema.define do
     t.date :completed_on
   end
 
-  create_table "cannons", :force => true do |t|
+  create_table "soldiers", :force => true do |t|
     t.references :defensible, :null => false
-    t.integer :calibre
-    t.integer :barrel_length
+    t.integer :health_rating, :null => false
+    t.integer :armor_rating
   end
 end

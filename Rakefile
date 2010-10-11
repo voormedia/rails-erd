@@ -40,7 +40,7 @@ begin
   require "hanna/rdoctask"
   Rake::RDocTask.new do |rdoc|
     rdoc.rdoc_files = Dir["[A-Z][A-Z]*"] + Dir["lib/**/*.rb"]
-    rdoc.title = "Rails ERD – Entity-Relationship Diagrams for Rails"
+    rdoc.title = "Rails ERD – API Documentation"
     rdoc.rdoc_dir = "rdoc"
   end
 rescue LoadError
@@ -49,4 +49,10 @@ end
 desc "Generate diagrams for bundled examples"
 task :examples do
   require File.expand_path("examples/generate", File.dirname(__FILE__))
+end
+
+namespace :examples do
+  task :sfdp do
+    require File.expand_path("examples/sfdp", File.dirname(__FILE__))
+  end
 end

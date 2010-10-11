@@ -9,7 +9,7 @@ output_dir = File.expand_path("output", ".")
 FileUtils.mkdir_p output_dir
 Dir["#{File.dirname(__FILE__)}/*/*"].each do |path|
   name = File.basename(path)
-  print "==> Generating diagram for #{name.capitalize}... "
+  print "=> Generating domain for #{name.capitalize}... "
   begin
     # Load database schema.
     ActiveRecord::Base.establish_connection :adapter => "sqlite3", :database => ":memory:"
@@ -30,18 +30,22 @@ Dir["#{File.dirname(__FILE__)}/*/*"].each do |path|
     next if ActiveRecord::Base.descendants.empty?
 
     puts "#{ActiveRecord::Base.descendants.length} models"
+    domain = RailsERD::Domain.generate
+
     [:simple, :bachman].each do |notation|
-      filename = File.expand_path("#{output_dir}/#{name}#{notation != :simple ? "-#{notation}" : ""}", File.dirname(__FILE__))
+      [:dot, :pdf].each do |filetype|
+        filename = File.expand_path("#{output_dir}/#{name}#{notation != :simple ? "-#{notation}" : ""}", File.dirname(__FILE__))
 
-      default_options = { :notation => notation, :filename => filename, :attributes => [:content],
-        :title => name.classify + " domain model" }
+        default_options = { :notation => notation, :filetype => filetype, :filename => filename,
+          :title => name.classify + " domain model" }
 
-      specific_options = eval((File.read("#{path}/options.rb") rescue "")) || {}
+        specific_options = eval((File.read("#{path}/options.rb") rescue "")) || {}
 
-      # Generate ERD.
-      outfile = RailsERD::Diagram::Graphviz.create(default_options.merge(specific_options))
+        # Generate ERD.
+        outfile = RailsERD::Diagram::Graphviz.new(domain, default_options.merge(specific_options)).create
 
-      puts "    - #{notation} notation saved to #{outfile}"
+        puts "   - #{notation} notation saved to #{outfile}"
+      end
     end
     puts
   ensure

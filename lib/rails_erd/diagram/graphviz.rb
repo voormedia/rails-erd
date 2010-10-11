@@ -60,8 +60,7 @@ module RailsERD
         :concentrate => true,
         :labelloc => :t,
         :fontsize => 13,
-        :fontname => "Arial Bold",
-        :remincross => true
+        :fontname => "Arial Bold"
       }
 
       # Default node attributes.

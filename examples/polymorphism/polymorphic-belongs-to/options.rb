@@ -1,1 +1,1 @@
-{ :title => false, :polymorphism => true, :orientation => :vertical }
+{ :title => false, :polymorphism => true }
