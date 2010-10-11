@@ -1,12 +1,17 @@
 === To be released:
 
 * Support to optionally display single table inheritance relationships
-  (specialization).
+  (inheritance=true).
+* Support to optionally display polymorphic associations (polymorphism=true).
 * Adjustments to 'advanced' style so that it matches original Bachman style,
   and therefore now called 'bachman'.
-* Added compatibility for Active Record 3.1, removed version dependency on Arel.
-* Restructured classes.
-* Renamed several API properties and methods.
+* Ignore models without tables (reported by Mark Chapman).
+* Mutual indirect relationships are now combined.
+* Changed API for diagram generation.
+* Restructured classes and renamed several API properties and methods.
+* Added new edge type to describe single table inheritance and polymorphic
+  associations: Specialization.
+* Added compatibility for Active Record 3.1 (beta), removed dependency on Arel.
 
 === 0.3.0:
 
@@ -20,7 +25,7 @@
 * More versatile API that allows you to inspect relationships and their
   cardinalities.
 * Changed line widths to 1.0 to avoid invisible node boundaries with older
-  versions of Graphviz.
+  versions of Graphviz (reported by Mike McQuinn).
 * Bundled examples based on actual applications.
 
 === 0.2.0

@@ -1,1 +1,1 @@
-{ :inheritance => true }
+{ :disconnected => false, :inheritance => true }

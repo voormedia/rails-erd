@@ -106,6 +106,15 @@ The following output options are available in Rails ERD.
     try both. Default value: <tt>horizontal</tt>
   </dd>
 
+  <dt><pre>polymorphism           true | false</pre></dt>
+  <dd>
+    Specifies whether or not to display polymorphic hierarchies. Polymorphic
+    associations are normally displayed as direct relationships. In some cases
+    this may be confusing, because it masks their true nature. Enable this
+    option if polymorphic associations play a crucial role in your domain model.
+    Default value: <tt>false</tt>
+  </dd>
+
   <dt><pre>title                  true | false | &lt;string&gt;</pre></dt>
   <dd>
     By default, a title is displayed at the top of the diagram:
@@ -133,26 +142,28 @@ The following output options are available in Rails ERD.
 require "rails_erd/diagram"
 
 class YumlDiagram < RailsERD::Diagram
-  def process_relationship(relationship)  # Invoked once for each relationship
-    return if relationship.indirect?
+  setup { @edges = [] }
+
+  # Invoked once for each relationship
+  each_relationship do |relationship|
+    line = if relationship.indirect? then "-.-" else "-" end
 
     arrow = case
-    when relationship.one_to_one?   then "1-1>"
-    when relationship.one_to_many?  then "1-*>"
-    when relationship.many_to_many? then "*-*>"
+    when relationship.one_to_one?   then "1#{line}1>"
+    when relationship.one_to_many?  then "1#{line}*>"
+    when relationship.many_to_many? then "*#{line}*>"
     end
 
-    (@edges ||= []) << "[#{relationship.source}] #{arrow} [#{relationship.destination}]"
+    @edges << "[#{relationship.source}] #{arrow} [#{relationship.destination}]"
   end
 
-  def save  # Should save or return the generated diagram
-    @edges * "\n"
-  end
+  # Should save or return the generated diagram
+  save { @edges * "\n" }
 end
 {% endhighlight %}
 
 <p>
-  Only 15 lines of code! Then, simply call...
+  Only 14 lines of code! Then, simply call...
 </p>
 
 {% highlight ruby %}
@@ -212,9 +223,9 @@ domain = RailsERD::Domain.generate
 
 # Which entities do we have? Each entity corresponds to a model.
 domain.entities
-#=> [ #<RailsERD::Entity @model=Comment>,
-#     #<RailsERD::Entity @model=Post>,
-#     #<RailsERD::Entity @model=User> ]
+#=> [ #<RailsERD::Domain::Entity @model=Comment>,
+#     #<RailsERD::Domain::Entity @model=Post>,
+#     #<RailsERD::Domain::Entity @model=User> ]
 
 # Does an entity have relationships with other entities?
 domain.entities.first.connected?
@@ -222,9 +233,9 @@ domain.entities.first.connected?
 
 # Let's see all relationships...
 domain.relationships
-#=> [ #<RailsERD::Relationship @source=Post @destination=Comment>,
-#     #<RailsERD::Relationship @source=User @destination=Comment>,
-#     #<RailsERD::Relationship @source=User @destination=Post> ]
+#=> [ #<RailsERD::Domain::Relationship @source=Post @destination=Comment>,
+#     #<RailsERD::Domain::Relationship @source=User @destination=Comment>,
+#     #<RailsERD::Domain::Relationship @source=User @destination=Post> ]
 
 # What is the destination entity of the first relationship?
 domain.relationships.first.destination
