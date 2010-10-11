@@ -21,7 +21,7 @@ module RailsERD
         private
       
         def association_identity(association)
-          identifier = association.options[:join_table] || association.primary_key_name.to_s
+          identifier = association.options[:join_table] || association.options[:through] || association.primary_key_name.to_s
           Set[identifier, association_owner(association), association_target(association)]
         end
         

@@ -100,6 +100,22 @@ class DomainTest < ActiveSupport::TestCase
     end
     assert_equal [Domain::Relationship], Domain.generate.relationships.collect(&:class)
   end
+
+  test "relationships should count mutual indirect relationship as one" do
+    create_model "Wizard" do
+      has_many :spell_masteries
+      has_many :spells, :through => :spell_masteries
+    end
+    create_model "Spell" do
+      has_many :spell_masteries
+      has_many :wizards, :through => :spell_masteries
+    end
+    create_model "SpellMastery", :wizard => :references, :spell => :references do
+      belongs_to :wizard
+      belongs_to :spell
+    end
+    assert_equal [Domain::Relationship], Domain.generate.relationships.select(&:indirect?).collect(&:class)
+  end
   
   test "relationships should count relationship between same models with distinct foreign key seperately" do
     create_model "Foo", :bar => :references, :special_bar => :references do
