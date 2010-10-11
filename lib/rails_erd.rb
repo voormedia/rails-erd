@@ -23,7 +23,7 @@ module RailsERD
   end
   
   module Inspectable # @private :nodoc:
-    def inspect_with(*attributes)
+    def inspection_attributes(*attributes)
       attribute_inspection = attributes.collect { |attribute|
         " @#{attribute}=\#{[Symbol, String].include?(#{attribute}.class) ? #{attribute}.inspect : #{attribute}}"
       }.join
@@ -44,6 +44,7 @@ module RailsERD
     :inheritance, false,
     :notation, :simple,
     :orientation, :horizontal,
+    :polymorphism, false,
     :warn, true,
     :title, true
   ]

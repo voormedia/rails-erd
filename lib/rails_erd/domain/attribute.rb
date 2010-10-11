@@ -8,12 +8,12 @@ module RailsERD
 
       class << self
         def from_model(domain, model) # @private :nodoc:
-          model.columns.collect { |column| Attribute.new(domain, model, column) }.sort
+          model.columns.collect { |column| new(domain, model, column) }.sort
         end
       end
       
       extend Inspectable
-      inspect_with :name, :type
+      inspection_attributes :name, :type
 
       attr_reader :column # @private :nodoc:
   
@@ -53,7 +53,7 @@ module RailsERD
       # Returns +true+ if this attribute is used as a foreign key for any
       # relationship.
       def foreign_key?
-        @domain.relationships_for(@model).map(&:associations).flatten.map(&:primary_key_name).include?(name)
+        @domain.relationships_by_entity_name(@model.name).map(&:associations).flatten.map(&:primary_key_name).include?(name)
       end
 
       # Returns +true+ if this attribute is used for single table inheritance.

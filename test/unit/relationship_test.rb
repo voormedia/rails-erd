@@ -22,7 +22,7 @@ class RelationshipTest < ActiveSupport::TestCase
     end
     create_model "Bar"
     domain = Domain.generate
-    assert_equal [domain.entity_for(Bar)], domain.relationships.map(&:source)
+    assert_equal [domain.entity_by_name("Bar")], domain.relationships.map(&:source)
   end
   
   test "destination should return relationship destination" do
@@ -31,7 +31,7 @@ class RelationshipTest < ActiveSupport::TestCase
     end
     create_model "Bar"
     domain = Domain.generate
-    assert_equal [domain.entity_for(Foo)], domain.relationships.map(&:destination)
+    assert_equal [domain.entity_by_name("Foo")], domain.relationships.map(&:destination)
   end
   
   # Relationship properties ==================================================
@@ -138,28 +138,18 @@ class RelationshipTest < ActiveSupport::TestCase
     end
     assert_equal [4], Domain.generate.relationships.map(&:strength)
   end
-  
-  test "specialized should return false by default" do
-    create_simple_domain
-    assert_equal [false], Domain.generate.relationships.map(&:specialized?)
-  end
-  
-  test "specialized should return true if source is specialized" do
-    create_model "Beverage", :type => :string
-    create_model "Whisky", Beverage
-    create_model "Bottle", :whisky => :references do
-      belongs_to :whisky
+
+  test "strength should count polymorphic associations only once" do
+    create_model "Foo", :bar => :references do
+      belongs_to :bar, :polymorphic => true
     end
-    assert_equal [true], Domain.generate.relationships.map(&:specialized?)
-  end
-  
-  test "specialized should return true if destination is specialized" do
-    create_model "Beverage", :type => :string, :distillery => :references
-    create_model "Whisky", Beverage
-    create_model "Distillery" do
-      has_many :whiskies
+    create_model "Qux" do
+      has_many :foos, :as => :bar
     end
-    assert_equal [true], Domain.generate.relationships.map(&:specialized?)
+    create_model "Quux" do
+      has_many :foos, :as => :bar
+    end
+    assert_equal [1], Domain.generate.relationships.map(&:strength)
   end
   
   # Cardinalities ============================================================
@@ -371,6 +361,22 @@ class RelationshipTest < ActiveSupport::TestCase
     assert_equal [Domain::Relationship::Cardinality.new(0..1, 50..100)], domain_cardinalities
   end
   
+  test "cardinality should be one to one-many for mandatory one to many associations on polymorphic interfaces" do
+    create_model "Cannon", :defensible => :references do
+      belongs_to :defensible, :polymorphic => true
+      validates_presence_of :defensible
+    end
+    create_model "Stronghold" do
+      has_many :cannons, :as => :defensible
+      validates_presence_of :cannons
+    end
+    create_model "Galleon" do
+      has_many :cannons, :as => :defensible
+      validates_presence_of :cannons
+    end
+    assert_equal [Domain::Relationship::Cardinality.new(1, 1..N)], domain_cardinalities
+  end
+  
   # Cardinality classes ======================================================
   test "cardinality should be one to one for has_one associations" do
     create_one_to_one_assoc_domain
@@ -437,5 +443,25 @@ class RelationshipTest < ActiveSupport::TestCase
     create_model "Bar"
     domain = Domain.generate
     assert_equal [:one_to_many], domain.relationships.map(&:cardinality).map(&:name)
+  end
+  
+  test "cardinality should be one to many for has_many associations from generalized entity" do
+    create_model "Stronghold" do
+      has_many :cannons, :as => :defensible
+    end
+    create_model "Cannon", :defensible => :references do
+      belongs_to :defensible, :polymorphic => true
+    end
+    domain = Domain.generate
+
+    assert_equal [:one_to_many], domain.relationships.map(&:cardinality).map(&:name)
+    assert_equal [false], domain.relationships.map(&:one_to_one?)
+    assert_equal [true], domain.relationships.map(&:one_to_many?)
+    assert_equal [false], domain.relationships.map(&:many_to_many?)
+
+    assert_equal [true], domain.relationships.map(&:one_to?)
+    assert_equal [false], domain.relationships.map(&:many_to?)
+    assert_equal [false], domain.relationships.map(&:to_one?)
+    assert_equal [true], domain.relationships.map(&:to_many?)
   end
 end

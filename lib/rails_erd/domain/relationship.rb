@@ -15,19 +15,27 @@ module RailsERD
       class << self
         def from_associations(domain, associations) # @private :nodoc:
           assoc_groups = associations.group_by { |assoc| association_identity(assoc) }
-          assoc_groups.collect { |_, assoc_group| Relationship.new(domain, assoc_group.to_a) }
+          assoc_groups.collect { |_, assoc_group| new(domain, assoc_group.to_a) }
         end
       
         private
       
-        def association_identity(assoc)
-          identifier = assoc.options[:join_table] || assoc.primary_key_name.to_s
-          Set[identifier, assoc.active_record, assoc.klass]
+        def association_identity(association)
+          identifier = association.options[:join_table] || association.primary_key_name.to_s
+          Set[identifier, association_owner(association), association_target(association)]
+        end
+        
+        def association_owner(association)
+          association.options[:as] ? association.options[:as].to_s.classify : association.active_record.name
+        end
+        
+        def association_target(association)
+          association.class_name
         end
       end
       
       extend Inspectable
-      inspect_with :source, :destination
+      inspection_attributes :source, :destination
 
       # The domain in which this relationship is defined.
       attr_reader :domain
@@ -55,7 +63,8 @@ module RailsERD
         end
       
         assoc = @forward_associations.first || @reverse_associations.first
-        @source, @destination = @domain.entity_for(assoc.active_record), @domain.entity_for(assoc.klass)
+        @source = @domain.entity_by_name(self.class.send(:association_owner, assoc))
+        @destination = @domain.entity_by_name(self.class.send(:association_target, assoc))
         @source, @destination = @destination, @source if assoc.belongs_to?
       end
     
@@ -69,8 +78,8 @@ module RailsERD
       def cardinality
         @cardinality ||= begin
           reverse_max = any_habtm?(associations) ? N : 1
-          forward_range = associations_range(@source.model, @forward_associations, N)
-          reverse_range = associations_range(@destination.model, @reverse_associations, reverse_max)
+          forward_range = associations_range(@forward_associations, N)
+          reverse_range = associations_range(@reverse_associations, reverse_max)
           Cardinality.new(reverse_range, forward_range)
         end
       end
@@ -93,12 +102,6 @@ module RailsERD
       # Indicates whether or not this relationship connects an entity with itself.
       def recursive?
         @source == @destination
-      end
-      
-      # Indicated whether or not this relationship is connected to a specialized
-      # entity.
-      def specialized?
-        source.specialized? or destination.specialized?
       end
     
       # Indicates whether the destination cardinality class of this relationship
@@ -130,7 +133,7 @@ module RailsERD
       # The strength of a relationship is equal to the number of associations
       # that describe it.
       def strength
-        associations.size
+        if source.generalized? then 1 else associations.size end
       end
 
       def <=>(other) # @private :nodoc:
@@ -139,46 +142,46 @@ module RailsERD
     
       private
 
-      def associations_range(model, associations, absolute_max)
+      def associations_range(associations, absolute_max)
         # The minimum of the range is the maximum value of each association
         # minimum. If there is none, it is zero by definition. The reasoning is
         # that from all associations, if only one has a required minimum, then
         # this side of the relationship has a cardinality of at least one.
-        min = associations.map { |assoc| association_minimum(model, assoc) }.max || 0
+        min = associations.map { |assoc| association_minimum(assoc) }.max || 0
 
         # The maximum of the range is the maximum value of each association
         # maximum. If there is none, it is equal to the absolute maximum. If
         # only one association has a high cardinality on this side, the
         # relationship itself has the same maximum cardinality.
-        max = associations.map { |assoc| association_maximum(model, assoc) }.max || absolute_max
+        max = associations.map { |assoc| association_maximum(assoc) }.max || absolute_max
 
         min..max
       end
     
-      def association_minimum(model, association)
-        minimum = association_validators(:presence, model, association).any? ||
-          foreign_key_required?(model, association) ? 1 : 0
-        length_validators = association_validators(:length, model, association)
+      def association_minimum(association)
+        minimum = association_validators(:presence, association).any? ||
+          foreign_key_required?(association) ? 1 : 0
+        length_validators = association_validators(:length, association)
         length_validators.map { |v| v.options[:minimum] }.compact.max or minimum
       end
 
-      def association_maximum(model, association)
+      def association_maximum(association)
         maximum = association.collection? ? N : 1      
-        length_validators = association_validators(:length, model, association)
+        length_validators = association_validators(:length, association)
         length_validators.map { |v| v.options[:maximum] }.compact.min or maximum
       end
     
-      def association_validators(kind, model, association)
-        model.validators_on(association.name).select { |v| v.kind == kind }
+      def association_validators(kind, association)
+        association.active_record.validators_on(association.name).select { |v| v.kind == kind }
       end
     
       def any_habtm?(associations)
         associations.any? { |association| association.macro == :has_and_belongs_to_many }
       end
     
-      def foreign_key_required?(model, association)
+      def foreign_key_required?(association)
         if association.belongs_to?
-          key = model.arel_table[association.primary_key_name] and !key.column.null
+          column = association.active_record.columns_hash[association.primary_key_name] and !column.null
         end
       end
     end

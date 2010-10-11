@@ -165,6 +165,22 @@ class DiagramTest < ActiveSupport::TestCase
     create_table "special_foo", {}, true
     assert_equal [Foo, SpecialFoo], retrieve_entities.map(&:model)
   end
+
+  test "generate should filter generalized entities" do
+    create_model "Cannon"
+    create_model "Galleon" do
+      has_many :cannons, :as => :defensible
+    end
+    assert_equal ["Cannon", "Galleon"], retrieve_entities.map(&:name)
+  end
+  
+  test "generate should yield generalized entities if polymorphism is true" do
+    create_model "Cannon"
+    create_model "Galleon" do
+      has_many :cannons, :as => :defensible
+    end
+    assert_equal ["Cannon", "Defensible", "Galleon"], retrieve_entities(:polymorphism => true).map(&:name)
+  end
   
   # Relationship filtering ===================================================
   test "generate should yield relationships" do
@@ -202,53 +218,49 @@ class DiagramTest < ActiveSupport::TestCase
     assert_equal [false, false], retrieve_relationships(:indirect => false).map(&:indirect?)
   end
 
-  test "generate should filter relationships from specialized entities" do
+  test "generate should yield relationships from specialized entities" do
     create_model "Foo", :bar => :references
     create_model "Bar", :type => :string
     Object.const_set :SpecialBar, Class.new(Bar)
     SpecialBar.class_eval do
       has_many :foos
     end
-    assert_equal [], retrieve_relationships
+    assert_equal 1, retrieve_relationships.length
   end
   
-  test "generate should filter relationships to specialized entities" do
+  test "generate should yield relationships to specialized entities" do
     create_model "Foo", :type => :string, :bar => :references
     Object.const_set :SpecialFoo, Class.new(Foo)
     create_model "Bar" do
       has_many :special_foos
     end
-    assert_equal [], retrieve_relationships
-  end
-
-  test "generate should yield relationships from specialized entities if inheritance is true" do
-    create_model "Foo", :bar => :references
-    create_model "Bar", :type => :string
-    Object.const_set :SpecialBar, Class.new(Bar)
-    SpecialBar.class_eval do
-      has_many :foos
-    end
-    assert_equal 1, retrieve_relationships(:inheritance => true).length
-  end
-  
-  test "generate should yield relationships to specialized entities if inheritance is true" do
-    create_model "Foo", :type => :string, :bar => :references
-    Object.const_set :SpecialFoo, Class.new(Foo)
-    create_model "Bar" do
-      has_many :special_foos
-    end
-    assert_equal 1, retrieve_relationships(:inheritance => true).length
+    assert_equal 1, retrieve_relationships.length
   end
 
   # Specialization filtering =================================================
   test "generate should not yield specializations" do
     create_specialization
+    create_generalization
     assert_equal [], retrieve_specializations
   end
   
-  test "generate should yield specializations if inheritance is true" do
+  test "generate should yield specializations but not generalizations if inheritance is true" do
     create_specialization
+    create_generalization
     assert_equal ["Beer"], retrieve_specializations(:inheritance => true).map { |s| s.specialized.name }
+  end
+
+  test "generate should yield generalizations but not specializations if polymorphism is true" do
+    create_specialization
+    create_generalization
+    assert_equal ["Galleon"], retrieve_specializations(:polymorphism => true).map { |s| s.specialized.name }
+  end
+
+  test "generate should yield specializations and generalizations if polymorphism and inheritance is true" do
+    create_specialization
+    create_generalization
+    assert_equal ["Beer", "Galleon"], retrieve_specializations(:inheritance => true,
+      :polymorphism => true).map { |s| s.specialized.name }
   end
 
   # Attribute filtering ======================================================

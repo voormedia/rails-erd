@@ -98,6 +98,13 @@ class ActiveSupport::TestCase
     create_model "Beverage", :type => :string
     Object.const_set :Beer, Class.new(Beverage)
   end
+  
+  def create_generalization
+    create_model "Cannon"
+    create_model "Galleon" do
+      has_many :cannons, :as => :defensible
+    end
+  end
 
   private
   

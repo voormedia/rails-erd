@@ -29,7 +29,7 @@ module RailsERD
     end
     
     extend Inspectable
-    inspect_with
+    inspection_attributes
     
     # The options that are used to generate this domain model.
     attr_reader :options
@@ -37,7 +37,7 @@ module RailsERD
     # Create a new domain model object based on the given array of models.
     # The given models are assumed to be subclasses of <tt>ActiveRecord::Base</tt>.
     def initialize(models = [], options = {})
-      @models, @options = models, RailsERD.options.merge(options)
+      @source_models, @options = models, RailsERD.options.merge(options)
     end
 
     # Returns the domain model name, which is the name of your Rails
@@ -48,7 +48,7 @@ module RailsERD
     
     # Returns all entities of your domain model.
     def entities
-      @entities ||= Entity.from_models(self, @models)
+      @entities ||= Entity.from_models(self, models)
     end
     
     # Returns all relationships in your domain model.
@@ -58,17 +58,21 @@ module RailsERD
     
     # Returns all specializations in your domain model.
     def specializations
-      @specializations ||= Specialization.from_models(self, @models)
+      @specializations ||= Specialization.from_models(self, models)
     end
     
     # Returns a specific entity object for the given Active Record model.
-    def entity_for(model) # @private :nodoc:
-      entity_mapping[model] or raise "model #{model} exists, but is not included in domain"
+    def entity_by_name(name) # @private :nodoc:
+      entity_mapping[name]
     end
     
     # Returns an array of relationships for the given Active Record model.
-    def relationships_for(model) # @private :nodoc:
-      relationships_mapping[model] or []
+    def relationships_by_entity_name(name) # @private :nodoc:
+      relationships_mapping[name] or []
+    end
+    
+    def specializations_by_entity_name(name)
+      specializations_mapping[name] or []
     end
     
     def warn(message) # @private :nodoc:
@@ -80,7 +84,7 @@ module RailsERD
     def entity_mapping
       @entity_mapping ||= {}.tap do |mapping|
         entities.each do |entity|
-          mapping[entity.model] = entity
+          mapping[entity.name] = entity
         end
       end
     end
@@ -88,25 +92,46 @@ module RailsERD
     def relationships_mapping
       @relationships_mapping ||= {}.tap do |mapping|
         relationships.each do |relationship|
-          (mapping[relationship.source.model] ||= []) << relationship
-          (mapping[relationship.destination.model] ||= []) << relationship
+          (mapping[relationship.source.name] ||= []) << relationship
+          (mapping[relationship.destination.name] ||= []) << relationship
         end
       end
     end
     
+    def specializations_mapping
+      @specializations_mapping ||= {}.tap do |mapping|
+        specializations.each do |specialization|
+          (mapping[specialization.generalized.name] ||= []) << specialization
+          (mapping[specialization.specialized.name] ||= []) << specialization
+        end
+      end
+    end
+    
+    def models
+      @models ||= @source_models.reject(&:abstract_class?).select { |model| check_model_validity(model) }
+    end
+    
     def associations
-      @associations ||= @models.collect(&:reflect_on_all_associations).flatten.select { |assoc| check_association_validity(assoc) }
+      @associations ||= models.collect(&:reflect_on_all_associations).flatten.select { |assoc| check_association_validity(assoc) }
+    end
+    
+    def check_model_validity(model)
+      model.table_exists? or raise "table #{model.table_name} does not exist"
+    rescue => e
+      warn "Ignoring invalid model #{model.name} (#{e.message})"
     end
     
     def check_association_validity(association)
       # Raises an ActiveRecord::ActiveRecordError if the association is broken.
       association.check_validity!
 
-      # Raises NameError if the associated class cannot be found.
-      model = association.klass
-      
-      # Raises error if model is not in the domain.
-      entity_for model
+      if association.options[:polymorphic]
+        entity_name = association.class_name
+        entity_by_name(entity_name) or raise "polymorphic interface #{entity_name} does not exist"
+      else
+        entity_name = association.klass.name # Raises NameError if the associated class cannot be found.
+        entity_by_name(entity_name) or raise "model #{entity_name} exists, but is not included in domain"
+      end
     rescue => e
       warn "Ignoring invalid association #{association_description(association)} (#{e.message})"
     end

@@ -58,8 +58,10 @@ module RailsERD
   # indirect:: Set to +false+ to exclude relationships that are indirect.
   #            Indirect relationships are defined in Active Record with
   #            <tt>has_many :through</tt> associations.
-  # indirect:: Set to +true+ to include specializations, which corresponds to
-  #            Rails single table inheritance.
+  # inheritance:: Set to +true+ to include specializations, which correspond to
+  #               Rails single table inheritance.
+  # polymorphism:: Set to +true+ to include generalizations, which correspond to
+  #                Rails polymorphic associations.
   # warn:: When set to +false+, no warnings are printed to the
   #        command line while processing the domain model. Defaults
   #        to +true+.
@@ -127,12 +129,12 @@ module RailsERD
         instance_exec entity, filtered_attributes(entity), &callbacks[:each_entity]
       end
 
-      filtered_relationships.each do |relationship|
-        instance_exec relationship, &callbacks[:each_relationship]
-      end
-
       filtered_specializations.each do |specialization|
         instance_exec specialization, &callbacks[:each_specialization]
+      end
+
+      filtered_relationships.each do |relationship|
+        instance_exec relationship, &callbacks[:each_relationship]
       end
     end
     
@@ -149,6 +151,7 @@ module RailsERD
     def filtered_entities
       @domain.entities.reject { |entity|
         !options.inheritance && entity.specialized? or
+        !options.polymorphism && entity.generalized? or
         !options.disconnected && entity.disconnected?
       }.compact.tap do |entities|
         raise "No entities found; create your models first!" if entities.empty?
@@ -157,13 +160,15 @@ module RailsERD
     
     def filtered_relationships
       @domain.relationships.reject { |relationship|
-        !options.inheritance && relationship.specialized? or
         !options.indirect && relationship.indirect?
       }
     end
     
     def filtered_specializations
-      if options.inheritance then @domain.specializations else [] end
+      @domain.specializations.reject { |specialization|
+        !options.inheritance && specialization.inheritance? or
+        !options.polymorphism && specialization.polymorphic?
+      }
     end
     
     def filtered_attributes(entity)

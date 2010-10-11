@@ -48,5 +48,5 @@ end
 
 desc "Generate diagrams for bundled examples"
 task :examples do
-  require File.expand_path("examples/examples", File.dirname(__FILE__))
+  require File.expand_path("examples/generate", File.dirname(__FILE__))
 end

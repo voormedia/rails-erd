@@ -248,6 +248,33 @@ class GraphvizTest < ActiveSupport::TestCase
     assert_match %r(\A<\s*<.*\|.*>\s*>\Z)m, find_dot_node(diagram(:orientation => :horizontal), "Author")[:label].to_gv
   end
   
+  test "generate should create edge to generalized entity if polymorphism is true" do
+    create_model "Cannon", :defensible => :references do
+      belongs_to :defensible, :polymorphic => true
+    end
+    create_model "Stronghold" do
+      has_many :cannons, :as => :defensible
+    end
+    create_model "Galleon" do
+      has_many :cannons, :as => :defensible
+    end
+    assert_equal [["Defensible", "Cannon"], ["Defensible", "Galleon"], ["Defensible", "Stronghold"]],
+      find_dot_node_pairs(diagram(:polymorphism => true)).sort
+  end
+
+  test "generate should create edge to each child of generalized entity if polymorphism is false" do
+    create_model "Cannon", :defensible => :references do
+      belongs_to :defensible, :polymorphic => true
+    end
+    create_model "Stronghold" do
+      has_many :cannons, :as => :defensible
+    end
+    create_model "Galleon" do
+      has_many :cannons, :as => :defensible
+    end
+    assert_equal [["Galleon", "Cannon"], ["Stronghold", "Cannon"]], find_dot_node_pairs(diagram).sort
+  end
+  
   # Simple notation style ====================================================
   test "generate should use no style for one to one cardinalities with simple notation" do
     create_one_to_one_assoc_domain

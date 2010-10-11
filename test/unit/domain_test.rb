@@ -32,9 +32,9 @@ class DomainTest < ActiveSupport::TestCase
   end
   
   # Entity processing ========================================================
-  test "entity_for should return associated entity for given model" do
+  test "entity_by_name should return associated entity for given name" do
     create_model "Foo"
-    assert_equal Foo, Domain.generate.entity_for(Foo).model
+    assert_equal Foo, Domain.generate.entity_by_name("Foo").model
   end
   
   test "entities should return domain entities" do
@@ -45,6 +45,33 @@ class DomainTest < ActiveSupport::TestCase
   test "entities should return all domain entities sorted by name" do
     create_models "Foo", "Bar", "Baz", "Qux"
     assert_equal [Bar, Baz, Foo, Qux], Domain.generate.entities.collect(&:model)
+  end
+
+  test "entities should include abstract entities" do
+    create_model "Stronghold" do
+      has_many :cannons, :as => :defensible
+    end
+    assert_equal ["Defensible", "Stronghold"], Domain.generate.entities.collect(&:name)
+  end
+
+  test "entities should include abstract entities only once" do
+    create_model "Stronghold" do
+      has_many :cannons, :as => :defensible
+    end
+    create_model "Galleon" do
+      has_many :cannons, :as => :defensible
+    end
+    assert_equal ["Defensible", "Galleon", "Stronghold"], Domain.generate.entities.collect(&:name)
+  end
+  
+  test "entities should omit abstract models" do
+    Object.const_set :Foo, Class.new(ActiveRecord::Base) { self.abstract_class = true }
+    create_model "Bar", Foo do
+      set_table_name "bars"
+    end
+    create_table "foos", {}, true
+    create_table "bars", {}, true
+    assert_equal ["Bar"], Domain.generate.entities.collect(&:name)
   end
   
   # Relationship processing ==================================================
@@ -105,6 +132,38 @@ class DomainTest < ActiveSupport::TestCase
     assert_equal [Domain::Specialization] * 2, Domain.generate.specializations.collect(&:class)
   end
   
+  test "specializations should return generalizations in domain model" do
+    create_model "Post" do
+      has_many :assets, :as => :attachable
+    end
+    create_model "Asset", :attachable => :references do
+      belongs_to :attachable, :polymorphic => true
+    end
+    assert_equal [Domain::Specialization], Domain.generate.specializations.collect(&:class)
+  end
+
+  test "specializations should return generalizations and specializations in domain model" do
+    create_model "Content", :type => :string do
+      has_many :assets, :as => :attachable
+    end
+    Object.const_set :Post, Class.new(Content)
+    create_model "Asset", :attachable => :references do
+      belongs_to :attachable, :polymorphic => true
+    end
+    assert_equal [Domain::Specialization] * 2, Domain.generate.specializations.collect(&:class)
+  end
+  
+  # test "generalizations should ..." do
+  #   # TODO
+  #   create_model "Post" do
+  #     has_many :assets, :as => :attachable
+  #   end
+  #   create_model "Asset", :attachable => :references do
+  #     belongs_to :attachable, :polymorphic => true
+  #   end
+  #   assert_equal [], Domain.generate.relationships
+  # end
+  
   # Erroneous associations ===================================================
   test "relationships should omit bad has_many associations" do
     create_model "Foo" do
@@ -149,6 +208,19 @@ class DomainTest < ActiveSupport::TestCase
     assert_match /model Bar exists, but is not included in domain/, output
   end
 
+  test "relationships should output a warning when an association to a non existent generalization is encountere" do
+    create_model "Foo" do
+      has_many :bars, :as => :foo
+    end
+    create_model "Bar", :foobar => :references do
+      belongs_to :foo_bar, :polymorphic => true
+    end
+    output = collect_stdout do
+      Domain.generate.relationships
+    end
+    assert_match /polymorphic interface FooBar does not exist/, output
+  end
+
   test "relationships should not warn when a bad association is encountered if warnings are disabled" do
     create_model "Foo" do
       has_many :flabs
@@ -157,5 +229,19 @@ class DomainTest < ActiveSupport::TestCase
       Domain.generate(:warn => false).relationships
     end
     assert_equal "", output
+  end
+  
+  # Erroneous models =========================================================
+  test "entities should omit bad models" do
+    Object.const_set :Foo, Class.new(ActiveRecord::Base)
+    assert_equal [], Domain.generate(:warn => false).entities
+  end
+
+  test "entities should output a warning when a model table does not exist" do
+    Object.const_set :Foo, Class.new(ActiveRecord::Base)
+    output = collect_stdout do
+      Domain.generate.entities
+    end
+    assert_match /Ignoring invalid model Foo \(table foos does not exist\)/, output
   end
 end

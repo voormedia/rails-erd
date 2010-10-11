@@ -3,7 +3,7 @@ module RailsERD
     class Relationship
       class Cardinality
         extend Inspectable
-        inspect_with :source_range, :destination_range
+        inspection_attributes :source_range, :destination_range
         
         N = Infinity = 1.0/0 # And beyond.
       
