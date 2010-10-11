@@ -1,1 +1,1 @@
-{ :orientation => :vertical, :disconnected => false, :inheritance => true }
+{ :inheritance => true }
