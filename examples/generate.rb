@@ -37,7 +37,7 @@ Dir["#{File.dirname(__FILE__)}/*/*"].each do |path|
         filename = File.expand_path("#{output_dir}/#{name}#{notation != :simple ? "-#{notation}" : ""}", File.dirname(__FILE__))
 
         default_options = { :notation => notation, :filetype => filetype, :filename => filename,
-          :title => name.classify + " domain model" }
+          :title => name.camelize + " domain model" }
 
         specific_options = eval((File.read("#{path}/options.rb") rescue "")) || {}
 
