@@ -39,9 +39,10 @@ task :default => :test
 begin
   require "hanna/rdoctask"
   Rake::RDocTask.new do |rdoc|
-    rdoc.rdoc_files = Dir["[A-Z][A-Z]*"] + Dir["lib/**/*.rb"]
+    rdoc.rdoc_files = %w{CHANGES.rdoc LICENSE} + Dir["lib/**/*.rb"]
     rdoc.title = "Rails ERD – API Documentation"
     rdoc.rdoc_dir = "rdoc"
+    rdoc.main = "RailsERD"
   end
 rescue LoadError
 end

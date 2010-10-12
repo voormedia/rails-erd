@@ -9,7 +9,7 @@ output_dir = File.expand_path("output", ".")
 FileUtils.mkdir_p output_dir
 Dir["#{File.dirname(__FILE__)}/*/*"].each do |path|
   name = File.basename(path)
-  print "=> Generating domain for #{name.capitalize}... "
+  print "=> Generating domain for #{name.camelize}... "
   begin
     # Load database schema.
     ActiveRecord::Base.establish_connection :adapter => "sqlite3", :database => ":memory:"

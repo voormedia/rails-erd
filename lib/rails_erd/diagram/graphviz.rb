@@ -19,12 +19,9 @@ end
 module RailsERD
   class Diagram
     # Create Graphviz-based diagrams based on the domain model. For easy
-    # command line graph generation, you can use rake:
+    # command line graph generation, you can use:
     #
     #   % rake erd
-    #
-    # Please see the README.rdoc file for more details on how to use Rails ERD
-    # from the command line.
     #
     # === Options
     #
@@ -84,67 +81,65 @@ module RailsERD
         :fontsize => 7  
       }
       
-      module Styles
-        module Simple
-          def entity_style(entity, attributes)
-            {}.tap do |options|
-              options[:fontcolor] = options[:color] = :grey60 if entity.abstract?
-            end
-          end
-          
-          def relationship_style(relationship)
-            {}.tap do |options|
-              options[:style] = :dotted if relationship.indirect?
-
-              # Closed arrows for to/from many.
-              options[:arrowhead] = relationship.to_many? ? "normal" : "none"
-              options[:arrowtail] = relationship.many_to? ? "normal" : "none"
-            end
-          end
-
-          def specialization_style(specialization)
-            { :color => :grey60, :arrowtail => :onormal, :arrowhead => :none, :arrowsize => 1.2 }
-          end
-        end
-      
-        module Bachman
-          include Simple
-          def relationship_style(relationship)
-            {}.tap do |options|
-              options[:style] = :dotted if relationship.indirect?
-
-              # Participation is "look-here".
-              dst = relationship.source_optional? ? "odot" : "dot"
-              src = relationship.destination_optional? ? "odot" : "dot"
-
-              # Cardinality is "look-across".
-              dst << "normal" if relationship.to_many?
-              src << "normal" if relationship.many_to?
-              options[:arrowsize] = 0.6
-              options[:arrowhead], options[:arrowtail] = dst, src
-            end
+      module Simple
+        def entity_style(entity, attributes)
+          {}.tap do |options|
+            options[:fontcolor] = options[:color] = :grey60 if entity.abstract?
           end
         end
         
-        module Uml
-          include Simple
-          def relationship_style(relationship)
-            {}.tap do |options|
-              options[:style] = :dotted if relationship.indirect?
+        def relationship_style(relationship)
+          {}.tap do |options|
+            options[:style] = :dotted if relationship.indirect?
 
-              options[:arrowsize] = 0.7
-              options[:arrowhead] = relationship.to_many? ? "vee" : "none"
-              options[:arrowtail] = relationship.many_to? ? "vee" : "none"
+            # Closed arrows for to/from many.
+            options[:arrowhead] = relationship.to_many? ? "normal" : "none"
+            options[:arrowtail] = relationship.many_to? ? "normal" : "none"
+          end
+        end
 
-              ranges = [relationship.cardinality.destination_range, relationship.cardinality.source_range].map do |range|
-                if range.min == range.max
-                  "#{range.min}"
-                else
-                  "#{range.min}..#{range.max == Domain::Relationship::N ? "∗" : range.max}"
-                end
+        def specialization_style(specialization)
+          { :color => :grey60, :arrowtail => :onormal, :arrowhead => :none, :arrowsize => 1.2 }
+        end
+      end
+    
+      module Bachman
+        include Simple
+        def relationship_style(relationship)
+          {}.tap do |options|
+            options[:style] = :dotted if relationship.indirect?
+
+            # Participation is "look-here".
+            dst = relationship.source_optional? ? "odot" : "dot"
+            src = relationship.destination_optional? ? "odot" : "dot"
+
+            # Cardinality is "look-across".
+            dst << "normal" if relationship.to_many?
+            src << "normal" if relationship.many_to?
+            options[:arrowsize] = 0.6
+            options[:arrowhead], options[:arrowtail] = dst, src
+          end
+        end
+      end
+      
+      module Uml
+        include Simple
+        def relationship_style(relationship)
+          {}.tap do |options|
+            options[:style] = :dotted if relationship.indirect?
+
+            options[:arrowsize] = 0.7
+            options[:arrowhead] = relationship.to_many? ? "vee" : "none"
+            options[:arrowtail] = relationship.many_to? ? "vee" : "none"
+
+            ranges = [relationship.cardinality.destination_range, relationship.cardinality.source_range].map do |range|
+              if range.min == range.max
+                "#{range.min}"
+              else
+                "#{range.min}..#{range.max == Domain::Relationship::N ? "∗" : range.max}"
               end
-              options[:headlabel], options[:taillabel] = *ranges
             end
+            options[:headlabel], options[:taillabel] = *ranges
           end
         end
       end
@@ -166,7 +161,7 @@ module RailsERD
         graph[:label] = "#{title}\\n\\n" if title
         
         # Setup notation options.
-        extend Styles.const_get(options.notation.to_s.capitalize.to_sym)
+        extend self.class.const_get(options.notation.to_s.capitalize.to_sym)
       end
       
       save do
