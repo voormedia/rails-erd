@@ -1,4 +1,4 @@
-=== To be released:
+=== 0.4.0:
 
 * Support to optionally display single table inheritance relationships
   (inheritance=true).
