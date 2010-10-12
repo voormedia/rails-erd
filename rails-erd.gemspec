@@ -5,16 +5,16 @@
 
 Gem::Specification.new do |s|
   s.name = %q{rails-erd}
-  s.version = "0.3.0"
+  s.version = "0.4.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Rolf Timmermans"]
-  s.date = %q{2010-10-08}
+  s.date = %q{2010-10-12}
   s.description = %q{Automatically generate an entity-relationship diagram (ERD) for your Rails models.}
   s.email = %q{r.timmermans@voormedia.com}
   s.extra_rdoc_files = [
     "LICENSE",
-     "README.rdoc"
+     "README.md"
   ]
   s.files = [
     ".gitignore",
@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
      "Gemfile",
      "Gemfile.lock",
      "LICENSE",
-     "README.rdoc",
+     "README.md",
      "Rakefile",
      "VERSION",
      "lib/rails-erd.rb",
