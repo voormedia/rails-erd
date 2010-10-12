@@ -31,7 +31,7 @@ Getting started
 See the [installation instructions](http://rails-erd.rubyforge.org/install.html)
 for a complete description of how to install Rails ERD. Here's a summary:
 
-* Install Graphviz 2.22+ with Pango and Cairo support
+* Install Graphviz 2.22+ with Pango and Cairo support ([how?](http://rails-erd.rubyforge.org/install.html))
 
 * Add <tt>gem "rails-erd"</tt> to your application's Gemfile
 
