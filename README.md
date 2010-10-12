@@ -41,14 +41,9 @@ for a complete description of how to install Rails ERD. Here's a summary:
 Learn more
 ----------
 
-More information can be found on Rails ERD's project homepage:
-http://rails-erd.rubyforge.org/
+More information can be found on [Rails ERD's project homepage](http://rails-erd.rubyforge.org/).
 
-If you wish to extend or customise Rails ERD, take a look at the API documentation:
-http://rails-erd.rubyforge.org/doc/
-
-Rubygem page:
-http://rubygems.org/gems/rails-erd
+If you wish to extend or customise Rails ERD, take a look at the [API documentation](http://rails-erd.rubyforge.org/doc/).
 
 
 About Rails ERD
