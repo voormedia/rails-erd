@@ -127,6 +127,18 @@ class DomainTest < ActiveSupport::TestCase
     assert_equal [Domain::Relationship] * 2, Domain.generate.relationships.collect(&:class)
   end
   
+  test "relationships should use model name first in alphabet as source for many to many relationships" do
+    create_table "many_more", :many_id => :integer, :more_id => :integer
+    create_model "Many" do
+      has_and_belongs_to_many :more
+    end
+    create_model "More" do
+      has_and_belongs_to_many :many
+    end
+    relationship = Domain.generate.relationships.first
+    assert_equal ["Many", "More"], [relationship.source.name, relationship.destination.name]
+  end
+  
   # Specialization processing ================================================
   test "specializations should return empty array for empty domain" do
     assert_equal [], Domain.generate.specializations

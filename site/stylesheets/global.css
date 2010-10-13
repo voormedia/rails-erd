@@ -42,13 +42,15 @@ p { margin: 16px 0; padding: 0; }
 p.jumpto { margin: 42px 0; font-weight: bold; }
 tt { padding: 0 3px; font-family: Courier, fixed; font-size: 105%; }
 
+img.erd { padding: 14px; border: 1px solid #cb771f; background-color: #fff; -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px; }
+img.section { padding: 14px 42px; }
 table.combined, pre { margin: 16px 0; padding: 10px 15px; border: 1px solid #cb771f; background-color: #fff; -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px; font-family: Courier, fixed; }
 pre { font-size: 110%; line-height: 115%; }
 table.combined { width: 100%; font-size: 100%; }
 table.combined pre { border: 0; margin: 0; padding: 0; }
 table.combined img.erd { float: right; border: 0; margin: 0; padding: 0; }
 div.console pre { border: 0; background-color: #327eba; color: #fff; font-size: 125%; }
-img.erd { padding: 14px; border: 1px solid #cb771f; background-color: #fff; -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px; }
+table td.list { padding-right: 60px; }
 
 dl dt { margin: 10px 0; }
 dl dd { margin: 10px 0 20px 40px; }

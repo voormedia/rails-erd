@@ -261,7 +261,7 @@ class RelationshipTest < ActiveSupport::TestCase
     More.class_eval do
       validates_length_of :many, :maximum => 29, :minimum => 7
     end
-    assert_equal [Domain::Relationship::Cardinality.new(3..18, 7..29)], domain_cardinalities
+    assert_equal [Domain::Relationship::Cardinality.new(7..29, 3..18)], domain_cardinalities
   end
 
   test "cardinality should be n-m to n-m for limited many to many associations with multiple validations" do
@@ -278,7 +278,7 @@ class RelationshipTest < ActiveSupport::TestCase
       validates_length_of :many, :minimum => 9
       validates_length_of :many, :maximum => 17
     end
-    assert_equal [Domain::Relationship::Cardinality.new(3..20, 9..17)], domain_cardinalities
+    assert_equal [Domain::Relationship::Cardinality.new(9..17, 3..20)], domain_cardinalities
   end
   
   # Cardinality for non-mutual relationships =================================

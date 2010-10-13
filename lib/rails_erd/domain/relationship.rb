@@ -58,8 +58,8 @@ module RailsERD
         else
           # Many-to-many associations don't have a clearly defined direction.
           # We sort by name and use the first model as the source.
-          source = associations.first.active_record
-          associations.partition { |association| association.active_record == source }
+          source = associations.map(&:active_record).sort_by(&:name).first
+          associations.partition { |association| association.active_record != source }
         end
       
         assoc = @forward_associations.first || @reverse_associations.first

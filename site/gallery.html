@@ -49,12 +49,36 @@ title: Gallery of example diagrams
 <h2><a name="notations">Detailed examples</a></h2>
 <p>
   Now that we've seen some real entity-relationship diagrams, let's see what
-  they're composed of exactly. Consider the following two models, which
-  describe <em>countries</em> and their <em>heads of state</em>. They are each associated with
+  they're composed of exactly. We start with a single entity. Below is the
+  database migration of a table named <tt>photographs</tt>, which could
+  contain digital photographs and their metadata.
+  Based on this database table, Rails ERD renders the <em>Photograph</em>
+  entity with all relevant attributes and their types.
+</p>
+<table class="combined" cellspacing="0"><tr><td>
+{% highlight ruby %}
+ActiveRecord::Schema.define do
+  create_table "photographs" do |t|
+    t.decimal  :aperture
+    t.binary   :data,        :null => false
+    t.text     :description,                 :limit => 512
+    t.string   :filename,    :null => false, :limit => 64
+    t.boolean  :flash
+    t.integer  :iso
+    t.float    :shutter_speed
+    t.datetime :taken_at,    :null => false
+  end
+end
+{% endhighlight %}
+</td><td><img src="/images/attributes.png" class="erd" alt="Example of entity with attributes"/></td></tr></table>
+
+<p>
+  Now we take a look at the relationships that are possible in a model diagram.
+  Consider the following two models, which describe <em>countries</em> and
+  their <em>heads of state</em>. They are each associated with
   the other model, so they share a <strong>one-to-one relationship</strong>.
   It is rendered as follows...
 </p>
-
 <table class="combined" cellspacing="0"><tr><td>
 {% highlight ruby %}
 class Country < ActiveRecord::Base
@@ -188,18 +212,50 @@ end
 {% endhighlight %}
 </td><td><img src="/images/polymorphic-belongs-to.png" class="erd" alt="Single table inheritance example"/></td></tr></table>
 
-<!--<h2>Alternative notation</h2>
+<h2><a name="notations">Alternative notation</a></h2>
 <p>
-  The standard notation is designed to be simple and easy to understand.
-  Relationship <em>cardinalities</em> are displayed with arrows. Their
-  <em>participation</em> – whether relationships are optional or mandatory –
-  are hidden. If you have many presence validations on your relationships, or
-  if you have many non-nullable foreign key columns, you may
-  consider an alternative notation.
+  Rails ERD's standard notation is designed to be simple.
+  Relationship <em>cardinalities</em> (one-to-many, many-to-many, etc.) are
+  indicated with arrows.
+  But sometimes you also want to know whether a relationship is <strong>optional or
+  mandatory</strong>. This property of relationships, called <em>participation</em>, can
+  be added to a diagram by using an alternative notation; set with <tt>notation=bachman</tt>.
 </p>
 <p>
-  The alternative is a notation designed by Charles Bachman in 1992.
+  The notation that we use was designed by Charles Bachman in 1992.
   It uses open and closed dots to indicate <em>partial</em> and <em>total</em>
-  participation.
+  participation. Here's an example, a model of fruit orchards...
 </p>
--->
+<p><img src="/images/orchard-bachman.png" class="erd" alt="Orchard entity-relationship diagram"/></p>
+<p>
+  Notice the use of open and closed dots. An <em>open dot</em> means
+  that the relationship to the other entity is <strong>optional</strong>, seen
+  from the entity it is next to. A <em>closed dot</em> means that the
+  relationship is <strong>mandatory</strong>. These properties are automatically
+  determined based on your validators and non-nullable foreign keys.
+  Based on the diagram above we can conclude the following...
+</p>
+<table cellspacing="0">
+  <tr>
+    <td class="list">
+      <ul>
+        <li><strong>All</strong> companies have many orchards;
+          it is <strong>required</strong> for a company to have orchards (<em>closed dot</em>).</li>
+        <li><strong>Some</strong> orchards belong to a company;
+          it is <strong>optional</strong> for an orchard to belong to a company (<em>open dot</em>).</li>
+      </ul>
+    </td>
+    <td><img src="/images/orchard-company-orchard-bachman.png" class="erd section" alt="A company has many orchards"/></td>
+  </tr>
+  <tr>
+    <td class="list">
+      <ul>
+        <li><strong>Some</strong> orchards have one stand;
+          it is <strong>optional</strong> for an orchard to have a stand (<em>open dot</em>).</li>
+        <li><strong>All</strong> stands belong to an orchard;
+          it is <strong>mandatory</strong> for a stand to belong to an orchard (<em>closed dot</em>).</li>
+      </ul>
+    </td>
+    <td><img src="/images/orchard-orchard-stand-bachman.png" class="erd section" alt="An orchard has one stand"/></td>
+  </tr>
+</table>

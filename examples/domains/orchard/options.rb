@@ -1,0 +1,1 @@
+{ :orientation => :vertical }
