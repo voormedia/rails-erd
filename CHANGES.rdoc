@@ -1,3 +1,7 @@
+=== To be released:
+
+* Fix processing of associations with class_name set to absolute module paths.
+
 === 0.4.0:
 
 * Support to optionally display single table inheritance relationships

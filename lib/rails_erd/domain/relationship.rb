@@ -30,7 +30,7 @@ module RailsERD
         end
         
         def association_target(association)
-          association.class_name
+          association.options[:polymorphic] ? association.class_name : association.klass.name
         end
       end
       

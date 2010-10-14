@@ -34,6 +34,15 @@ class RelationshipTest < ActiveSupport::TestCase
     assert_equal [domain.entity_by_name("Foo")], domain.relationships.map(&:destination)
   end
   
+  test "destination should return relationship destination if specified with absolute module path" do
+    create_model "Foo", :bar => :references
+    create_model "Bar" do
+      has_many :foos, :class_name => "::Foo"
+    end
+    domain = Domain.generate
+    assert_equal [domain.entity_by_name("Foo")], domain.relationships.map(&:destination)
+  end
+  
   # Relationship properties ==================================================
   test "mutual should return false for one way relationship" do
     create_model "Foo", :bar => :references do
