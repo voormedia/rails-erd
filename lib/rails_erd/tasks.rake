@@ -15,18 +15,17 @@ namespace :erd do
   end
   
   task :load_models do
-    say "Loading Active Record models..."
-
+    say "Loading application environment..."
     Rake::Task[:environment].invoke
-    Rails.application.config.paths.app.models.paths.each do |model_path|
-      Dir["#{model_path}/**/*.rb"].sort.each do |file|
-        require_dependency file
-      end
-    end
+
+    say "Loading code in search of Active Record models..."
+    Rails.application.eager_load!
+    
+    raise "Active Record was not loaded." unless defined? ActiveRecord
   end
   
   task :generate => [:options, :load_models] do
-    say "Generating Entity-Relationship Diagram..."
+    say "Generating Entity-Relationship Diagram for #{ActiveRecord::Base.descendants.length} models..."
 
     require "rails_erd/diagram/graphviz"
     file = RailsERD::Diagram::Graphviz.create

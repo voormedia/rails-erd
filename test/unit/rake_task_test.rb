@@ -29,6 +29,42 @@ class RakeTaskTest < ActiveSupport::TestCase
     assert !File.exists?("ERD.dot")
   end
   
+  test "generate task should eager load application environment" do
+    eager_loaded, environment_loaded = nil
+    Object::Quux = Module.new
+    Object::Quux::Application = Class.new
+    Object::Rails = Struct.new(:application).new(Object::Quux::Application.new)
+    Rails.application.class_eval do
+      define_method :eager_load! do
+        eager_loaded = true
+      end
+    end
+    Rake::Task.define_task :environment do
+      environment_loaded = true
+    end
+    create_simple_domain
+    Rake::Task["erd:generate"].invoke
+    assert_equal [true, true], [eager_loaded, environment_loaded]
+  end
+  
+  test "generate task should complain if active record is not loaded" do
+    Object::Quux = Module.new
+    Object::Quux::Application = Class.new
+    Object::Rails = Struct.new(:application).new(Object::Quux::Application.new)
+    Rails.application.class_eval do
+      define_method :eager_load! do end
+    end
+    Rake::Task.define_task :environment
+    Object.send :remove_const, :ActiveRecord
+    message = nil
+    begin
+      Rake::Task["erd:generate"].invoke
+    rescue => e
+      message = e.message
+    end
+    assert_equal "Active Record was not loaded.", message
+  end
+  
   # Option processing ========================================================
   test "options task should ignore unknown command line options" do
     ENV["unknownoption"] = "value"

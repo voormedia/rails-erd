@@ -109,14 +109,16 @@ class ActiveSupport::TestCase
   private
   
   def reset_domain
-    ActiveRecord::Base.descendants.each do |model|
-      Object.send :remove_const, model.name.to_sym
+    if defined? ActiveRecord
+      ActiveRecord::Base.descendants.each do |model|
+        Object.send :remove_const, model.name.to_sym
+      end
+      ActiveRecord::Base.connection.tables.each do |table|
+        ActiveRecord::Base.connection.drop_table table
+      end
+      ActiveRecord::Base.direct_descendants.clear
+      Arel::Relation.send :class_variable_set, :@@connection_tables_primary_keys, {}
+      ActiveSupport::Dependencies::Reference.clear!
     end
-    ActiveRecord::Base.connection.tables.each do |table|
-      ActiveRecord::Base.connection.drop_table table
-    end
-    ActiveRecord::Base.direct_descendants.clear
-    Arel::Relation.send :class_variable_set, :@@connection_tables_primary_keys, {}
-    ActiveSupport::Dependencies::Reference.clear!
   end
 end

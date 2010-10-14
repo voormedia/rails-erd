@@ -1,6 +1,7 @@
 === To be released:
 
 * Fix processing of associations with class_name set to absolute module paths.
+* Adjust model loading process to include models in non-standard paths eagerly.
 
 === 0.4.0:
 
