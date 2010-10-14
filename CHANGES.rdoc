@@ -1,4 +1,4 @@
-=== To be released:
+=== 0.4.1:
 
 * Fix processing of associations with class_name set to absolute module paths.
 * Adjust model loading process to include models in non-standard paths eagerly.
