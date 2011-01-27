@@ -1,4 +1,6 @@
 # encoding: utf-8
+
+#--
 module RailsERD
   class Domain
     # Describes an entity's attribute. Attributes correspond directly to
