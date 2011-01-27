@@ -18,18 +18,18 @@ class AttributeTest < ActiveSupport::TestCase
       end
     end
   end
-  
+
   def create_attribute(model, name)
     Domain::Attribute.new(Domain.generate, model, model.columns_hash[name])
   end
-  
+
   # Attribute ================================================================
   test "column should return database column" do
     create_model "Foo", :my_column => :string
     assert_equal Foo.columns_hash["my_column"],
       Domain::Attribute.from_model(Domain.new, Foo).reject(&:primary_key?).first.column
   end
-  
+
   test "spaceship should sort attributes by name" do
     create_model "Foo", :a => :string, :b => :string, :c => :string
     a = create_attribute(Foo, "a")
@@ -37,18 +37,18 @@ class AttributeTest < ActiveSupport::TestCase
     c = create_attribute(Foo, "c")
     assert_equal [a, b, c], [c, a, b].sort
   end
-  
+
   test "inspect should show column" do
     create_model "Foo", :my_column => :string
     assert_match %r{#<RailsERD::Domain::Attribute:.* @name="my_column" @type=:string>},
       Domain::Attribute.new(Domain.new, Foo, Foo.columns_hash["my_column"]).inspect
   end
-  
+
   test "type should return attribute type" do
     create_model "Foo", :a => :binary
     assert_equal :binary, create_attribute(Foo, "a").type
   end
-  
+
   # Attribute properties =====================================================
   test "mandatory should return false by default" do
     create_model "Foo", :column => :string
@@ -111,21 +111,21 @@ class AttributeTest < ActiveSupport::TestCase
     assert_equal [true] * 4, [create_attribute(Foo, "created_at"), create_attribute(Foo, "updated_at"),
       create_attribute(Foo, "created_on"), create_attribute(Foo, "updated_on")].collect(&:timestamp?)
   end
-  
+
   test "inheritance should return false by default" do
     create_model "Foo", :type => :string, :alternative => :string do
       set_inheritance_column :alternative
     end
     assert_equal false, create_attribute(Foo, "type").inheritance?
   end
-  
+
   test "inheritance should return if this column is used for single table inheritance" do
     create_model "Foo", :type => :string, :alternative => :string do
       set_inheritance_column :alternative
     end
     assert_equal true, create_attribute(Foo, "alternative").inheritance?
   end
-  
+
   test "content should return true by default" do
     create_model "Foo", :my_first_column => :string
     assert_equal true, create_attribute(Foo, "my_first_column").content?
@@ -138,7 +138,7 @@ class AttributeTest < ActiveSupport::TestCase
     create_model "Case"
     assert_equal [false] * 4, %w{id type created_at case_id}.map { |a| create_attribute(Book, a).content? }
   end
-  
+
   # Type descriptions ========================================================
   test "type_description should return short type description" do
     create_model "Foo", :a => :binary
@@ -161,20 +161,26 @@ class AttributeTest < ActiveSupport::TestCase
       assert_equal "string", create_attribute(Foo, "my_str").type_description
     end
   end
-  
+
   test "type_description should append hair space and low asterisk if field is mandatory" do
     create_model "Foo", :a => :integer do
       validates_presence_of :a
     end
     assert_equal "integer ∗", create_attribute(Foo, "a").type_description
   end
-  
+
+  test "type_description should return short type description with scale and precision for decimal types if nonstandard" do
+    create_model "Foo"
+    add_column :foos, :num, :decimal, :precision => 5, :scale => 2
+    assert_equal "decimal (5,2)", create_attribute(Foo, "num").type_description
+  end
+
   test "limit should return nil if there is no limit" do
     create_model "Foo"
     add_column :foos, :my_txt, :text
     assert_equal nil, create_attribute(Foo, "my_txt").limit
   end
-  
+
   test "limit should return nil if equal to standard database limit" do
     with_native_limit :string, 456 do
       create_model "Foo"
@@ -182,12 +188,42 @@ class AttributeTest < ActiveSupport::TestCase
       assert_equal nil, create_attribute(Foo, "my_str").limit
     end
   end
-  
+
   test "limit should return limit if nonstandard" do
     with_native_limit :string, 456 do
       create_model "Foo"
       add_column :foos, :my_str, :string, :limit => 255
       assert_equal 255, create_attribute(Foo, "my_str").limit
     end
+  end
+
+  test "limit should return precision for decimal columns if nonstandard" do
+    create_model "Foo"
+    add_column :foos, :num, :decimal, :precision => 5, :scale => 2
+    assert_equal 5, create_attribute(Foo, "num").limit
+  end
+
+  test "limit should return nil for decimal columns if equal to standard database limit" do
+    create_model "Foo"
+    add_column :foos, :num, :decimal
+    assert_equal nil, create_attribute(Foo, "num").limit
+  end
+
+  test "scale should return scale for decimal columns if nonstandard" do
+    create_model "Foo"
+    add_column :foos, :num, :decimal, :precision => 5, :scale => 2
+    assert_equal 2, create_attribute(Foo, "num").scale
+  end
+
+  test "scale should return nil for decimal columns if equal to standard database limit" do
+    create_model "Foo"
+    add_column :foos, :num, :decimal
+    assert_equal nil, create_attribute(Foo, "num").scale
+  end
+
+  test "scale should return zero for decimal columns if left to default setting when specifying precision" do
+    create_model "Foo"
+    add_column :foos, :num, :decimal, :precision => 5
+    assert_equal 0, create_attribute(Foo, "num").scale
   end
 end

@@ -1,3 +1,8 @@
+=== 0.4.2:
+
+* Display the scale of decimal attributes when set. A decimal attribute with
+  precision 5 and scale 2 is now indicated with (5,2).
+
 === 0.4.1:
 
 * Fix processing of associations with class_name set to absolute module paths.
