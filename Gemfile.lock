@@ -1,20 +1,3 @@
-PATH
-  remote: .
-  specs:
-    rails-erd (0.4.2)
-      activerecord (~> 3.0)
-      activerecord
-      activerecord-jdbc-adapter
-      activesupport (~> 3.0)
-      activesupport
-      jdbc-sqlite3
-      jeweler
-      jruby-openssl
-      rails-erd
-      rake
-      ruby-graphviz (~> 0.9.18)
-      sqlite3
-
 GEM
   remote: http://rubygems.org/
   specs:
@@ -34,7 +17,6 @@ GEM
     builder (2.1.2)
     git (1.2.5)
     i18n (0.5.0)
-    jdbc-sqlite3 (3.6.14.2.056)
     jdbc-sqlite3 (3.6.14.2.056-java)
     jeweler (1.5.2)
       bundler (~> 1.0.0)
@@ -42,7 +24,6 @@ GEM
       rake
     jruby-openssl (0.7.3)
       bouncy-castle-java
-    json (1.4.6)
     rake (0.8.7)
     ruby-graphviz (0.9.20)
     sqlite3 (1.3.3)
@@ -53,13 +34,13 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  activerecord
+  activerecord (~> 3.0)
   activerecord-jdbc-adapter
-  activesupport
+  activesupport (~> 3.0)
+  bundler (~> 1.0.0)
   jdbc-sqlite3
-  jeweler
+  jeweler (~> 1.5.2)
   jruby-openssl
-  json
-  rails-erd!
   rake
+  ruby-graphviz (~> 0.9.18)
   sqlite3
