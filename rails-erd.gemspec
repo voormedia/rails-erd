@@ -84,7 +84,7 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<activerecord>, ["~> 3.0"])
       s.add_runtime_dependency(%q<activesupport>, ["~> 3.0"])
       s.add_runtime_dependency(%q<ruby-graphviz>, ["~> 0.9.18"])
-      s.add_development_dependency(%q<sqlite3-ruby>, [">= 0"])
+      s.add_development_dependency(%q<sqlite3>, [">= 0"])
     else
       s.add_dependency(%q<rails-erd>, [">= 0"])
       s.add_dependency(%q<activerecord>, [">= 0"])
@@ -98,7 +98,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<activerecord>, ["~> 3.0"])
       s.add_dependency(%q<activesupport>, ["~> 3.0"])
       s.add_dependency(%q<ruby-graphviz>, ["~> 0.9.18"])
-      s.add_dependency(%q<sqlite3-ruby>, [">= 0"])
+      s.add_dependency(%q<sqlite3>, [">= 0"])
     end
   else
     s.add_dependency(%q<rails-erd>, [">= 0"])
@@ -113,7 +113,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<activerecord>, ["~> 3.0"])
     s.add_dependency(%q<activesupport>, ["~> 3.0"])
     s.add_dependency(%q<ruby-graphviz>, ["~> 0.9.18"])
-    s.add_dependency(%q<sqlite3-ruby>, [">= 0"])
+    s.add_dependency(%q<sqlite3>, [">= 0"])
   end
 end
 

@@ -15,7 +15,7 @@ Jeweler::Tasks.new do |spec|
   spec.add_runtime_dependency "activerecord", "~> 3.0"
   spec.add_runtime_dependency "activesupport", "~> 3.0"
   spec.add_runtime_dependency "ruby-graphviz", "~> 0.9.18"
-  spec.add_development_dependency "sqlite3-ruby"
+  spec.add_development_dependency "sqlite3"
 
   # Don't bundle examples or website in gem.
   excluded = Dir["{examples,site}/**/*"]
