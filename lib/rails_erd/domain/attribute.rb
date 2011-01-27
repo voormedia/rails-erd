@@ -55,7 +55,9 @@ module RailsERD
       # Returns +true+ if this attribute is used as a foreign key for any
       # relationship.
       def foreign_key?
-        @domain.relationships_by_entity_name(@model.name).map(&:associations).flatten.map(&:primary_key_name).include?(name)
+        @domain.relationships_by_entity_name(@model.name).map(&:associations).flatten.map { |associaton|
+          associaton.send(Domain.foreign_key_method_name)
+        }.include?(name)
       end
 
       # Returns +true+ if this attribute is used for single table inheritance.

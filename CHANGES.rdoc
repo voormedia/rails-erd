@@ -2,6 +2,7 @@
 
 * Display the scale of decimal attributes when set. A decimal attribute with
   precision 5 and scale 2 is now indicated with (5,2).
+* Fixed deprecation warnings for edge Rails (upcoming 3.1).
 
 === 0.4.1:
 

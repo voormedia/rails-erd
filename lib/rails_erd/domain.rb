@@ -26,11 +26,17 @@ module RailsERD
       def generate(options = {})
         new ActiveRecord::Base.descendants, options
       end
+
+      # Returns the method name to retrieve the foreign key from an
+      # association reflection object.
+      def foreign_key_method_name # @private :nodoc:
+        @foreign_key_method_name ||= ActiveRecord::Reflection::AssociationReflection.method_defined?(:foreign_key) ? :foreign_key : :primary_key_name
+      end
     end
-    
+
     extend Inspectable
     inspection_attributes
-    
+
     # The options that are used to generate this domain model.
     attr_reader :options
 
@@ -45,42 +51,42 @@ module RailsERD
     def name
       defined? Rails and Rails.application and Rails.application.class.parent.name
     end
-    
+
     # Returns all entities of your domain model.
     def entities
       @entities ||= Entity.from_models(self, models)
     end
-    
+
     # Returns all relationships in your domain model.
     def relationships
       @relationships ||= Relationship.from_associations(self, associations)
     end
-    
+
     # Returns all specializations in your domain model.
     def specializations
       @specializations ||= Specialization.from_models(self, models)
     end
-    
+
     # Returns a specific entity object for the given Active Record model.
     def entity_by_name(name) # @private :nodoc:
       entity_mapping[name]
     end
-    
+
     # Returns an array of relationships for the given Active Record model.
     def relationships_by_entity_name(name) # @private :nodoc:
       relationships_mapping[name] or []
     end
-    
+
     def specializations_by_entity_name(name)
       specializations_mapping[name] or []
     end
-    
+
     def warn(message) # @private :nodoc:
       puts "Warning: #{message}" if options.warn
     end
-    
+
     private
-    
+
     def entity_mapping
       @entity_mapping ||= {}.tap do |mapping|
         entities.each do |entity|
@@ -88,7 +94,7 @@ module RailsERD
         end
       end
     end
-    
+
     def relationships_mapping
       @relationships_mapping ||= {}.tap do |mapping|
         relationships.each do |relationship|
@@ -97,7 +103,7 @@ module RailsERD
         end
       end
     end
-    
+
     def specializations_mapping
       @specializations_mapping ||= {}.tap do |mapping|
         specializations.each do |specialization|
@@ -106,21 +112,21 @@ module RailsERD
         end
       end
     end
-    
+
     def models
       @models ||= @source_models.reject(&:abstract_class?).select { |model| check_model_validity(model) }
     end
-    
+
     def associations
       @associations ||= models.collect(&:reflect_on_all_associations).flatten.select { |assoc| check_association_validity(assoc) }
     end
-    
+
     def check_model_validity(model)
       model.table_exists? or raise "table #{model.table_name} does not exist"
     rescue => e
       warn "Ignoring invalid model #{model.name} (#{e.message})"
     end
-    
+
     def check_association_validity(association)
       # Raises an ActiveRecord::ActiveRecordError if the association is broken.
       association.check_validity!
@@ -135,7 +141,7 @@ module RailsERD
     rescue => e
       warn "Ignoring invalid association #{association_description(association)} (#{e.message})"
     end
-    
+
     def association_description(association)
       "#{association.name.inspect} on #{association.active_record}"
     end
