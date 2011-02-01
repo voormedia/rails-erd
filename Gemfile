@@ -5,8 +5,6 @@ gem "activesupport", "~> 3.0"
 gem "ruby-graphviz", "~> 0.9.18"
 
 group :development do
-  gem "rake"
-  gem "bundler", "~> 1.0.0"
   gem "jeweler", "~> 1.5.2"
 
   platforms :ruby do
