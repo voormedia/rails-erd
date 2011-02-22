@@ -13,17 +13,17 @@ namespace :erd do
       end
     end
   end
-  
+
   task :load_models do
     say "Loading application environment..."
     Rake::Task[:environment].invoke
 
     say "Loading code in search of Active Record models..."
     Rails.application.eager_load!
-    
+
     raise "Active Record was not loaded." unless defined? ActiveRecord
   end
-  
+
   task :generate => [:options, :load_models] do
     say "Generating Entity-Relationship Diagram for #{ActiveRecord::Base.descendants.length} models..."
 
