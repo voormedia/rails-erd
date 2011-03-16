@@ -6,18 +6,18 @@ class GraphvizTest < ActiveSupport::TestCase
     RailsERD.options.warn = false
     load "rails_erd/diagram/graphviz.rb"
   end
-  
+
   def teardown
     FileUtils.rm Dir["ERD.*"] rescue nil
     RailsERD::Diagram.send :remove_const, :Graphviz rescue nil
   end
-  
+
   def diagram(options = {})
     @diagram ||= Diagram::Graphviz.new(Domain.generate(options), options).tap do |diagram|
       diagram.generate
     end
   end
-  
+
   def find_dot_nodes(diagram)
     [].tap do |nodes|
       diagram.graph.each_node do |name, node|
@@ -37,7 +37,7 @@ class GraphvizTest < ActiveSupport::TestCase
       end
     end
   end
-  
+
   def find_dot_edges(diagram)
     [].tap do |edges|
       diagram.graph.each_edge do |edge|
@@ -45,7 +45,7 @@ class GraphvizTest < ActiveSupport::TestCase
       end
     end
   end
-  
+
   def find_dot_edge_styles(diagram)
     find_dot_edges(diagram).map { |e| [e[:arrowtail].to_s.tr('"', ''), e[:arrowhead].to_s.tr('"', '')] }
   end
@@ -59,7 +59,7 @@ class GraphvizTest < ActiveSupport::TestCase
       FileUtils.rm "ERD.svg" rescue nil
     end
   end
-  
+
   test "rank direction should be lr for horizontal orientation" do
     create_simple_domain
     assert_equal '"LR"', diagram(:orientation => :horizontal).graph[:rankdir].to_s
@@ -69,7 +69,7 @@ class GraphvizTest < ActiveSupport::TestCase
     create_simple_domain
     assert_equal '"TB"', diagram(:orientation => :vertical).graph[:rankdir].to_s
   end
-  
+
   # Diagram generation =======================================================
   test "create should create output for domain with attributes" do
     create_model "Foo", :bar => :references, :column => :string do
@@ -85,7 +85,7 @@ class GraphvizTest < ActiveSupport::TestCase
     Diagram::Graphviz.create
     assert File.exists?("ERD.png")
   end
-  
+
   test "create should write to file with dot extension if type is dot" do
     create_simple_domain
     Diagram::Graphviz.create :filetype => :dot
@@ -108,7 +108,7 @@ class GraphvizTest < ActiveSupport::TestCase
       end
     end
   end
-  
+
   test "create should create output for domain with attributes if orientation is vertical" do
     create_model "Foo", :bar => :references, :column => :string do
       belongs_to :bar
@@ -138,7 +138,7 @@ class GraphvizTest < ActiveSupport::TestCase
     end
     assert_match /No entities found/, message
   end
-  
+
   test "create should write to given file name plus extension if present" do
     begin
       create_simple_domain
@@ -148,7 +148,7 @@ class GraphvizTest < ActiveSupport::TestCase
       FileUtils.rm "foobar.png" rescue nil
     end
   end
-  
+
   test "create should abort and complain if output directory does not exist" do
     message = nil
     begin
@@ -165,7 +165,7 @@ class GraphvizTest < ActiveSupport::TestCase
     create_simple_domain
     assert_equal "digraph", diagram.graph.type
   end
-  
+
   test "generate should add title to graph" do
     create_simple_domain
     assert_equal '"Domain model\n\n"', diagram.graph.graph[:label].to_s
@@ -189,7 +189,7 @@ class GraphvizTest < ActiveSupport::TestCase
     create_simple_domain
     assert_equal "", diagram(:title => false).graph.graph[:label].to_s
   end
-  
+
   test "generate should create node for each entity" do
     create_model "Foo", :bar => :references do
       belongs_to :bar
@@ -197,8 +197,9 @@ class GraphvizTest < ActiveSupport::TestCase
     create_model "Bar"
     assert_equal ["Bar", "Foo"], find_dot_nodes(diagram).map(&:id).sort
   end
-  
-  test "generate should add label for entities" do
+
+  test "generate should add html label for entities" do
+    RailsERD.options.markup = true
     create_model "Foo", :bar => :references do
       belongs_to :bar
     end
@@ -206,12 +207,31 @@ class GraphvizTest < ActiveSupport::TestCase
     assert_match %r{<\w+.*?>Bar</\w+>}, find_dot_node(diagram, "Bar")[:label].to_gv
   end
 
-  test "generate should add attributes to entity labels" do
+  test "generate should add record label for entities" do
+    RailsERD.options.markup = false
+    create_model "Foo", :bar => :references do
+      belongs_to :bar
+    end
+    create_model "Bar"
+    assert_equal %Q("Bar"), find_dot_node(diagram, "Bar")[:label].to_gv
+  end
+
+  test "generate should add attributes to entity html labels" do
+    RailsERD.options.markup = true
     create_model "Foo", :bar => :references do
       belongs_to :bar
     end
     create_model "Bar", :column => :string
     assert_match %r{<\w+.*?>column <\w+.*?>string</\w+.*?>}, find_dot_node(diagram, "Bar")[:label].to_gv
+  end
+
+  test "generate should add attributes to entity record labels" do
+    RailsERD.options.markup = false
+    create_model "Foo", :bar => :references do
+      belongs_to :bar
+    end
+    create_model "Bar", :column => :string, :column_two => :boolean
+    assert_equal %Q("Bar|column (string)\\ncolumn_two (boolean)\\n"), find_dot_node(diagram, "Bar")[:label].to_gv
   end
 
   test "generate should not add any attributes to entity labels if attributes is set to false" do
@@ -220,6 +240,42 @@ class GraphvizTest < ActiveSupport::TestCase
       belongs_to :jar
     end
     assert_no_match %r{contents}, find_dot_node(diagram(:attributes => false), "Jar")[:label].to_gv
+  end
+
+  test "node html labels should have direction reversing braces for vertical orientation" do
+    RailsERD.options.markup = true
+    create_model "Book", :author => :references do
+      belongs_to :author
+    end
+    create_model "Author", :name => :string
+    assert_match %r(\A<\{\s*<.*\|.*>\s*\}>\Z)m, find_dot_node(diagram(:orientation => :vertical), "Author")[:label].to_gv
+  end
+
+  test "node html labels should not have direction reversing braces for horizontal orientation" do
+    RailsERD.options.markup = true
+    create_model "Book", :author => :references do
+      belongs_to :author
+    end
+    create_model "Author", :name => :string
+    assert_match %r(\A<\s*<.*\|.*>\s*>\Z)m, find_dot_node(diagram(:orientation => :horizontal), "Author")[:label].to_gv
+  end
+
+  test "node record labels should have direction reversing braces for vertical orientation" do
+    RailsERD.options.markup = false
+    create_model "Book", :author => :references do
+      belongs_to :author
+    end
+    create_model "Author", :name => :string
+    assert_match %r(\A"\{\w+|.*\}"\Z)m, find_dot_node(diagram(:orientation => :vertical), "Author")[:label].to_gv
+  end
+
+  test "node record labels should not have direction reversing braces for horizontal orientation" do
+    RailsERD.options.markup = false
+    create_model "Book", :author => :references do
+      belongs_to :author
+    end
+    create_model "Author", :name => :string
+    assert_match %r(\A"\w+|.*"\Z)m, find_dot_node(diagram(:orientation => :horizontal), "Author")[:label].to_gv
   end
 
   test "generate should create edge for each relationship" do
@@ -231,23 +287,7 @@ class GraphvizTest < ActiveSupport::TestCase
     end
     assert_equal [["Bar", "Foo"], ["Foo", "Bar"]], find_dot_node_pairs(diagram).sort
   end
-  
-  test "node records should have direction reversing braces for vertical orientation" do
-    create_model "Book", :author => :references do
-      belongs_to :author
-    end
-    create_model "Author", :name => :string
-    assert_match %r(\A<\{\s*<.*\|.*>\s*\}>\Z)m, find_dot_node(diagram(:orientation => :vertical), "Author")[:label].to_gv
-  end
 
-  test "node records should not have direction reversing braces for horizontal orientation" do
-    create_model "Book", :author => :references do
-      belongs_to :author
-    end
-    create_model "Author", :name => :string
-    assert_match %r(\A<\s*<.*\|.*>\s*>\Z)m, find_dot_node(diagram(:orientation => :horizontal), "Author")[:label].to_gv
-  end
-  
   test "generate should create edge to generalized entity if polymorphism is true" do
     create_model "Cannon", :defensible => :references do
       belongs_to :defensible, :polymorphic => true
@@ -274,7 +314,7 @@ class GraphvizTest < ActiveSupport::TestCase
     end
     assert_equal [["Galleon", "Cannon"], ["Stronghold", "Cannon"]], find_dot_node_pairs(diagram).sort
   end
-  
+
   # Simple notation style ====================================================
   test "generate should use no style for one to one cardinalities with simple notation" do
     create_one_to_one_assoc_domain

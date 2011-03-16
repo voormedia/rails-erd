@@ -40,13 +40,13 @@ module RailsERD
     #               or +:vertical+. Defaults to +horizontal+. The orientation of the
     #               PDF that is generated depends on the amount of hierarchy
     #               in your models.
-    # title:: The title to add at the top of the diagram. Defaults to 
+    # title:: The title to add at the top of the diagram. Defaults to
     #         <tt>"YourApplication domain model"</tt>.
     class Graphviz < Diagram
-      NODE_LABEL_TEMPLATE = ERB.new(File.read(File.expand_path("templates/node.erb", File.dirname(__FILE__))), nil, "<>") # @private :nodoc:
+      NODE_LABEL_TEMPLATES = { :html => "node.html.erb", :record => "node.record.erb" } # @private :nodoc:
 
       NODE_WIDTH = 130 # @private :nodoc:
-      
+
       # Default graph attributes.
       GRAPH_ATTRIBUTES = {
         :rankdir => :LR,
@@ -78,16 +78,16 @@ module RailsERD
         :penwidth => 1.0,
         :labelangle => 32,
         :labeldistance => 1.8,
-        :fontsize => 7  
+        :fontsize => 7
       }
-      
+
       module Simple
         def entity_style(entity, attributes)
           {}.tap do |options|
             options[:fontcolor] = options[:color] = :grey60 if entity.abstract?
           end
         end
-        
+
         def relationship_style(relationship)
           {}.tap do |options|
             options[:style] = :dotted if relationship.indirect?
@@ -102,7 +102,7 @@ module RailsERD
           { :color => :grey60, :arrowtail => :onormal, :arrowhead => :none, :arrowsize => 1.2 }
         end
       end
-    
+
       module Bachman
         include Simple
         def relationship_style(relationship)
@@ -121,7 +121,7 @@ module RailsERD
           end
         end
       end
-      
+
       module Uml
         include Simple
         def relationship_style(relationship)
@@ -143,7 +143,7 @@ module RailsERD
           end
         end
       end
-      
+
       attr_accessor :graph
 
       setup do
@@ -156,14 +156,14 @@ module RailsERD
 
         # Switch rank direction if we're creating a vertically oriented graph.
         graph[:rankdir] = :TB if options.orientation == :vertical
-        
+
         # Title of the graph itself.
         graph[:label] = "#{title}\\n\\n" if title
-        
+
         # Setup notation options.
         extend self.class.const_get(options.notation.to_s.capitalize.to_sym)
       end
-      
+
       save do
         raise "Saving diagram failed. Output directory '#{File.dirname(filename)}' does not exist." unless File.directory?(File.dirname(filename))
         begin
@@ -177,12 +177,12 @@ module RailsERD
       each_entity do |entity, attributes|
         draw_node entity.name, entity_options(entity, attributes)
       end
-      
+
       each_specialization do |specialization|
         from, to = specialization.generalized, specialization.specialized
         draw_edge from.name, to.name, specialization_options(specialization)
       end
-      
+
       each_relationship do |relationship|
         from, to = relationship.source, relationship.destination
         unless draw_edge from.name, to.name, relationship_options(relationship)
@@ -193,17 +193,17 @@ module RailsERD
           end
         end
       end
-      
+
       private
-      
+
       def node_exists?(name)
         !!graph.get_node(name)
       end
-      
+
       def draw_node(name, options)
         graph.add_node name, options
       end
-      
+
       def draw_edge(from, to, options)
         graph.add_edge graph.get_node(from), graph.get_node(to), options if node_exists?(from) and node_exists?(to)
       end
@@ -217,26 +217,27 @@ module RailsERD
         else options.title
         end
       end
-      
+
       # Returns the file name that will be used when saving the diagram.
       def filename
         "#{options.filename}.#{options.filetype}"
       end
-      
+
       # Returns the default file extension to be used when saving the diagram.
       def filetype
         if options.filetype.to_sym == :dot then :none else options.filetype.to_sym end
       end
 
       def entity_options(entity, attributes)
-        entity_style(entity, attributes).merge :label => "<#{NODE_LABEL_TEMPLATE.result(binding)}>"
+        label = options[:markup] ? "<#{read_template(:html).result(binding)}>" : "#{read_template(:record).result(binding)}"
+        entity_style(entity, attributes).merge :label => label
       end
-      
+
       def relationship_options(relationship)
         relationship_style(relationship).tap do |options|
           # Edges with a higher weight are optimised to be shorter and straighter.
           options[:weight] = relationship.strength
-          
+
           # Indirect relationships should not influence node ranks.
           options[:constraint] = false if relationship.indirect?
         end
@@ -244,6 +245,10 @@ module RailsERD
 
       def specialization_options(specialization)
         specialization_style(specialization)
+      end
+
+      def read_template(type)
+        ERB.new(File.read(File.expand_path("templates/#{NODE_LABEL_TEMPLATES[type]}", File.dirname(__FILE__))), nil, "<>")
       end
     end
   end

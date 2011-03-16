@@ -1,3 +1,10 @@
+=== Unreleased:
+
+* Added the ability to disable HTML markup in node labels (markup=false). This
+  causes .dot files to be compatible with OmniGraffle, which otherwise fails
+  to import graphs with HTML node labels (issue reported by Lucas Florio,
+  implementation based on template by Troy Anderson).
+
 === 0.4.3:
 
 * Display the scale of decimal attributes when set. A decimal attribute with
