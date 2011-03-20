@@ -197,15 +197,19 @@ module RailsERD
       private
 
       def node_exists?(name)
-        !!graph.get_node(name)
+        !!graph.get_node(escape_name(name))
       end
 
       def draw_node(name, options)
-        graph.add_node name, options
+        graph.add_node escape_name(name), options
       end
 
       def draw_edge(from, to, options)
-        graph.add_edge graph.get_node(from), graph.get_node(to), options if node_exists?(from) and node_exists?(to)
+        graph.add_edge graph.get_node(escape_name(from)), graph.get_node(escape_name(to)), options if node_exists?(from) and node_exists?(to)
+      end
+
+      def escape_name(name)
+        "m_#{name}"
       end
 
       # Returns the title to be used for the graph.

@@ -160,6 +160,16 @@ class GraphvizTest < ActiveSupport::TestCase
     assert_match /Output directory 'does_not_exist' does not exist/, message
   end
 
+  test "create should not fail when reserved words are used as node names" do
+    create_model "Node", :name => :string
+    create_model "Edge", :node => :references do
+      belongs_to :node
+    end
+    assert_nothing_raised do
+      Diagram::Graphviz.create
+    end
+  end
+
   # Graphviz output ==========================================================
   test "generate should create directed graph" do
     create_simple_domain
@@ -195,7 +205,7 @@ class GraphvizTest < ActiveSupport::TestCase
       belongs_to :bar
     end
     create_model "Bar"
-    assert_equal ["Bar", "Foo"], find_dot_nodes(diagram).map(&:id).sort
+    assert_equal ["m_Bar", "m_Foo"], find_dot_nodes(diagram).map(&:id).sort
   end
 
   test "generate should add html label for entities" do
@@ -204,7 +214,7 @@ class GraphvizTest < ActiveSupport::TestCase
       belongs_to :bar
     end
     create_model "Bar"
-    assert_match %r{<\w+.*?>Bar</\w+>}, find_dot_node(diagram, "Bar")[:label].to_gv
+    assert_match %r{<\w+.*?>Bar</\w+>}, find_dot_node(diagram, "m_Bar")[:label].to_gv
   end
 
   test "generate should add record label for entities" do
@@ -213,7 +223,7 @@ class GraphvizTest < ActiveSupport::TestCase
       belongs_to :bar
     end
     create_model "Bar"
-    assert_equal %Q("Bar"), find_dot_node(diagram, "Bar")[:label].to_gv
+    assert_equal %Q("Bar"), find_dot_node(diagram, "m_Bar")[:label].to_gv
   end
 
   test "generate should add attributes to entity html labels" do
@@ -222,7 +232,7 @@ class GraphvizTest < ActiveSupport::TestCase
       belongs_to :bar
     end
     create_model "Bar", :column => :string
-    assert_match %r{<\w+.*?>column <\w+.*?>string</\w+.*?>}, find_dot_node(diagram, "Bar")[:label].to_gv
+    assert_match %r{<\w+.*?>column <\w+.*?>string</\w+.*?>}, find_dot_node(diagram, "m_Bar")[:label].to_gv
   end
 
   test "generate should add attributes to entity record labels" do
@@ -231,7 +241,7 @@ class GraphvizTest < ActiveSupport::TestCase
       belongs_to :bar
     end
     create_model "Bar", :column => :string, :column_two => :boolean
-    assert_equal %Q("Bar|column (string)\\ncolumn_two (boolean)\\n"), find_dot_node(diagram, "Bar")[:label].to_gv
+    assert_equal %Q("Bar|column (string)\\ncolumn_two (boolean)\\n"), find_dot_node(diagram, "m_Bar")[:label].to_gv
   end
 
   test "generate should not add any attributes to entity labels if attributes is set to false" do
@@ -239,7 +249,7 @@ class GraphvizTest < ActiveSupport::TestCase
     create_model "Lid", :jar => :references do
       belongs_to :jar
     end
-    assert_no_match %r{contents}, find_dot_node(diagram(:attributes => false), "Jar")[:label].to_gv
+    assert_no_match %r{contents}, find_dot_node(diagram(:attributes => false), "m_Jar")[:label].to_gv
   end
 
   test "node html labels should have direction reversing braces for vertical orientation" do
@@ -248,7 +258,7 @@ class GraphvizTest < ActiveSupport::TestCase
       belongs_to :author
     end
     create_model "Author", :name => :string
-    assert_match %r(\A<\{\s*<.*\|.*>\s*\}>\Z)m, find_dot_node(diagram(:orientation => :vertical), "Author")[:label].to_gv
+    assert_match %r(\A<\{\s*<.*\|.*>\s*\}>\Z)m, find_dot_node(diagram(:orientation => :vertical), "m_Author")[:label].to_gv
   end
 
   test "node html labels should not have direction reversing braces for horizontal orientation" do
@@ -257,7 +267,7 @@ class GraphvizTest < ActiveSupport::TestCase
       belongs_to :author
     end
     create_model "Author", :name => :string
-    assert_match %r(\A<\s*<.*\|.*>\s*>\Z)m, find_dot_node(diagram(:orientation => :horizontal), "Author")[:label].to_gv
+    assert_match %r(\A<\s*<.*\|.*>\s*>\Z)m, find_dot_node(diagram(:orientation => :horizontal), "m_Author")[:label].to_gv
   end
 
   test "node record labels should have direction reversing braces for vertical orientation" do
@@ -266,7 +276,7 @@ class GraphvizTest < ActiveSupport::TestCase
       belongs_to :author
     end
     create_model "Author", :name => :string
-    assert_match %r(\A"\{\w+|.*\}"\Z)m, find_dot_node(diagram(:orientation => :vertical), "Author")[:label].to_gv
+    assert_match %r(\A"\{\w+|.*\}"\Z)m, find_dot_node(diagram(:orientation => :vertical), "m_Author")[:label].to_gv
   end
 
   test "node record labels should not have direction reversing braces for horizontal orientation" do
@@ -275,7 +285,7 @@ class GraphvizTest < ActiveSupport::TestCase
       belongs_to :author
     end
     create_model "Author", :name => :string
-    assert_match %r(\A"\w+|.*"\Z)m, find_dot_node(diagram(:orientation => :horizontal), "Author")[:label].to_gv
+    assert_match %r(\A"\w+|.*"\Z)m, find_dot_node(diagram(:orientation => :horizontal), "m_Author")[:label].to_gv
   end
 
   test "generate should create edge for each relationship" do
@@ -285,7 +295,7 @@ class GraphvizTest < ActiveSupport::TestCase
     create_model "Bar", :foo => :references do
       belongs_to :foo
     end
-    assert_equal [["Bar", "Foo"], ["Foo", "Bar"]], find_dot_node_pairs(diagram).sort
+    assert_equal [["m_Bar", "m_Foo"], ["m_Foo", "m_Bar"]], find_dot_node_pairs(diagram).sort
   end
 
   test "generate should create edge to generalized entity if polymorphism is true" do
@@ -298,7 +308,7 @@ class GraphvizTest < ActiveSupport::TestCase
     create_model "Galleon" do
       has_many :cannons, :as => :defensible
     end
-    assert_equal [["Defensible", "Cannon"], ["Defensible", "Galleon"], ["Defensible", "Stronghold"]],
+    assert_equal [["m_Defensible", "m_Cannon"], ["m_Defensible", "m_Galleon"], ["m_Defensible", "m_Stronghold"]],
       find_dot_node_pairs(diagram(:polymorphism => true)).sort
   end
 
@@ -312,7 +322,7 @@ class GraphvizTest < ActiveSupport::TestCase
     create_model "Galleon" do
       has_many :cannons, :as => :defensible
     end
-    assert_equal [["Galleon", "Cannon"], ["Stronghold", "Cannon"]], find_dot_node_pairs(diagram).sort
+    assert_equal [["m_Galleon", "m_Cannon"], ["m_Stronghold", "m_Cannon"]], find_dot_node_pairs(diagram).sort
   end
 
   # Simple notation style ====================================================
