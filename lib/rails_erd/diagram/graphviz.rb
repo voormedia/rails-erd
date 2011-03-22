@@ -165,12 +165,15 @@ module RailsERD
       end
 
       save do
-        raise "Saving diagram failed. Output directory '#{File.dirname(filename)}' does not exist." unless File.directory?(File.dirname(filename))
+        raise "Saving diagram failed!\nOutput directory '#{File.dirname(filename)}' does not exist." unless File.directory?(File.dirname(filename))
         begin
           graph.output(filetype => filename)
           filename
+        rescue RuntimeError => e
+          raise "Saving diagram failed!\nGraphviz produced errors. Verify it has support for filetype=#{options.filetype}, or use filetype=dot." <<
+            "\nOriginal error: #{e.message.split("\n").last}"
         rescue StandardError => e
-          raise "Saving diagram failed. Verify that Graphviz is installed or select filetype=dot."
+          raise "Saving diagram failed!\nVerify that Graphviz is installed and in your path, or use filetype=dot."
         end
       end
 

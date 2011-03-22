@@ -6,6 +6,8 @@
   implementation based on template by Troy Anderson).
 * Prevent models named after Graphviz reserved words (Node, Edge) from causing
   errors in .dot files (reported by gguthrie).
+* Improved error messages when Graphviz is throwing errors (reported by
+  Michael Irwin).
 
 === 0.4.3:
 
