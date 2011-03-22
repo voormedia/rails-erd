@@ -1,4 +1,4 @@
-=== Unreleased:
+=== 0.4.4:
 
 * Added the ability to disable HTML markup in node labels (markup=false). This
   causes .dot files to be compatible with OmniGraffle, which otherwise fails
