@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{rails-erd}
-  s.version = "0.4.4"
+  s.version = "0.4.5"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Rolf Timmermans"]
-  s.date = %q{2011-03-22}
+  s.date = %q{2011-04-13}
   s.description = %q{Automatically generate an entity-relationship diagram (ERD) for your Rails models.}
   s.email = %q{r.timmermans@voormedia.com}
   s.extra_rdoc_files = [
