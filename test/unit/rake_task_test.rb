@@ -16,7 +16,21 @@ class RakeTaskTest < ActiveSupport::TestCase
     FileUtils.rm "ERD.dot" rescue nil
     RailsERD::Diagram.send :remove_const, :Graphviz rescue nil
   end
-  
+
+  define_method :create_app do
+    Object::Quux = Module.new
+    Object::Quux::Application = Class.new
+    Object::Rails = Struct.new(:application).new(Object::Quux::Application.new)
+    Rails.class_eval do
+      define_method :backtrace_cleaner do
+        ActiveSupport::BacktraceCleaner.new.tap do |cleaner|
+          cleaner.add_filter { |line| line.sub(File.dirname(__FILE__), "test/unit") }
+          cleaner.add_silencer { |line| line !~ /^test\/unit/ }
+        end
+      end
+    end
+  end
+
   # Diagram generation =======================================================
   test "generate task should create output based on domain model" do
     create_simple_domain
@@ -28,12 +42,10 @@ class RakeTaskTest < ActiveSupport::TestCase
     Rake::Task["erd:generate"].execute rescue nil
     assert !File.exists?("ERD.dot")
   end
-  
+
   test "generate task should eager load application environment" do
     eager_loaded, environment_loaded = nil
-    Object::Quux = Module.new
-    Object::Quux::Application = Class.new
-    Object::Rails = Struct.new(:application).new(Object::Quux::Application.new)
+    create_app
     Rails.application.class_eval do
       define_method :eager_load! do
         eager_loaded = true
@@ -46,11 +58,9 @@ class RakeTaskTest < ActiveSupport::TestCase
     Rake::Task["erd:generate"].invoke
     assert_equal [true, true], [eager_loaded, environment_loaded]
   end
-  
+
   test "generate task should complain if active record is not loaded" do
-    Object::Quux = Module.new
-    Object::Quux::Application = Class.new
-    Object::Rails = Struct.new(:application).new(Object::Quux::Application.new)
+    create_app
     Rails.application.class_eval do
       define_method :eager_load! do end
     end
@@ -64,7 +74,53 @@ class RakeTaskTest < ActiveSupport::TestCase
     end
     assert_equal "Active Record was not loaded.", message
   end
-  
+
+  test "generate task should complain with simplified stack trace if application could not be loaded" do
+    create_app
+    l1, l2 = nil, nil
+    Rails.application.class_eval do
+      define_method :eager_load! do
+        l1 = __LINE__ + 1
+        raise "FooBar"
+      end
+    end
+    Rake::Task.define_task :environment
+    message = nil
+    begin
+      l2 = __LINE__ + 1
+      Rake::Task["erd:generate"].invoke
+    rescue => e
+      message = e.message
+    end
+    assert_equal <<-MSG.strip, message
+Loading models failed!
+Error occurred while loading application: FooBar (RuntimeError)
+    test/unit/rake_task_test.rb:#{l1}:in `block (3 levels) in <class:RakeTaskTest>'
+    test/unit/rake_task_test.rb:#{l2}:in `block in <class:RakeTaskTest>'
+    MSG
+  end
+
+  test "generate task should reraise if application could not be loaded and trace option is enabled" do
+    create_app
+    Rails.application.class_eval do
+      define_method :eager_load! do
+        raise "FooBar"
+      end
+    end
+    Rake::Task.define_task :environment
+    message = nil
+    begin
+      old_stdout, $stdout = $stdout, StringIO.new
+      Rake.application.options.trace = true
+      Rake::Task["erd:generate"].invoke
+    rescue => e
+      message = e.message
+    ensure
+      $stdout = old_stdout
+    end
+    assert_equal "FooBar", message
+  end
+
   # Option processing ========================================================
   test "options task should ignore unknown command line options" do
     ENV["unknownoption"] = "value"
@@ -101,7 +157,7 @@ class RakeTaskTest < ActiveSupport::TestCase
     Rake::Task["erd:options"].execute
     assert_equal true, RailsERD.options.title
   end
-  
+
   test "options task should set known array command line options" do
     ENV["attributes"] = "content,timestamps"
     Rake::Task["erd:options"].execute

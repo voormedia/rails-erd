@@ -1,3 +1,8 @@
+=== 0.4.5:
+
+* Display more helpful error message when the application models could not be
+  loaded successfully by the 'rake erd' task (reported by Greg Weber).
+
 === 0.4.4:
 
 * Added the ability to disable HTML markup in node labels (markup=false). This

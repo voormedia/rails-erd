@@ -19,7 +19,17 @@ namespace :erd do
     Rake::Task[:environment].invoke
 
     say "Loading code in search of Active Record models..."
-    Rails.application.eager_load!
+    begin
+      Rails.application.eager_load!
+    rescue Exception => err
+      if Rake.application.options.trace
+        raise
+      else
+        trace = Rails.backtrace_cleaner.clean(err.backtrace)
+        error = (["Loading models failed!\nError occurred while loading application: #{err} (#{err.class})"] + trace).join("\n    ")
+        raise error
+      end
+    end
 
     raise "Active Record was not loaded." unless defined? ActiveRecord
   end
