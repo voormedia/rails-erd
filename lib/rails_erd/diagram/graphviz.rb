@@ -103,6 +103,26 @@ module RailsERD
         end
       end
 
+      module Crowsfoot
+        include Simple
+        def relationship_style(relationship)
+          {}.tap do |options|
+            options[:style] = :dotted if relationship.indirect?
+
+            # Cardinality is "look-across".
+            dst = relationship.to_many? ? "crow" : "tee"
+            src = relationship.many_to? ? "crow" : "tee"
+
+            # Participation is "look-here".
+            dst << (relationship.source_optional? ? "odot" : "tee")
+            src << (relationship.destination_optional? ? "odot" : "tee")
+
+            options[:arrowsize] = 0.6
+            options[:arrowhead], options[:arrowtail] = dst, src
+          end
+        end
+      end
+
       module Bachman
         include Simple
         def relationship_style(relationship)
