@@ -3,6 +3,7 @@
 .yardoc
 *.pdf
 *.rbc
+.rvmrc
 doc
 pkg
 output
