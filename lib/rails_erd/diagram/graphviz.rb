@@ -114,8 +114,8 @@ module RailsERD
             src = relationship.many_to? ? "crow" : "tee"
 
             # Participation is "look-here".
-            dst << (relationship.source_optional? ? "odot" : "tee")
-            src << (relationship.destination_optional? ? "odot" : "tee")
+            dst << (relationship.destination_optional? ? "odot" : "tee")
+            src << (relationship.source_optional? ? "odot" : "tee")
 
             options[:arrowsize] = 0.6
             options[:arrowhead], options[:arrowtail] = dst, src

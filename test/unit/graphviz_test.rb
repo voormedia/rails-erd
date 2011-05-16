@@ -395,7 +395,7 @@ class GraphvizTest < ActiveSupport::TestCase
     One.class_eval do
       validates_presence_of :other
     end
-    assert_equal [["teetee","teeodot"]], find_dot_edge_styles(diagram(:notation => :crowsfoot))
+    assert_equal [["teeodot","teetee"]], find_dot_edge_styles(diagram(:notation => :crowsfoot))
   end
 
   test "generate should use 0/* crowsfeet with 0/1 crowsfeet for one to many cardinalities with crowsfoot notation" do
@@ -408,7 +408,7 @@ class GraphvizTest < ActiveSupport::TestCase
     One.class_eval do
       validates_presence_of :many
     end
-    assert_equal [["teetee", "crowodot"]], find_dot_edge_styles(diagram(:notation => :crowsfoot))
+    assert_equal [["teeodot", "crowtee"]], find_dot_edge_styles(diagram(:notation => :crowsfoot))
   end
 
   test "generate should use 0/* and 0/* crowsfeet for many to many cardinalities with crowsfoot notation" do
