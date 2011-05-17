@@ -383,4 +383,47 @@ class GraphvizTest < ActiveSupport::TestCase
     end
     assert_equal [["dotnormal", "dotnormal"]], find_dot_edge_styles(diagram(:notation => :bachman))
   end
+
+  # Crows-foot notation style ===================================================
+  test "generate should use 0/1 crowsfeet for one to one cardinalities with crowsfoot notation" do
+    create_one_to_one_assoc_domain
+    assert_equal [["teeodot", "teeodot"]], find_dot_edge_styles(diagram(:notation => :crowsfoot))
+  end
+
+  test "generate should use 1/1 crowsfeet for mandatory one to one cardinalities with crowsfoot notation" do
+    create_one_to_one_assoc_domain
+    One.class_eval do
+      validates_presence_of :other
+    end
+    assert_equal [["teeodot","teetee"]], find_dot_edge_styles(diagram(:notation => :crowsfoot))
+  end
+
+  test "generate should use 0/* crowsfeet with 0/1 crowsfeet for one to many cardinalities with crowsfoot notation" do
+    create_one_to_many_assoc_domain
+    assert_equal [["teeodot", "crowodot"]], find_dot_edge_styles(diagram(:notation => :crowsfoot))
+  end
+
+  test "generate should use 0/* crowsfeet with 1/1 crowsfett for mandatory one to many cardinalities with crowsfoot notation" do
+    create_one_to_many_assoc_domain
+    One.class_eval do
+      validates_presence_of :many
+    end
+    assert_equal [["teeodot", "crowtee"]], find_dot_edge_styles(diagram(:notation => :crowsfoot))
+  end
+
+  test "generate should use 0/* and 0/* crowsfeet for many to many cardinalities with crowsfoot notation" do
+    create_many_to_many_assoc_domain
+    assert_equal [["crowodot", "crowodot"]], find_dot_edge_styles(diagram(:notation => :crowsfoot))
+  end
+
+  test "generate should use 1/* and 1/* tail and head for mandatory many to many cardinalities with crowsfoot notation" do
+    create_many_to_many_assoc_domain
+    Many.class_eval do
+      validates_presence_of :more
+    end
+    More.class_eval do
+      validates_presence_of :many
+    end
+    assert_equal [["crowtee", "crowtee"]], find_dot_edge_styles(diagram(:notation => :crowsfoot))
+  end
 end
