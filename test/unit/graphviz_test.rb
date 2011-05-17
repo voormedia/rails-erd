@@ -341,7 +341,7 @@ class GraphvizTest < ActiveSupport::TestCase
     assert_equal [["normal", "normal"]], find_dot_edge_styles(diagram(:notation => :simple))
   end
 
-  # Advanced notation style ===================================================
+  # Advanced notation style ==================================================
   test "generate should use open dots for one to one cardinalities with bachman notation" do
     create_one_to_one_assoc_domain
     assert_equal [["odot", "odot"]], find_dot_edge_styles(diagram(:notation => :bachman))
@@ -384,7 +384,7 @@ class GraphvizTest < ActiveSupport::TestCase
     assert_equal [["dotnormal", "dotnormal"]], find_dot_edge_styles(diagram(:notation => :bachman))
   end
 
-  # Crows-foot notation style ===================================================
+  # Crows-foot notation style ================================================
   test "generate should use 0/1 crowsfeet for one to one cardinalities with crowsfoot notation" do
     create_one_to_one_assoc_domain
     assert_equal [["teeodot", "teeodot"]], find_dot_edge_styles(diagram(:notation => :crowsfoot))

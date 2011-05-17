@@ -113,7 +113,7 @@ module RailsERD
             dst = relationship.to_many? ? "crow" : "tee"
             src = relationship.many_to? ? "crow" : "tee"
 
-            # Participation is "look-here".
+            # Participation is "look-across".
             dst << (relationship.destination_optional? ? "odot" : "tee")
             src << (relationship.source_optional? ? "odot" : "tee")
 
@@ -136,6 +136,7 @@ module RailsERD
             # Cardinality is "look-across".
             dst << "normal" if relationship.to_many?
             src << "normal" if relationship.many_to?
+
             options[:arrowsize] = 0.6
             options[:arrowhead], options[:arrowtail] = dst, src
           end

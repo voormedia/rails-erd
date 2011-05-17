@@ -1,3 +1,9 @@
+=== Unreleased:
+
+* Crow's foot notation (also known as the Information Engineering notation)
+  can be used by adding 'notation=crowsfoot' to the 'rake erd' command
+  (contributed by Jeremy Holland).
+
 === 0.4.5:
 
 * Display more helpful error message when the application models could not be
