@@ -24,7 +24,7 @@ class ActiveSupport::TestCase
       end
     end
   end
-  
+
   def add_column(*args)
     ActiveRecord::Schema.define do
       suppress_messages do
@@ -42,13 +42,13 @@ class ActiveSupport::TestCase
       create_table Object.const_get(name.to_sym).table_name, columns, Object.const_get(name.to_sym).primary_key rescue nil
     end
   end
-    
+
   def create_models(*names)
     names.each do |name|
       create_model name
     end
   end
-  
+
   def collect_stdout
     stdout = $stdout
     $stdout = StringIO.new
@@ -58,14 +58,14 @@ class ActiveSupport::TestCase
   ensure
     $stdout = stdout
   end
-  
+
   def create_simple_domain
     create_model "Beer", :bar => :references do
       belongs_to :bar
     end
     create_model "Bar"
   end
-  
+
   def create_one_to_one_assoc_domain
     create_model "One" do
       has_one :other
@@ -93,12 +93,12 @@ class ActiveSupport::TestCase
     end
     create_table "manies_mores", :many_id => :integer, :more_id => :integer
   end
-  
+
   def create_specialization
     create_model "Beverage", :type => :string
     Object.const_set :Beer, Class.new(Beverage)
   end
-  
+
   def create_generalization
     create_model "Cannon"
     create_model "Galleon" do
@@ -107,17 +107,17 @@ class ActiveSupport::TestCase
   end
 
   private
-  
+
   def reset_domain
     if defined? ActiveRecord
       ActiveRecord::Base.descendants.each do |model|
+        model.reset_column_information
         Object.send :remove_const, model.name.to_sym
       end
       ActiveRecord::Base.connection.tables.each do |table|
         ActiveRecord::Base.connection.drop_table table
       end
       ActiveRecord::Base.direct_descendants.clear
-      Arel::Relation.send :class_variable_set, :@@connection_tables_primary_keys, {}
       ActiveSupport::Dependencies::Reference.clear!
     end
   end

@@ -62,7 +62,7 @@ class DiagramTest < ActiveSupport::TestCase
     domain = Object.new
     assert_same domain, Class.new(Diagram).new(domain).domain
   end
-
+  
   # Diagram DSL ==============================================================
   test "create should succeed silently if called on abstract class" do
     create_simple_domain
@@ -70,14 +70,14 @@ class DiagramTest < ActiveSupport::TestCase
       Diagram.create
     end
   end
-
+  
   test "create should succeed if called on subclass" do
     create_simple_domain
     assert_nothing_raised do
       Class.new(Diagram).create
     end
   end
-
+  
   test "create should call callbacks in instance in specific order" do
     create_simple_domain
     executed_calls = Class.new(Diagram) do
@@ -129,7 +129,7 @@ class DiagramTest < ActiveSupport::TestCase
     create_model "Foo"
     assert_equal [Foo], retrieve_entities.map(&:model)
   end
-
+  
   test "generate should filter disconnected entities if disconnected is false" do
     create_model "Book", :author => :references do
       belongs_to :author
@@ -138,12 +138,12 @@ class DiagramTest < ActiveSupport::TestCase
     create_model "Table", :type => :string
     assert_equal [Author, Book], retrieve_entities(:disconnected => false).map(&:model)
   end
-
+  
   test "generate should yield disconnected entities if disconnected is true" do
     create_model "Foo", :type => :string
     assert_equal [Foo], retrieve_entities(:disconnected => true).map(&:model)
   end
-
+  
   test "generate should filter specialized entities" do
     create_model "Foo", :type => :string
     Object.const_set :SpecialFoo, Class.new(Foo)
@@ -155,7 +155,7 @@ class DiagramTest < ActiveSupport::TestCase
     Object.const_set :SpecialFoo, Class.new(Foo)
     assert_equal [Foo, SpecialFoo], retrieve_entities(:inheritance => true).map(&:model)
   end
-
+  
   test "generate should yield specialized entities with distinct tables" do
     create_model "Foo"
     Object.const_set :SpecialFoo, Class.new(Foo)
@@ -165,7 +165,7 @@ class DiagramTest < ActiveSupport::TestCase
     create_table "special_foo", {}, true
     assert_equal [Foo, SpecialFoo], retrieve_entities.map(&:model)
   end
-
+  
   test "generate should filter generalized entities" do
     create_model "Cannon"
     create_model "Galleon" do
@@ -187,7 +187,7 @@ class DiagramTest < ActiveSupport::TestCase
     create_simple_domain
     assert_equal 1, retrieve_relationships.length
   end
-
+  
   test "generate should yield indirect relationships if indirect is true" do
     create_model "Foo" do
       has_many :bazs
@@ -217,7 +217,7 @@ class DiagramTest < ActiveSupport::TestCase
     end
     assert_equal [false, false], retrieve_relationships(:indirect => false).map(&:indirect?)
   end
-
+  
   test "generate should yield relationships from specialized entities" do
     create_model "Foo", :bar => :references
     create_model "Bar", :type => :string
@@ -236,7 +236,7 @@ class DiagramTest < ActiveSupport::TestCase
     end
     assert_equal 1, retrieve_relationships.length
   end
-
+  
   # Specialization filtering =================================================
   test "generate should not yield specializations" do
     create_specialization
@@ -249,20 +249,20 @@ class DiagramTest < ActiveSupport::TestCase
     create_generalization
     assert_equal ["Beer"], retrieve_specializations(:inheritance => true).map { |s| s.specialized.name }
   end
-
+  
   test "generate should yield generalizations but not specializations if polymorphism is true" do
     create_specialization
     create_generalization
     assert_equal ["Galleon"], retrieve_specializations(:polymorphism => true).map { |s| s.specialized.name }
   end
-
+  
   test "generate should yield specializations and generalizations if polymorphism and inheritance is true" do
     create_specialization
     create_generalization
     assert_equal ["Beer", "Galleon"], retrieve_specializations(:inheritance => true,
       :polymorphism => true).map { |s| s.specialized.name }
   end
-
+  
   # Attribute filtering ======================================================
   test "generate should yield content attributes by default" do
     create_model "Book", :title => :string, :created_at => :datetime, :author => :references do
@@ -271,7 +271,7 @@ class DiagramTest < ActiveSupport::TestCase
     create_model "Author"
     assert_equal %w{title}, retrieve_attribute_lists[Book].map(&:name)
   end
-
+  
   test "generate should yield primary key attributes if included" do
     create_model "Book", :title => :string
     create_model "Page", :book => :references do
@@ -279,7 +279,7 @@ class DiagramTest < ActiveSupport::TestCase
     end
     assert_equal %w{id}, retrieve_attribute_lists(:attributes => [:primary_keys])[Book].map(&:name)
   end
-
+  
   test "generate should yield foreign key attributes if included" do
     create_model "Book", :author => :references do
       belongs_to :author
@@ -287,7 +287,7 @@ class DiagramTest < ActiveSupport::TestCase
     create_model "Author"
     assert_equal %w{author_id}, retrieve_attribute_lists(:attributes => [:foreign_keys])[Book].map(&:name)
   end
-
+  
   test "generate should yield timestamp attributes if included" do
     create_model "Book", :created_at => :datetime, :created_on => :date, :updated_at => :datetime, :updated_on => :date
     create_model "Page", :book => :references do
@@ -296,7 +296,7 @@ class DiagramTest < ActiveSupport::TestCase
     assert_equal %w{created_at created_on updated_at updated_on},
       retrieve_attribute_lists(:attributes => [:timestamps])[Book].map(&:name)
   end
-
+  
   test "generate should yield combinations of attributes if included" do
     create_model "Book", :created_at => :datetime, :title => :string, :author => :references do
       belongs_to :author
