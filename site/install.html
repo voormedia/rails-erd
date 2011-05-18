@@ -19,6 +19,10 @@ title: Installation instructions
 % brew install cairo pango graphviz    # Homebrew on Mac OS X
 {% endhighlight %}
 
+The order of installation is important in Homebrew. If you already have
+Graphviz installed without support for Pango/Cairo, <strong>uninstall it
+first!</strong>
+
 {% highlight console cssclass=console %}
 % sudo port install graphviz           # Macports on Mac OS X
 {% endhighlight %}
