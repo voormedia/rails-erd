@@ -110,13 +110,13 @@ Error occurred while loading application: FooBar (RuntimeError)
     Rake::Task.define_task :environment
     message = nil
     begin
-      old_stdout, $stdout = $stdout, StringIO.new
+      old_stderr, $stderr = $stderr, StringIO.new
       Rake.application.options.trace = true
       Rake::Task["erd:generate"].invoke
     rescue => e
       message = e.message
     ensure
-      $stdout = old_stdout
+      $stderr = old_stderr
     end
     assert_equal "FooBar", message
   end

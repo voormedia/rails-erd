@@ -1,12 +1,8 @@
 source "http://rubygems.org"
 
-gem "activerecord", "~> 3.0"
-gem "activesupport", "~> 3.0"
-gem "ruby-graphviz", "~> 0.9.18"
+gemspec
 
 group :development do
-  gem "jeweler", "~> 1.5.2"
-
   platforms :ruby do
     gem "sqlite3"
   end
