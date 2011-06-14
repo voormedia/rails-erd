@@ -5,7 +5,7 @@ class DomainTest < ActiveSupport::TestCase
   test "generate should return domain" do
     assert_kind_of Domain, Domain.generate
   end
-  
+
   test "name should return rails application name" do
     begin
       Object::Quux = Module.new
@@ -18,11 +18,11 @@ class DomainTest < ActiveSupport::TestCase
       Object.send :remove_const, :Rails
     end
   end
-  
+
   test "name should return nil outside rails" do
     assert_nil Domain.generate.name
   end
-  
+
   test "inspect should display object id only" do
     create_model "Foo", :bar => :references do
       belongs_to :bar
@@ -30,18 +30,18 @@ class DomainTest < ActiveSupport::TestCase
     create_model "Bar"
     assert_match %r{#<RailsERD::Domain:.*>}, Domain.generate.inspect
   end
-  
+
   # Entity processing ========================================================
   test "entity_by_name should return associated entity for given name" do
     create_model "Foo"
     assert_equal Foo, Domain.generate.entity_by_name("Foo").model
   end
-  
+
   test "entities should return domain entities" do
     create_models "Foo", "Bar"
     assert_equal [Domain::Entity] * 2, Domain.generate.entities.collect(&:class)
   end
-  
+
   test "entities should return all domain entities sorted by name" do
     create_models "Foo", "Bar", "Baz", "Qux"
     assert_equal [Bar, Baz, Foo, Qux], Domain.generate.entities.collect(&:model)
@@ -63,7 +63,7 @@ class DomainTest < ActiveSupport::TestCase
     end
     assert_equal ["Defensible", "Galleon", "Stronghold"], Domain.generate.entities.collect(&:name)
   end
-  
+
   test "entities should omit abstract models" do
     Object.const_set :Foo, Class.new(ActiveRecord::Base) { self.abstract_class = true }
     create_model "Bar", Foo do
@@ -73,12 +73,12 @@ class DomainTest < ActiveSupport::TestCase
     create_table "bars", {}, true
     assert_equal ["Bar"], Domain.generate.entities.collect(&:name)
   end
-  
+
   # Relationship processing ==================================================
   test "relationships should return empty array for empty domain" do
     assert_equal [], Domain.generate.relationships
   end
-  
+
   test "relationships should return relationships in domain model" do
     create_models "Baz", "Qux"
     create_model "Foo", :bar => :references, :qux => :references do
@@ -90,7 +90,7 @@ class DomainTest < ActiveSupport::TestCase
     end
     assert_equal [Domain::Relationship] * 3, Domain.generate.relationships.collect(&:class)
   end
-  
+
   test "relationships should count mutual relationship as one" do
     create_model "Foo", :bar => :references do
       belongs_to :bar
@@ -116,7 +116,7 @@ class DomainTest < ActiveSupport::TestCase
     end
     assert_equal [Domain::Relationship], Domain.generate.relationships.select(&:indirect?).collect(&:class)
   end
-  
+
   test "relationships should count relationship between same models with distinct foreign key seperately" do
     create_model "Foo", :bar => :references, :special_bar => :references do
       belongs_to :bar
@@ -126,7 +126,7 @@ class DomainTest < ActiveSupport::TestCase
     end
     assert_equal [Domain::Relationship] * 2, Domain.generate.relationships.collect(&:class)
   end
-  
+
   test "relationships should use model name first in alphabet as source for many to many relationships" do
     create_table "many_more", :many_id => :integer, :more_id => :integer
     create_model "Many" do
@@ -138,7 +138,7 @@ class DomainTest < ActiveSupport::TestCase
     relationship = Domain.generate.relationships.first
     assert_equal ["Many", "More"], [relationship.source.name, relationship.destination.name]
   end
-  
+
   # Specialization processing ================================================
   test "specializations should return empty array for empty domain" do
     assert_equal [], Domain.generate.specializations
@@ -159,7 +159,7 @@ class DomainTest < ActiveSupport::TestCase
     Object.const_set :BelgianBeer, Class.new(Beer)
     assert_equal [Domain::Specialization] * 2, Domain.generate.specializations.collect(&:class)
   end
-  
+
   test "specializations should return generalizations in domain model" do
     create_model "Post" do
       has_many :assets, :as => :attachable
@@ -180,7 +180,7 @@ class DomainTest < ActiveSupport::TestCase
     end
     assert_equal [Domain::Specialization] * 2, Domain.generate.specializations.collect(&:class)
   end
-  
+
   # test "generalizations should ..." do
   #   # TODO
   #   create_model "Post" do
@@ -191,7 +191,7 @@ class DomainTest < ActiveSupport::TestCase
   #   end
   #   assert_equal [], Domain.generate.relationships
   # end
-  
+
   # Erroneous associations ===================================================
   test "relationships should omit bad has_many associations" do
     create_model "Foo" do
@@ -199,14 +199,14 @@ class DomainTest < ActiveSupport::TestCase
     end
     assert_equal [], Domain.generate(:warn => false).relationships
   end
-  
+
   test "relationships should omit bad has_many through association" do
     create_model "Foo" do
       has_many :flabs, :through => :bars
     end
     assert_equal [], Domain.generate(:warn => false).relationships
   end
-  
+
   test "relationships should omit association to model outside domain" do
     create_model "Foo" do
       has_many :bars
@@ -258,7 +258,7 @@ class DomainTest < ActiveSupport::TestCase
     end
     assert_equal "", output
   end
-  
+
   # Erroneous models =========================================================
   test "entities should omit bad models" do
     Object.const_set :Foo, Class.new(ActiveRecord::Base)
