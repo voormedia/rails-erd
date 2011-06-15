@@ -1,9 +1,10 @@
 PATH
   remote: .
   specs:
-    rails-erd (0.4.6)
+    rails-erd (0.5.0pre)
       activerecord (~> 3.0)
       activesupport (~> 3.0)
+      choice (~> 0.1.4)
       ruby-graphviz (~> 1.0)
 
 GEM
@@ -23,6 +24,7 @@ GEM
     arel (2.0.10)
     bouncy-castle-java (1.5.0146.1)
     builder (2.1.2)
+    choice (0.1.4)
     i18n (0.5.0)
     jdbc-sqlite3 (3.6.14.2.056-java)
     jruby-openssl (0.7.4)

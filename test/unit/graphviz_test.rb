@@ -8,7 +8,7 @@ class GraphvizTest < ActiveSupport::TestCase
   end
 
   def teardown
-    FileUtils.rm Dir["ERD.*"] rescue nil
+    FileUtils.rm Dir["erd.*"] rescue nil
     RailsERD::Diagram.send :remove_const, :Graphviz rescue nil
   end
 
@@ -54,9 +54,9 @@ class GraphvizTest < ActiveSupport::TestCase
   test "file name should depend on file type" do
     create_simple_domain
     begin
-      assert_equal "ERD.svg", Diagram::Graphviz.create(:filetype => :svg)
+      assert_equal "erd.svg", Diagram::Graphviz.create(:filetype => :svg)
     ensure
-      FileUtils.rm "ERD.svg" rescue nil
+      FileUtils.rm "erd.svg" rescue nil
     end
   end
 
@@ -77,19 +77,19 @@ class GraphvizTest < ActiveSupport::TestCase
     end
     create_model "Bar", :column => :string
     Diagram::Graphviz.create
-    assert File.exists?("ERD.png")
+    assert File.exists?("erd.png")
   end
 
   test "create should create output for domain without attributes" do
     create_simple_domain
     Diagram::Graphviz.create
-    assert File.exists?("ERD.png")
+    assert File.exists?("erd.png")
   end
 
   test "create should write to file with dot extension if type is dot" do
     create_simple_domain
     Diagram::Graphviz.create :filetype => :dot
-    assert File.exists?("ERD.dot")
+    assert File.exists?("erd.dot")
   end
 
   test "create should write to file with dot extension without requiring graphviz" do
@@ -115,18 +115,18 @@ class GraphvizTest < ActiveSupport::TestCase
     end
     create_model "Bar", :column => :string
     Diagram::Graphviz.create(:orientation => :vertical)
-    assert File.exists?("ERD.png")
+    assert File.exists?("erd.png")
   end
 
   test "create should create output for domain if orientation is vertical" do
     create_simple_domain
     Diagram::Graphviz.create(:orientation => :vertical)
-    assert File.exists?("ERD.png")
+    assert File.exists?("erd.png")
   end
 
   test "create should not create output if there are no connected models" do
     Diagram::Graphviz.create rescue nil
-    assert !File.exists?("ERD.png")
+    assert !File.exists?("erd.png")
   end
 
   test "create should abort and complain if there are no connected models" do

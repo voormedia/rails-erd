@@ -50,7 +50,7 @@ module RailsERD
   self.options = ActiveSupport::OrderedOptions[
     :attributes, :content,
     :disconnected, true,
-    :filename, "ERD",
+    :filename, "erd",
     :filetype, :pdf,
     :indirect, true,
     :inheritance, false,

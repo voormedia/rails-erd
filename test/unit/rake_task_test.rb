@@ -13,7 +13,7 @@ class RakeTaskTest < ActiveSupport::TestCase
   end
 
   def teardown
-    FileUtils.rm "ERD.dot" rescue nil
+    FileUtils.rm "erd.dot" rescue nil
     RailsERD::Diagram.send :remove_const, :Graphviz rescue nil
   end
 
@@ -35,12 +35,12 @@ class RakeTaskTest < ActiveSupport::TestCase
   test "generate task should create output based on domain model" do
     create_simple_domain
     Rake::Task["erd:generate"].execute
-    assert File.exists?("ERD.dot")
+    assert File.exists?("erd.dot")
   end
 
   test "generate task should not create output if there are no connected models" do
     Rake::Task["erd:generate"].execute rescue nil
-    assert !File.exists?("ERD.dot")
+    assert !File.exists?("erd.dot")
   end
 
   test "generate task should eager load application environment" do

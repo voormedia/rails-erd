@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+require "rails_erd/cli"
+
+RailsERD::CLI.start
