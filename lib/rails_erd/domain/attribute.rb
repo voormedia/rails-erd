@@ -102,6 +102,8 @@ module RailsERD
       def limit
         unless @model.connection.native_database_types[type].nil?
           column.limit if column.limit != @model.connection.native_database_types[type][:limit]
+        else
+          ''
         end
       end
 
