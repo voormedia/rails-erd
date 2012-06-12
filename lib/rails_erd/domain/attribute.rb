@@ -31,7 +31,11 @@ module RailsERD
       # The type of the attribute, equal to the Rails migration type. Can be any
       # of +:string+, +:integer+, +:boolean+, +:text+, etc.
       def type
-        puts "===> " + column.to_json
+        
+        unless column.to_json.match(/geog/).nil?
+          puts "===> " + column.to_json
+        end
+        
         column.type
       end
 
