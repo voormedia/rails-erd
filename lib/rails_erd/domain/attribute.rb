@@ -103,13 +103,17 @@ module RailsERD
         unless @model.connection.native_database_types[type].nil?
           column.limit if column.limit != @model.connection.native_database_types[type][:limit]
         else
-          'Unknown Limit' 
+          ' ' 
         end
       end
 
       # Returns any non-standard scale for this attribute (decimal types only).
       def scale
-        column.scale if column.scale != @model.connection.native_database_types[type][:scale]
+        unless @model.connection.native_database_types[type].nil?
+          column.scale if column.scale != @model.connection.native_database_types[type][:scale]
+        else
+          ' '
+        end
       end
 
       # Returns a string that describes the limit for this attribute, such as
