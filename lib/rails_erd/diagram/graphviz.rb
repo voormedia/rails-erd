@@ -188,7 +188,6 @@ module RailsERD
       save do
         raise "Saving diagram failed!\nOutput directory '#{File.dirname(filename)}' does not exist." unless File.directory?(File.dirname(filename))
         begin
-          puts "===> #{filename}"
           graph.output(filetype => filename)
           filename
         rescue RuntimeError => e
