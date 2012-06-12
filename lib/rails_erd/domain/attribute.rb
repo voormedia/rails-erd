@@ -31,12 +31,11 @@ module RailsERD
       # The type of the attribute, equal to the Rails migration type. Can be any
       # of +:string+, +:integer+, +:boolean+, +:text+, etc.
       def type
-        
-        unless column.to_json.match(/geog/).nil?
-          puts "===> " + column.to_json
+        if column.type.nil?
+          column.sql_type
+        else
+          column.type
         end
-        
-        column.type
       end
 
       # Returns +true+ if this attribute is a content column, that is, if it
@@ -108,7 +107,7 @@ module RailsERD
         unless @model.connection.native_database_types[type].nil?
           column.limit if column.limit != @model.connection.native_database_types[type][:limit]
         else
-          ' ' 
+          nil 
         end
       end
 
@@ -117,7 +116,7 @@ module RailsERD
         unless @model.connection.native_database_types[type].nil?
           column.scale if column.scale != @model.connection.native_database_types[type][:scale]
         else
-          ' '
+          nil
         end
       end
 
