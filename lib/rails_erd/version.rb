@@ -1,4 +1,4 @@
 module RailsERD
-  VERSION = "0.5.0pre"
+  VERSION = "1.0.0"
   BANNER = "RailsERD #{VERSION}"
 end
