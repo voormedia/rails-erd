@@ -13,6 +13,8 @@
   Milovan Zogovic).
 * Process column types that are unsupported by Rails (contributed by Erik
   Gustavson).
+* Ignore custom limit/scale attributes that cannot be converted to an integer
+  (reported by Adam St. John).
 
 === 0.4.5:
 
