@@ -225,11 +225,11 @@ module RailsERD
       end
 
       def draw_node(name, options)
-        graph.add_node escape_name(name), options
+        graph.add_nodes escape_name(name), options
       end
 
       def draw_edge(from, to, options)
-        graph.add_edge graph.get_node(escape_name(from)), graph.get_node(escape_name(to)), options if node_exists?(from) and node_exists?(to)
+        graph.add_edges graph.get_node(escape_name(from)), graph.get_node(escape_name(to)), options if node_exists?(from) and node_exists?(to)
       end
 
       def escape_name(name)

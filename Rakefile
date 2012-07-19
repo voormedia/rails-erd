@@ -4,7 +4,7 @@ require "rake/testtask"
 Bundler::GemHelper.install_tasks
 
 Rake::TestTask.new do |test|
-  test.pattern = "test/**/*_test.rb"
+  test.test_files = FileList["test/**/*_test.rb"]
 end
 
 task :default => :test

@@ -72,7 +72,7 @@ class EntityTest < ActiveSupport::TestCase
   #   create_model "Foo", :type => :string
   #   Object.const_set :SpecialFoo, Class.new(Foo)
   #   SpecialFoo.class_eval do
-  #     set_table_name "special_foo"
+  #     self.table_name = "special_foo"
   #   end
   #   create_table "special_foo", {}, true
   #   assert_nil create_entity(SpecialFoo).parent
@@ -129,7 +129,7 @@ class EntityTest < ActiveSupport::TestCase
     create_model "Foo", :type => :string
     Object.const_set :SpecialFoo, Class.new(Foo)
     SpecialFoo.class_eval do
-      set_table_name "special_foo"
+      self.table_name = "special_foo"
     end
     create_table "special_foo", {}, true
     assert_equal false, create_entity(SpecialFoo).specialized?

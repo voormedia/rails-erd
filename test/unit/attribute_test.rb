@@ -75,7 +75,7 @@ class AttributeTest < ActiveSupport::TestCase
 
   test "primary_key should return true if column is used as primary key" do
     create_model "Bar", :my_key => :integer do
-      set_primary_key :my_key
+      self.primary_key = :my_key
     end
     assert_equal true, create_attribute(Bar, "my_key").primary_key?
   end
@@ -114,14 +114,14 @@ class AttributeTest < ActiveSupport::TestCase
 
   test "inheritance should return false by default" do
     create_model "Foo", :type => :string, :alternative => :string do
-      set_inheritance_column :alternative
+      self.inheritance_column = :alternative
     end
     assert_equal false, create_attribute(Foo, "type").inheritance?
   end
 
   test "inheritance should return if this column is used for single table inheritance" do
     create_model "Foo", :type => :string, :alternative => :string do
-      set_inheritance_column :alternative
+      self.inheritance_column = :alternative
     end
     assert_equal true, create_attribute(Foo, "alternative").inheritance?
   end

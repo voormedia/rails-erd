@@ -14,9 +14,9 @@ Gem::Specification.new do |s|
 
   s.rubyforge_project = "rails-erd"
 
-  s.add_runtime_dependency "activerecord", ["~> 3.0"]
-  s.add_runtime_dependency "activesupport", ["~> 3.0"]
-  s.add_runtime_dependency "ruby-graphviz", ["~> 1.0"]
+  s.add_runtime_dependency "activerecord", ["~> 3.0.0"]
+  s.add_runtime_dependency "activesupport", ["~> 3.0.0"]
+  s.add_runtime_dependency "ruby-graphviz", [">= 1.0.4"]
   s.add_runtime_dependency "choice", ["~> 0.1.4"]
   s.add_development_dependency "rake", ["~> 0.9"]
 

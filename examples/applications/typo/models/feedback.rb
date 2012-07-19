@@ -1,3 +1,3 @@
 class Feedback < Content
-  set_table_name "feedback"
+  self.table_name = "feedback"
 end

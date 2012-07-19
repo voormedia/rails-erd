@@ -67,7 +67,7 @@ class DomainTest < ActiveSupport::TestCase
   test "entities should omit abstract models" do
     Object.const_set :Foo, Class.new(ActiveRecord::Base) { self.abstract_class = true }
     create_model "Bar", Foo do
-      set_table_name "bars"
+      self.table_name = "bars"
     end
     create_table "foos", {}, true
     create_table "bars", {}, true

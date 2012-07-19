@@ -160,7 +160,7 @@ class DiagramTest < ActiveSupport::TestCase
     create_model "Foo"
     Object.const_set :SpecialFoo, Class.new(Foo)
     SpecialFoo.class_eval do
-      set_table_name "special_foo"
+      self.table_name = "special_foo"
     end
     create_table "special_foo", {}, true
     assert_equal [Foo, SpecialFoo], retrieve_entities.map(&:model)
