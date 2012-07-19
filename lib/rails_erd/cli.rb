@@ -1,10 +1,5 @@
 require "choice"
 
-Hash.class_eval do
-  # Fix deprecation warning in Choice.
-  alias_method :index, :key if method_defined? :key
-end
-
 Choice.options do
   separator ""
   separator "Diagram options:"
@@ -18,6 +13,38 @@ Choice.options do
     long "--notation=STYLE"
     desc "Diagram notation style, one of simple, bachman, uml or crowsfoot."
     default "simple"
+  end
+
+  option :attributes do
+    long "--attributes=TYPE,..."
+    desc "Attribute groups to display: content, primary_keys, foreign_keys, timestamps and/or inheritance."
+    default "content"
+  end
+
+  option :orientation do
+    long "--orientation=ORIENTATION"
+    desc "Orientation of diagram, either horizontal (default) or vertical."
+    default "orientation"
+  end
+
+  option :inheritance do
+    long "--inheritance"
+    desc "Display (single table) inheritance relationships."
+  end
+
+  option :polymorphism do
+    long "--polymorphism"
+    desc "Display polymorphic relationships."
+  end
+
+  option :no_indirect do
+    long "--direct"
+    desc "Omit indirect relationships (through other entities)."
+  end
+
+  option :no_disconnected do
+    long "--connected"
+    desc "Omit entities without relationships."
   end
 
   separator ""
@@ -35,6 +62,11 @@ Choice.options do
     default "pdf"
   end
 
+  option :no_markup do
+    long "--no-markup"
+    desc "Disable markup for enhanced compatibility of .dot output with other applications."
+  end
+
   option :open do
     long "--open"
     desc "Open the output file after it has been saved."
@@ -48,6 +80,11 @@ Choice.options do
     desc "Display this help message."
   end
 
+  option :debug do
+    long "--debug"
+    desc "Show stack traces when an error occurs."
+  end
+
   option :version do
     short "-v"
     long "--version"
@@ -58,20 +95,6 @@ Choice.options do
       exit
     end
   end
-
-  # Remaining options:
-  # :attributes, :content,
-  # :disconnected, true,
-  ## :filename, "erd",
-  ## :filetype, :pdf,
-  # :indirect, true,
-  # :inheritance, false,
-  # :markup, true,
-  ## :notation, :simple,
-  # :orientation, :horizontal,
-  # :polymorphism, false,
-  # :warn, true,
-  ## :title, true
 end
 
 module RailsERD
@@ -81,7 +104,15 @@ module RailsERD
     class << self
       def start
         path = Choice.rest.first || Dir.pwd
-        options = Choice.choices.each_with_object({}) { |(k, v), o| o[k.to_sym] = v }
+        options = Choice.choices.each_with_object({}) do |(key, value), opts|
+          if key.start_with? "no_"
+            opts[key.gsub("no_", "").to_sym] = !value
+          elsif value.to_s.include? ","
+            opts[key.to_sym] = value.split(",").map(&:to_sym)
+          else
+            opts[key.to_sym] = value
+          end
+        end
         new(path, options).start
       end
     end
@@ -93,23 +124,23 @@ module RailsERD
 
     def start
       load_application
-      load_models
       create_diagram
+    rescue Exception => e
+      $stderr.puts "Failed: #{e.class}: #{e.message}"
+      $stderr.puts e.backtrace.map { |t| "    from #{t}" } if options[:debug]
     end
 
     private
 
     def load_application
       $stderr.puts "Loading application in '#{File.basename(path)}'..."
+      # TODO: Add support for different kinds of environment.
       require "#{path}/config/environment"
-    end
-
-    def load_models
-      $stderr.puts "Loading code in search of models..."
       Rails.application.eager_load!
     end
 
     def create_diagram
+      $stderr.puts "Generating entity-relationship diagram for #{ActiveRecord::Base.descendants.length} models..."
       file = RailsERD::Diagram::Graphviz.create(options)
       $stderr.puts "Diagram saved to '#{file}'."
       `open #{file}` if options[:open]
