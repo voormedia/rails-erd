@@ -21,8 +21,18 @@ module RailsERD
         private
 
         def association_identity(association)
-          identifier = association.options[:join_table] || association.options[:through] || association.send(Domain.foreign_key_method_name).to_s
+          identifier = association_identifier(association)
           Set[identifier, association_owner(association), association_target(association)]
+        end
+
+        def association_identifier(association)
+          if association.macro == :has_and_belongs_to_many
+            # Rails 4+ supports the join_table method, and doesn't expose it
+            # as an option if it's an implicit default.
+            (association.respond_to?(:join_table) && association.join_table) || association.options[:join_table]
+          else
+            association.options[:through] || association.send(Domain.foreign_key_method_name).to_s
+          end
         end
 
         def association_owner(association)
