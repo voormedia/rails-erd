@@ -31,7 +31,7 @@ module RailsERD
       # The type of the attribute, equal to the Rails migration type. Can be any
       # of +:string+, +:integer+, +:boolean+, +:text+, etc.
       def type
-        column.type
+        column.type or column.sql_type.downcase.to_sym
       end
 
       # Returns +true+ if this attribute is a content column, that is, if it
@@ -100,12 +100,12 @@ module RailsERD
       # Returns any non-standard limit for this attribute. If a column has no
       # limit or uses a default database limit, this method returns +nil+.
       def limit
-        column.limit if column.limit != @model.connection.native_database_types[type][:limit]
+        column.limit if column.limit != native_type[:limit]
       end
 
       # Returns any non-standard scale for this attribute (decimal types only).
       def scale
-        column.scale if column.scale != @model.connection.native_database_types[type][:scale]
+        column.scale if column.scale != native_type[:scale]
       end
 
       # Returns a string that describes the limit for this attribute, such as
@@ -114,6 +114,12 @@ module RailsERD
       def limit_description # @private :nodoc:
         return "(#{limit},#{scale})" if limit and scale
         return "(#{limit})" if limit
+      end
+
+      private
+
+      def native_type
+        @model.connection.native_database_types[type] or {}
       end
     end
   end

@@ -49,6 +49,16 @@ class AttributeTest < ActiveSupport::TestCase
     assert_equal :binary, create_attribute(Foo, "a").type
   end
 
+  test "type should return native type if unsupported by rails" do
+    create_model "Foo"
+    ActiveRecord::Schema.define do
+      suppress_messages do
+        add_column "foos", "a", "REAL"
+      end
+    end
+    assert_equal :real, create_attribute(Foo, "a").type
+  end
+
   # Attribute properties =====================================================
   test "mandatory should return false by default" do
     create_model "Foo", :column => :string
@@ -145,6 +155,16 @@ class AttributeTest < ActiveSupport::TestCase
     assert_equal "binary", create_attribute(Foo, "a").type_description
   end
 
+  test "type_description should return short type description if unsupported by rails" do
+    create_model "Foo"
+    ActiveRecord::Schema.define do
+      suppress_messages do
+        add_column "foos", "a", "REAL"
+      end
+    end
+    assert_equal "real", create_attribute(Foo, "a").type_description
+  end
+
   test "type_description should return short type description without limit if standard" do
     with_native_limit :string, 456 do
       create_model "Foo"
@@ -209,6 +229,16 @@ class AttributeTest < ActiveSupport::TestCase
     assert_equal nil, create_attribute(Foo, "num").limit
   end
 
+  test "limit should return nil if type is unsupported by rails" do
+    create_model "Foo"
+    ActiveRecord::Schema.define do
+      suppress_messages do
+        add_column "foos", "a", "REAL"
+      end
+    end
+    assert_equal nil, create_attribute(Foo, "a").limit
+  end
+
   test "scale should return scale for decimal columns if nonstandard" do
     create_model "Foo"
     add_column :foos, :num, :decimal, :precision => 5, :scale => 2
@@ -225,5 +255,15 @@ class AttributeTest < ActiveSupport::TestCase
     create_model "Foo"
     add_column :foos, :num, :decimal, :precision => 5
     assert_equal 0, create_attribute(Foo, "num").scale
+  end
+
+  test "scale should return nil if type is unsupported by rails" do
+    create_model "Foo"
+    ActiveRecord::Schema.define do
+      suppress_messages do
+        add_column "foos", "a", "REAL"
+      end
+    end
+    assert_equal nil, create_attribute(Foo, "a").scale
   end
 end
