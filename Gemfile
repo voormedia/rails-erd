@@ -8,6 +8,9 @@ if ENV["edge"]
 end
 
 group :development do
+  gem "yard"
+  gem "redcarpet"
+
   platforms :ruby do
     gem "sqlite3"
   end

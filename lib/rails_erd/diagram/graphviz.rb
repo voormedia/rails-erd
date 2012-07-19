@@ -5,7 +5,7 @@ require "erb"
 
 # Fix bad RegEx test in Ruby-Graphviz.
 GraphViz::Types::LblString.class_eval do
-  def output
+  def output # @private :nodoc:
     if /^<.*>$/m =~ @data
       @data
     else
