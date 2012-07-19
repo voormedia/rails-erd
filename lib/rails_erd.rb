@@ -59,6 +59,8 @@ module RailsERD
     :orientation, :horizontal,
     :polymorphism, false,
     :warn, true,
-    :title, true
+    :title, true,
+    :exclude, nil,
+    :only, nil
   ]
 end
