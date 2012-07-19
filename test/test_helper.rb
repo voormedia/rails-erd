@@ -14,7 +14,7 @@ class ActiveSupport::TestCase
 
   def create_table(table, columns = {}, pk = nil)
     opts = if pk then { :primary_key => pk } else { :id => false } end
-    ActiveRecord::Schema.define do
+    ActiveRecord::Schema.instance_eval do
       suppress_messages do
         create_table table, opts do |t|
           columns.each do |column, type|
@@ -23,14 +23,16 @@ class ActiveSupport::TestCase
         end
       end
     end
+    ActiveRecord::Base.clear_cache!
   end
 
   def add_column(*args)
-    ActiveRecord::Schema.define do
+    ActiveRecord::Schema.instance_eval do
       suppress_messages do
         add_column *args
       end
     end
+    ActiveRecord::Base.clear_cache!
   end
 
   def create_model(name, *args, &block)
@@ -119,6 +121,7 @@ class ActiveSupport::TestCase
       end
       ActiveRecord::Base.direct_descendants.clear
       ActiveSupport::Dependencies::Reference.clear!
+      ActiveRecord::Base.clear_cache!
     end
   end
 end
