@@ -239,6 +239,18 @@ class AttributeTest < ActiveSupport::TestCase
     assert_equal nil, create_attribute(Foo, "a").limit
   end
 
+  test "limit should return nil for oddball column types that misuse the limit attribute" do
+    create_model "Business", :location => :integer
+    attribute = create_attribute(Business, "location")
+    attribute.column.class_eval do
+      define_method :limit do
+        # https://github.com/voormedia/rails-erd/issues/21
+        { :srid => 4326, :type => "point", :geographic => true }
+      end
+    end
+    assert_equal nil, attribute.limit
+  end
+
   test "scale should return scale for decimal columns if nonstandard" do
     create_model "Foo"
     add_column :foos, :num, :decimal, :precision => 5, :scale => 2
@@ -265,5 +277,16 @@ class AttributeTest < ActiveSupport::TestCase
       end
     end
     assert_equal nil, create_attribute(Foo, "a").scale
+  end
+
+  test "scale should return nil for oddball column types that misuse the scale attribute" do
+    create_model "Kobold", :size => :integer
+    attribute = create_attribute(Kobold, "size")
+    attribute.column.class_eval do
+      define_method :scale do
+        :small
+      end
+    end
+    assert_equal nil, attribute.scale
   end
 end
