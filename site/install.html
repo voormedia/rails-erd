@@ -12,23 +12,19 @@ title: Installation instructions
 
 <h2><a name="install-graphviz">Install Graphviz</a></h2>
 <p>
-  Rails ERD requires Graphviz (with Pango/Cairo support). To install it, try one of the following...
+  Rails ERD requires Graphviz. To install it, try one of the following...
 </p>
 
 {% highlight console cssclass=console %}
-% brew install cairo pango graphviz    # Homebrew on Mac OS X
-{% endhighlight %}
-
-The order of installation is important in Homebrew. If you already have
-Graphviz installed without support for Pango/Cairo, <strong>uninstall it
-first!</strong>
-
-{% highlight console cssclass=console %}
-% sudo port install graphviz           # Macports on Mac OS X
+ brew install graphviz           # Homebrew on Mac OS X
 {% endhighlight %}
 
 {% highlight console cssclass=console %}
-% sudo aptitude install graphviz       # Debian and Ubuntu
+% sudo port install graphviz      # Macports on Mac OS X
+{% endhighlight %}
+
+{% highlight console cssclass=console %}
+% sudo aptitude install graphviz  # Debian and Ubuntu
 {% endhighlight %}
 
 <p>
@@ -40,9 +36,9 @@ first!</strong>
 
 <h2><a name="install-rails-erd">Install Rails ERD</a></h2>
 <p>
-  Rails ERD runs on all Rails 3 platforms: Ruby 1.8.7, Ruby 1.9.2, Rubinius 1.1,
-  or JRuby 1.5 all work fine. Add Rails ERD as a plugin to your Ruby on Rails
-  3 application. In your <tt>Gemfile</tt>...
+  Rails ERD runs on all Rails 3 platforms: Ruby 1.8/1.9, Rubinius, or JRuby
+  all work fine. Add Rails ERD as a plugin to your Ruby on Rails 3
+  application. In your <tt>Gemfile</tt>...
 </p>
 
 {% highlight ruby %}
@@ -103,5 +99,7 @@ RailsERD::Diagram::Graphviz.create
 <p>
   If things are still not running smoothly, I'd love to hear from you.
   You can either create a <a href="http://github.com/voormedia/rails-erd/issues">new issue</a>,
-  or drop me a line at <b>r.timmermans <em>at</em> voormedia.com</b>.
+  or drop me a line at <b>r.timmermans <em>at</em> voormedia.com</b>. If
+  something goes wrong while generating a diagram, please provide a set of
+  example models that exhibit the problem.
 </p>

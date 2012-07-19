@@ -1,8 +1,18 @@
-=== Unreleased:
+=== 1.0.0:
 
+* The internal API is now stable and will be backwards compatible until
+  the next major version.
+* Added experimental command line interface (erd). The CLI still requires a
+  Rails application to be present, but it may one day support other kinds of
+  applications.
 * Crow's foot notation (also known as the Information Engineering notation)
   can be used by adding 'notation=crowsfoot' to the 'rake erd' command
   (contributed by Jeremy Holland).
+* Filter models by using the only or exclude options (only=ModelOne,ModelTwo
+  or exclude=ModelThree,ModelFour) from the command line (contributed by
+  Milovan Zogovic).
+* Process column types that are unsupported by Rails (contributed by Erik
+  Gustavson).
 
 === 0.4.5:
 
