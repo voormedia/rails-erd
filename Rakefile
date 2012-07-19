@@ -10,7 +10,7 @@ Rake::TestTask.new do |test|
 end
 
 YARD::Rake::YardocTask.new do |yard|
-  yard.files = ["lib/**/*.rb", "-", "LICENSE", "CHANGES.rdoc"]
+  yard.files = ["lib/**/*.rb", "-", "LICENSE", "CHANGES.md"]
 end
 
 task :default => :test

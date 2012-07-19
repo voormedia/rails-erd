@@ -1,4 +1,5 @@
-=== 1.0.0:
+1.0.0
+-----
 
 * The internal API is now stable and will be backwards compatible until
   the next major version.
@@ -16,12 +17,14 @@
 * Ignore custom limit/scale attributes that cannot be converted to an integer
   (reported by Adam St. John).
 
-=== 0.4.5:
+0.4.5
+-----
 
 * Display more helpful error message when the application models could not be
   loaded successfully by the 'rake erd' task (reported by Greg Weber).
 
-=== 0.4.4:
+0.4.4
+-----
 
 * Added the ability to disable HTML markup in node labels (markup=false). This
   causes .dot files to be compatible with OmniGraffle, which otherwise fails
@@ -32,18 +35,21 @@
 * Improved error messages when Graphviz is throwing errors (reported by
   Michael Irwin).
 
-=== 0.4.3:
+0.4.3
+-----
 
 * Display the scale of decimal attributes when set. A decimal attribute with
   precision 5 and scale 2 is now indicated with (5,2).
 * Fixed deprecation warnings for edge Rails (upcoming 3.1).
 
-=== 0.4.1:
+0.4.1
+-----
 
 * Fix processing of associations with class_name set to absolute module paths.
 * Adjust model loading process to include models in non-standard paths eagerly.
 
-=== 0.4.0:
+0.4.0
+-----
 
 * Support to optionally display single table inheritance relationships
   (inheritance=true).
@@ -59,7 +65,8 @@
 * Added compatibility for Active Record 3.1 (beta), removed dependency on Arel.
 * Rubinius compatibility.
 
-=== 0.3.0:
+0.3.0
+-----
 
 * Added the ability to support multiple styles of cardinality notations.
   Currently supported types are 'simple' and 'advanced'.
@@ -74,7 +81,8 @@
   versions of Graphviz (reported by Mike McQuinn).
 * Bundled examples based on actual applications.
 
-=== 0.2.0
+0.2.0
+-----
 
 * Added simple way to create your own type of diagrams with a tiny amount of code.
 * Improved internal API and documentation.
@@ -83,12 +91,14 @@
   as indirect relationships.
 * Fixed error where diagrams with a vertical layout might fail to be generated.
 
-=== 0.1.1
+0.1.1
+-----
 
 * Fixed small errors in Ruby 1.8.7.
 * Abort generation of diagrams when there are no models.
 
-=== 0.1.0
+0.1.0
+-----
 
 * Released on September 20th, 2010.
 * First public release.
