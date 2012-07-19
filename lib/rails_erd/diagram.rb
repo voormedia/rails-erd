@@ -3,7 +3,7 @@ require "rails_erd/domain"
 module RailsERD
   # This class is an abstract class that will process a domain model and
   # allows easy creation of diagrams. To implement a new diagram type, derive
-  # from this class and override +process_entity+, +process_relationship+, 
+  # from this class and override +process_entity+, +process_relationship+,
   # and (optionally) +save+.
   #
   # As an example, a diagram class that generates code that can be used with
@@ -73,13 +73,13 @@ module RailsERD
       def create(options = {})
         new(Domain.generate(options), options).create
       end
-      
+
       protected
-      
+
       def setup(&block)
         callbacks[:setup] = block
       end
-      
+
       def each_entity(&block)
         callbacks[:each_entity] = block
       end
@@ -91,7 +91,7 @@ module RailsERD
       def each_specialization(&block)
         callbacks[:each_specialization] = block
       end
-      
+
       def save(&block)
         callbacks[:save] = block
       end
@@ -105,7 +105,7 @@ module RailsERD
 
     # The options that are used to create this diagram.
     attr_reader :options
-    
+
     # The domain that this diagram represents.
     attr_reader :domain
 
@@ -113,13 +113,13 @@ module RailsERD
     def initialize(domain, options = {})
       @domain, @options = domain, RailsERD.options.merge(options)
     end
-    
+
     # Generates and saves the diagram, returning the result of +save+.
     def create
       generate
       save
     end
-    
+
     # Generates the diagram, but does not save the output. It is called
     # internally by Diagram#create.
     def generate
@@ -137,19 +137,21 @@ module RailsERD
         instance_exec relationship, &callbacks[:each_relationship]
       end
     end
-    
+
     def save
       instance_eval &callbacks[:save]
     end
-    
+
     private
-    
+
     def callbacks
       @callbacks ||= self.class.send(:callbacks)
     end
-    
+
     def filtered_entities
       @domain.entities.reject { |entity|
+        options.exclude && entity.model && [options.exclude].flatten.include?(entity.name.to_sym) or
+        options.only && entity.model && ![options.only].flatten.include?(entity.name.to_sym) or
         !options.inheritance && entity.specialized? or
         !options.polymorphism && entity.generalized? or
         !options.disconnected && entity.disconnected?
@@ -157,20 +159,20 @@ module RailsERD
         raise "No entities found; create your models first!" if entities.empty?
       end
     end
-    
+
     def filtered_relationships
       @domain.relationships.reject { |relationship|
         !options.indirect && relationship.indirect?
       }
     end
-    
+
     def filtered_specializations
       @domain.specializations.reject { |specialization|
         !options.inheritance && specialization.inheritance? or
         !options.polymorphism && specialization.polymorphic?
       }
     end
-    
+
     def filtered_attributes(entity)
       entity.attributes.reject { |attribute|
         # Select attributes that satisfy the conditions in the :attributes option.
@@ -178,7 +180,7 @@ module RailsERD
         [*options.attributes].none? { |type| attribute.send(:"#{type.to_s.chomp('s')}?") }
       }
     end
-    
+
     def warn(message)
       puts "Warning: #{message}" if options.warn
     end
