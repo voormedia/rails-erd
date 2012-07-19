@@ -2,11 +2,11 @@ require File.expand_path("../test_helper", File.dirname(__FILE__))
 
 class RelationshipTest < ActiveSupport::TestCase
   N = Domain::Relationship::N
-  
+
   def domain_cardinalities
     Domain.generate.relationships.map(&:cardinality)
   end
-  
+
   # Relationship =============================================================
   test "inspect should show source and destination" do
     create_model "Foo", :bar => :references do
@@ -15,7 +15,7 @@ class RelationshipTest < ActiveSupport::TestCase
     create_model "Bar"
     assert_match %r{#<RailsERD::Domain::Relationship:.* @source=Bar @destination=Foo>}, Domain.generate.relationships.first.inspect
   end
-  
+
   test "source should return relationship source" do
     create_model "Foo", :bar => :references do
       belongs_to :bar
@@ -24,7 +24,7 @@ class RelationshipTest < ActiveSupport::TestCase
     domain = Domain.generate
     assert_equal [domain.entity_by_name("Bar")], domain.relationships.map(&:source)
   end
-  
+
   test "destination should return relationship destination" do
     create_model "Foo", :bar => :references do
       belongs_to :bar
@@ -33,7 +33,7 @@ class RelationshipTest < ActiveSupport::TestCase
     domain = Domain.generate
     assert_equal [domain.entity_by_name("Foo")], domain.relationships.map(&:destination)
   end
-  
+
   test "destination should return relationship destination if specified with absolute module path" do
     create_model "Foo", :bar => :references
     create_model "Bar" do
@@ -42,7 +42,7 @@ class RelationshipTest < ActiveSupport::TestCase
     domain = Domain.generate
     assert_equal [domain.entity_by_name("Foo")], domain.relationships.map(&:destination)
   end
-  
+
   # Relationship properties ==================================================
   test "mutual should return false for one way relationship" do
     create_model "Foo", :bar => :references do
@@ -51,7 +51,7 @@ class RelationshipTest < ActiveSupport::TestCase
     create_model "Bar"
     assert_equal [false], Domain.generate.relationships.map(&:mutual?)
   end
-  
+
   test "mutual should return true for mutual relationship" do
     create_model "Foo", :bar => :references do
       belongs_to :bar
@@ -61,12 +61,12 @@ class RelationshipTest < ActiveSupport::TestCase
     end
     assert_equal [true], Domain.generate.relationships.map(&:mutual?)
   end
-  
+
   test "mutual should return true for mutual many to many relationship" do
     create_many_to_many_assoc_domain
     assert_equal [true], Domain.generate.relationships.map(&:mutual?)
   end
-  
+
   test "recursive should return false for ordinary relationship" do
     create_model "Foo", :bar => :references do
       belongs_to :bar
@@ -76,14 +76,14 @@ class RelationshipTest < ActiveSupport::TestCase
     end
     assert_equal [false], Domain.generate.relationships.map(&:recursive?)
   end
-  
+
   test "recursive should return true for self referencing relationship" do
     create_model "Foo", :foo => :references do
       belongs_to :foo
     end
     assert_equal [true], Domain.generate.relationships.map(&:recursive?)
   end
-  
+
   test "indirect should return false for ordinary relationship" do
     create_model "Foo", :bar => :references do
       belongs_to :bar
@@ -93,7 +93,7 @@ class RelationshipTest < ActiveSupport::TestCase
     end
     assert_equal [false], Domain.generate.relationships.map(&:indirect?)
   end
-  
+
   test "indirect should return false for non mutual ordinary relationship" do
     create_model "Foo", :bar => :references do
       belongs_to :bar
@@ -101,7 +101,7 @@ class RelationshipTest < ActiveSupport::TestCase
     create_model "Bar"
     assert_equal [false], Domain.generate.relationships.map(&:indirect?)
   end
-  
+
   test "indirect should return true if relationship is a through association" do
     create_model "Foo", :baz => :references, :bar => :references do
       belongs_to :baz
@@ -117,7 +117,7 @@ class RelationshipTest < ActiveSupport::TestCase
     assert_equal true, Domain.generate.relationships.find { |rel|
       rel.source.model == Bar and rel.destination.model == Baz }.indirect?
   end
-  
+
   test "strength should return one for relationship with one association" do
     create_model "Foo", :bar => :references
     create_model "Bar" do
@@ -160,7 +160,7 @@ class RelationshipTest < ActiveSupport::TestCase
     end
     assert_equal [1], Domain.generate.relationships.map(&:strength)
   end
-  
+
   # Cardinalities ============================================================
   test "cardinality should be zero-one to zero-one for optional one to one associations" do
     create_one_to_one_assoc_domain
@@ -245,7 +245,7 @@ class RelationshipTest < ActiveSupport::TestCase
     end
     assert_equal [Domain::Relationship::Cardinality.new(0..1, 5..17)], domain_cardinalities
   end
-  
+
   test "cardinality should be zero-many to zero-many for optional many to many associations" do
     create_many_to_many_assoc_domain
     assert_equal [Domain::Relationship::Cardinality.new(0..N, 0..N)], domain_cardinalities
@@ -261,7 +261,7 @@ class RelationshipTest < ActiveSupport::TestCase
     end
     assert_equal [Domain::Relationship::Cardinality.new(1..N, 1..N)], domain_cardinalities
   end
-  
+
   test "cardinality should be n-m to n-m for limited many to many associations with single validations" do
     create_many_to_many_assoc_domain
     Many.class_eval do
@@ -289,7 +289,7 @@ class RelationshipTest < ActiveSupport::TestCase
     end
     assert_equal [Domain::Relationship::Cardinality.new(9..17, 3..20)], domain_cardinalities
   end
-  
+
   # Cardinality for non-mutual relationships =================================
   test "cardinality should be zero-one to zero-many for non mutual relationship with belongs_to association" do
     create_model "One"
@@ -306,7 +306,7 @@ class RelationshipTest < ActiveSupport::TestCase
     create_model "Many", :one => :references
     assert_equal [Domain::Relationship::Cardinality.new(0..1, 0..N)], domain_cardinalities
   end
-  
+
   test "cardinality should be zero-one to zero-one for non mutual relationship with has_one association" do
     create_model "One" do
       has_one :other
@@ -314,7 +314,7 @@ class RelationshipTest < ActiveSupport::TestCase
     create_model "Other", :one => :references
     assert_equal [Domain::Relationship::Cardinality.new(0..1, 0..1)], domain_cardinalities
   end
-  
+
   test "cardinality should be zero-many to zero-many for non mutual relationship with has_and_belongs_to_many association" do
     create_table "many_more", :many_id => :integer, :more_id => :integer
     create_model "Many"
@@ -323,7 +323,7 @@ class RelationshipTest < ActiveSupport::TestCase
     end
     assert_equal [Domain::Relationship::Cardinality.new(0..N, 0..N)], domain_cardinalities
   end
-  
+
   # Cardinality for multiple associations ====================================
   test "cardinality should be zero-one to zero-many for conflicting one to many associations" do
     create_model "CreditCard", :person => :references do
@@ -331,7 +331,7 @@ class RelationshipTest < ActiveSupport::TestCase
     end
     create_model "Person" do
       has_many :credit_cards
-      
+
       # A person may have a preferred card, but they are still able to have
       # many cards. The association has an infinite maximum cardinality.
       has_one :preferred_credit_card, :class_name => "CreditCard"
@@ -353,14 +353,14 @@ class RelationshipTest < ActiveSupport::TestCase
     end
     assert_equal [Domain::Relationship::Cardinality.new(0..1, 1..N)], domain_cardinalities
   end
-  
+
   test "cardinality should be n-m to n-m for conflicting validations in one to many associations" do
     create_model "Spell", :wizard => :references do
     end
     create_model "Wizard" do
       has_many :ice_spells, :class_name => "Spell"
       has_many :fire_spells, :class_name => "Spell"
-      
+
       # Well, this can make sense, based on the conditions for the associations.
       # We don't go that far yet. We ignore the lower values and opt for the
       # higher values. It'll be okay. Really... You'll never need this.
@@ -369,7 +369,7 @@ class RelationshipTest < ActiveSupport::TestCase
     end
     assert_equal [Domain::Relationship::Cardinality.new(0..1, 50..100)], domain_cardinalities
   end
-  
+
   test "cardinality should be one to one-many for mandatory one to many associations on polymorphic interfaces" do
     create_model "Cannon", :defensible => :references do
       belongs_to :defensible, :polymorphic => true
@@ -385,7 +385,7 @@ class RelationshipTest < ActiveSupport::TestCase
     end
     assert_equal [Domain::Relationship::Cardinality.new(1, 1..N)], domain_cardinalities
   end
-  
+
   # Cardinality classes ======================================================
   test "cardinality should be one to one for has_one associations" do
     create_one_to_one_assoc_domain
@@ -403,7 +403,7 @@ class RelationshipTest < ActiveSupport::TestCase
     assert_equal [true], domain.relationships.map(&:to_one?)
     assert_equal [false], domain.relationships.map(&:to_many?)
   end
-  
+
   test "cardinality should be one to many for has_many associations" do
     create_one_to_many_assoc_domain
     domain = Domain.generate
@@ -418,7 +418,7 @@ class RelationshipTest < ActiveSupport::TestCase
     assert_equal [false], domain.relationships.map(&:to_one?)
     assert_equal [true], domain.relationships.map(&:to_many?)
   end
-  
+
   test "cardinality should be many to many for has_and_belongs_to_many associations" do
     create_many_to_many_assoc_domain
     domain = Domain.generate
@@ -434,7 +434,7 @@ class RelationshipTest < ActiveSupport::TestCase
     assert_equal [false], domain.relationships.map(&:to_one?)
     assert_equal [true], domain.relationships.map(&:to_many?)
   end
-  
+
   test "cardinality should be one to many for multiple associations with maximum cardinality of has_many" do
     create_model "Foo", :bar => :references
     create_model "Bar" do
@@ -444,7 +444,7 @@ class RelationshipTest < ActiveSupport::TestCase
     domain = Domain.generate
     assert_equal [:one_to_many], domain.relationships.map(&:cardinality).map(&:name)
   end
-  
+
   test "cardinality should be one to many if forward association is missing" do
     create_model "Foo", :bar => :references do
       belongs_to :bar
@@ -453,7 +453,7 @@ class RelationshipTest < ActiveSupport::TestCase
     domain = Domain.generate
     assert_equal [:one_to_many], domain.relationships.map(&:cardinality).map(&:name)
   end
-  
+
   test "cardinality should be one to many for has_many associations from generalized entity" do
     create_model "Stronghold" do
       has_many :cannons, :as => :defensible
