@@ -284,7 +284,7 @@ class AttributeTest < ActiveSupport::TestCase
     attribute = create_attribute(Kobold, "size")
     attribute.column.class_eval do
       define_method :scale do
-        :small
+        1..5
       end
     end
     assert_equal nil, attribute.scale
