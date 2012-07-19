@@ -4,7 +4,7 @@ class CardinalityTest < ActiveSupport::TestCase
   def setup
     @n = Domain::Relationship::Cardinality::N
   end
-  
+
   # Cardinality ==============================================================
   test "inspect should show source and destination ranges" do
     assert_match %r{#<RailsERD::Domain::Relationship::Cardinality:.* @source_range=1\.\.1 @destination_range=1\.\.Infinity>},
@@ -15,7 +15,7 @@ class CardinalityTest < ActiveSupport::TestCase
   test "new should return cardinality object" do
     assert_kind_of Domain::Relationship::Cardinality, Domain::Relationship::Cardinality.new(1, 1..@n)
   end
-  
+
   # Cardinality properties ===================================================
   test "source_optional should return true if source range starts at zero" do
     assert_equal true, Domain::Relationship::Cardinality.new(0..1, 1).source_optional?
@@ -32,11 +32,11 @@ class CardinalityTest < ActiveSupport::TestCase
   test "destination_optional should return false if destination range starts at one or more" do
     assert_equal false, Domain::Relationship::Cardinality.new(0..1, 1..2).destination_optional?
   end
-  
+
   test "inverse should return inverse cardinality" do
     assert_equal Domain::Relationship::Cardinality.new(23..45, 0..15), Domain::Relationship::Cardinality.new(0..15, 23..45).inverse
   end
-  
+
   # Cardinality equality =====================================================
   test "cardinalities are equal if they have the same boundaries" do
     assert_equal Domain::Relationship::Cardinality.new(1, 1..Domain::Relationship::Cardinality::N),
@@ -52,7 +52,7 @@ class CardinalityTest < ActiveSupport::TestCase
     assert_not_equal Domain::Relationship::Cardinality.new(0..1, 1..Domain::Relationship::Cardinality::N),
       Domain::Relationship::Cardinality.new(0..1, 2..Domain::Relationship::Cardinality::N)
   end
-  
+
   # Cardinal names ===========================================================
   test "one_to_one should return true if source and destination are exactly one" do
     assert_equal true, Domain::Relationship::Cardinality.new(1, 1).one_to_one?
@@ -65,11 +65,11 @@ class CardinalityTest < ActiveSupport::TestCase
   test "one_to_one should return false if source range upper limit is more than one" do
     assert_equal false, Domain::Relationship::Cardinality.new(0..15, 0..1).one_to_one?
   end
-  
+
   test "one_to_one should return false if destination range upper limit is more than one" do
     assert_equal false, Domain::Relationship::Cardinality.new(0..1, 0..15).one_to_one?
   end
-  
+
   test "one_to_many should return true if source is exactly one and destination is higher than one" do
     assert_equal true, Domain::Relationship::Cardinality.new(1, 15).one_to_many?
   end
@@ -81,7 +81,7 @@ class CardinalityTest < ActiveSupport::TestCase
   test "one_to_many should return false if source range upper limit is more than one" do
     assert_equal false, Domain::Relationship::Cardinality.new(0..15, 0..15).one_to_many?
   end
-  
+
   test "one_to_many should return false if destination range upper limit is one" do
     assert_equal false, Domain::Relationship::Cardinality.new(0..1, 1).one_to_many?
   end
@@ -97,11 +97,11 @@ class CardinalityTest < ActiveSupport::TestCase
   test "many_to_many should return false if source range upper limit is is one" do
     assert_equal false, Domain::Relationship::Cardinality.new(1, 0..15).many_to_many?
   end
-  
+
   test "many_to_many should return false if destination range upper limit is one" do
     assert_equal false, Domain::Relationship::Cardinality.new(0..1, 1).many_to_many?
   end
-  
+
   test "inverse of one_to_many should be many_to_one" do
     assert_equal true, Domain::Relationship::Cardinality.new(0..1, 0..@n).inverse.many_to_one?
   end

@@ -8,7 +8,7 @@ class SpecializationTest < ActiveSupport::TestCase
     assert_match %r{#<RailsERD::Domain::Specialization:.* @generalized=Beverage @specialized=Beer>},
       Domain::Specialization.new(domain, domain.entity_by_name("Beverage"), domain.entity_by_name("Beer")).inspect
   end
-  
+
   test "generalized should return source entity" do
     create_specialization
     domain = Domain.generate
@@ -22,7 +22,7 @@ class SpecializationTest < ActiveSupport::TestCase
     assert_equal domain.entity_by_name("Beer"),
       Domain::Specialization.new(domain, domain.entity_by_name("Beverage"), domain.entity_by_name("Beer")).specialized
   end
-  
+
   # Specialization properties ================================================
   test "inheritance should be true for inheritance specializations" do
     create_specialization
@@ -43,7 +43,7 @@ class SpecializationTest < ActiveSupport::TestCase
     create_generalization
     assert_equal [true], Domain.generate.specializations.map(&:polymorphic?)
   end
-  
+
   test "inheritance should be false for polymorphic specializations to specialized entities" do
     create_model "Cannon"
     create_model "Ship", :type => :string

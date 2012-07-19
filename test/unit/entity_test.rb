@@ -4,17 +4,17 @@ class EntityTest < ActiveSupport::TestCase
   def create_entity(model)
     Domain::Entity.new(Domain.new, model.name, model)
   end
-  
+
   def create_generalized_entity(name)
     Domain::Entity.new(Domain.new, name)
   end
-  
+
   # Entity ===================================================================
   test "model should return active record model" do
     create_models "Foo"
     assert_equal Foo, create_entity(Foo).model
   end
-  
+
   test "name should return model name" do
     create_models "Foo"
     assert_equal "Foo", create_entity(Foo).name
@@ -25,7 +25,7 @@ class EntityTest < ActiveSupport::TestCase
     foo, bar = create_entity(Foo), create_entity(Bar)
     assert_equal [bar, foo], [foo, bar].sort
   end
-  
+
   test "to_s should equal name" do
     create_models "Foo"
     assert_equal "Foo", create_entity(Foo).to_s
@@ -49,7 +49,7 @@ class EntityTest < ActiveSupport::TestCase
     foo = domain.entity_by_name("Foo")
     assert_equal domain.relationships.select { |r| r.destination == foo }, foo.relationships
   end
-  
+
   test "relationships should return relationships that connect to this model" do
     create_model "Foo", :bar => :references
     create_model "Bar", :baz => :references do
@@ -67,7 +67,7 @@ class EntityTest < ActiveSupport::TestCase
   #   create_model "Foo"
   #   assert_nil create_entity(Foo).parent
   # end
-  # 
+  #
   # test "parent should return nil for specialized entities with distinct tables" do
   #   create_model "Foo", :type => :string
   #   Object.const_set :SpecialFoo, Class.new(Foo)
@@ -77,14 +77,14 @@ class EntityTest < ActiveSupport::TestCase
   #   create_table "special_foo", {}, true
   #   assert_nil create_entity(SpecialFoo).parent
   # end
-  # 
+  #
   # test "parent should return parent entity for specialized entities" do
   #   create_model "Foo", :type => :string
   #   Object.const_set :SpecialFoo, Class.new(Foo)
   #   domain = Domain.generate
   #   assert_equal domain.entity_by_name("Foo"), Domain::Entity.from_models(domain, [SpecialFoo]).first.parent
   # end
-  # 
+  #
   # test "parent should return parent entity for specializations of specialized entities" do
   #   create_model "Foo", :type => :string
   #   Object.const_set :SpecialFoo, Class.new(Foo)
@@ -119,7 +119,7 @@ class EntityTest < ActiveSupport::TestCase
     create_model "Bar"
     assert_equal [false, false], Domain.generate.entities.map(&:disconnected?)
   end
-  
+
   test "specialized should return false for regular entities" do
     create_model "Foo"
     assert_equal false, create_entity(Foo).specialized?
@@ -153,17 +153,17 @@ class EntityTest < ActiveSupport::TestCase
     Object.const_set :SpecialFoo, Class.new(Foo)
     assert_equal true, create_entity(SpecialFoo).abstract?
   end
-  
+
   test "generalized should return false for regular entity" do
     create_model "Concrete"
     assert_equal false, create_entity(Concrete).generalized?
   end
-  
+
   test "abstract should return false for regular entity" do
     create_model "Concrete"
     assert_equal false, create_entity(Concrete).abstract?
   end
-  
+
   # Attribute processing =====================================================
   test "attributes should return list of attributes" do
     create_model "Bar", :some_column => :integer, :another_column => :string
@@ -179,23 +179,23 @@ class EntityTest < ActiveSupport::TestCase
   test "model should return nil for generalized entity" do
     assert_nil create_generalized_entity("MyAbstractModel").model
   end
-  
+
   test "name should return given name for generalized entity" do
     assert_equal "MyAbstractModel", create_generalized_entity("MyAbstractModel").name
   end
-  
+
   test "attributes should return empty array for generalized entity" do
     assert_equal [], create_generalized_entity("MyAbstractModel").attributes
   end
-  
+
   test "generalized should return true for generalized entity" do
     assert_equal true, create_generalized_entity("MyAbstractModel").generalized?
   end
-  
+
   test "specialized should return false for generalized entity" do
     assert_equal false, create_generalized_entity("MyAbstractModel").specialized?
   end
-  
+
   test "abstract should return true for generalized entity" do
     assert_equal true, create_generalized_entity("MyAbstractModel").abstract?
   end
