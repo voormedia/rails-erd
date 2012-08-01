@@ -1,3 +1,9 @@
+Unreleased
+----------
+
+* Correctly save Graphviz diagrams with spaces in the filename (contributed by
+  Neil Chambers).
+
 1.0.0
 -----
 
