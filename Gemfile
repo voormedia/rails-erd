@@ -8,6 +8,7 @@ if ENV["edge"]
 end
 
 group :development do
+  gem "rake"
   gem "yard"
   gem "redcarpet"
 

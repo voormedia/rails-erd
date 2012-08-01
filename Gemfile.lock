@@ -47,7 +47,7 @@ DEPENDENCIES
   jdbc-sqlite3
   jruby-openssl
   rails-erd!
-  rake (~> 0.9)
+  rake
   redcarpet
   sqlite3
   yard
