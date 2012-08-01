@@ -88,7 +88,7 @@ end
 
 
 class HeadOfState < ActiveRecord::Base
-  belongs_to :country  
+  belongs_to :country
 
   # A head of state always belongs to a country.
   validates_presence_of :country
@@ -124,7 +124,7 @@ end
 </p>
 <table class="combined" cellspacing="0"><tr><td>
 {% highlight ruby %}
-# The two models are joined by the join table 'films_genres', 
+# The two models are joined by the join table 'films_genres',
 # with two foreign keys, 'film_id' and 'genre_id'.
 
 class Film < ActiveRecord::Base

@@ -10,7 +10,7 @@ class User < ActiveRecord::Base
     :class_name => 'Article',
     :conditions => { :published => true },
     :order      => "published_at DESC"
-  
+
   validates_uniqueness_of :login, :on => :create
   validates_uniqueness_of :email, :on => :create
   validates_length_of :password, :within => 5..40, :if => Proc.new { |user|

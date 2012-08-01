@@ -7,11 +7,11 @@ class Identity < RailsERD::Diagram
   setup do
     @class_defintions = {}
   end
-  
+
   each_entity do |entity, attributes|
     @class_defintions[entity.name] = []
   end
-  
+
   each_relationship do |relationship|
     unless relationship.indirect?
       @class_defintions[relationship.source.name] << association_macro(relationship)
@@ -28,9 +28,9 @@ class Identity < RailsERD::Diagram
       puts "end"
     end
   end
-  
+
   private
-  
+
   def association_macro(relationship)
     name = relationship.destination.name.underscore
     macro = case
@@ -39,7 +39,7 @@ class Identity < RailsERD::Diagram
     when relationship.to_many?      then "has_many :#{name.pluralize}"
     end
   end
-  
+
   def reverse_association_macro(relationship)
     name = relationship.source.name.underscore
     macro = case

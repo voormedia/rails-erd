@@ -19,13 +19,13 @@ Dir["#{File.dirname(__FILE__)}/*/*"].each do |path|
       rescue LoadError
       end
     end
-    
+
     # Load domain models for this example.
     ActiveSupport::Dependencies.autoload_paths = ["#{path}/models"]
     Dir["#{path}/{lib,models}/**/*.rb"].each do |model|
       require File.expand_path(model, File.dirname(__FILE__))
     end
-    
+
     # Skip empty domain models.
     next if ActiveRecord::Base.descendants.empty?
 

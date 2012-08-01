@@ -21,14 +21,14 @@ ActiveRecord::Schema.define do
     t.references :generalized_entity, :null => false
     t.references :specialized_entity, :null => false
   end
-  
+
   create_table "attributes", :force => true do |t|
     t.references :entity, :null => false
     t.string :name, :null => false
     t.string :type, :null => false
     t.boolean :mandatory, :null => false
   end
-  
+
   create_table "cardinalities", :force => true do |t|
     t.references :relationship, :null => false
     t.integer :source_minimum, :null => false

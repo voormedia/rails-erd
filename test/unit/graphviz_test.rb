@@ -91,7 +91,7 @@ class GraphvizTest < ActiveSupport::TestCase
     Diagram::Graphviz.create :filetype => :dot
     assert File.exists?("erd.dot")
   end
-  
+
   test "create should create output for filenames that have spaces" do
     create_simple_domain
     Diagram::Graphviz.create :filename => "erd with spaces"
