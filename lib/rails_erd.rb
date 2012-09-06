@@ -63,4 +63,9 @@ module RailsERD
     :exclude, nil,
     :only, nil
   ]
+
+  erdconfig_path = File.expand_path(".erdconfig", ENV["HOME"])
+  if File.exists?(erdconfig_path)
+    self.options.merge!(YAML.load_file(erdconfig_path))
+  end
 end

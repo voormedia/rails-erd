@@ -1,0 +1,4 @@
+:attributes:
+  - :content
+  - :foreign_key
+  - :inheritance
