@@ -46,6 +46,16 @@ Choice.options do
     long "--connected"
     desc "Omit entities without relationships."
   end
+  
+  option :only do
+    long "--only"
+    desc "Filter to only include listed modeles in diagram."
+  end
+  
+  option :exclude do
+    long "--exclude"
+    desc "Filter to exclude listed modeles in diagram."
+  end
 
   separator ""
   separator "Output options:"
