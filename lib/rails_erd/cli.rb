@@ -49,12 +49,12 @@ Choice.options do
   
   option :only do
     long "--only"
-    desc "Filter to only include listed modeles in diagram."
+    desc "Filter to only include listed models in diagram."
   end
   
   option :exclude do
     long "--exclude"
-    desc "Filter to exclude listed modeles in diagram."
+    desc "Filter to exclude listed models in diagram."
   end
 
   separator ""

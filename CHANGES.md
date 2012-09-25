@@ -3,6 +3,7 @@ Unreleased
 
 * Correctly save Graphviz diagrams with spaces in the filename (contributed by
   Neil Chambers).
+* Add only/exclude to CLI (contributed by Dru Ibarra).
 
 1.0.0
 -----
