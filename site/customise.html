@@ -128,6 +128,21 @@ The following output options are available in Rails ERD.
     When set to <tt>false</tt>, no warnings are printed to the command line
     while processing models and drawing the diagram. Default value: <tt>true</tt>
   </dd>
+
+  <dt><pre>only               &lt;string&gt;</pre></dt>
+  <dd>
+    Only include specified models. Together with exclude, this will allow to
+    filter out models on your diagram. Default value: <tt>nil</tt>. Example:
+    <tt>only="Order,Customer,Product"</tt>
+  </dd>
+
+  <dt><pre>exclude               &lt;string&gt;</pre></dt>
+  <dd>
+    Exclude specified models. Together with only, this will allow to filter out
+    models on your diagram. Default value: <tt>nil</tt>. Example:
+    <tt>exclude="User,Role"</tt>
+  </dd>
+
 </dl>
 
 <h2><a name="custum-output">Custom output</a></h2>
