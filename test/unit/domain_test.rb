@@ -64,14 +64,12 @@ class DomainTest < ActiveSupport::TestCase
     assert_equal ["Defensible", "Galleon", "Stronghold"], Domain.generate.entities.collect(&:name)
   end
 
-  test "entities should omit abstract models" do
-    Object.const_set :Foo, Class.new(ActiveRecord::Base) { self.abstract_class = true }
-    create_model "Bar", Foo do
-      self.table_name = "bars"
+  test "entities should include abstract models" do
+    create_model "Structure" do
+      self.abstract_class = true
     end
-    create_table "foos", {}, true
-    create_table "bars", {}, true
-    assert_equal ["Bar"], Domain.generate.entities.collect(&:name)
+    create_model "Palace", Structure
+    assert_equal ["Palace", "Structure"], Domain.generate.entities.collect(&:name)
   end
 
   # Relationship processing ==================================================
@@ -160,37 +158,22 @@ class DomainTest < ActiveSupport::TestCase
     assert_equal [Domain::Specialization] * 2, Domain.generate.specializations.collect(&:class)
   end
 
-  test "specializations should return generalizations in domain model" do
-    create_model "Post" do
-      has_many :assets, :as => :attachable
-    end
-    create_model "Asset", :attachable => :references do
-      belongs_to :attachable, :polymorphic => true
-    end
+  test "specializations should return polymorphic generalizations in domain model" do
+    create_polymorphic_generalization
     assert_equal [Domain::Specialization], Domain.generate.specializations.collect(&:class)
   end
 
-  test "specializations should return generalizations and specializations in domain model" do
-    create_model "Content", :type => :string do
-      has_many :assets, :as => :attachable
-    end
-    Object.const_set :Post, Class.new(Content)
-    create_model "Asset", :attachable => :references do
-      belongs_to :attachable, :polymorphic => true
-    end
-    assert_equal [Domain::Specialization] * 2, Domain.generate.specializations.collect(&:class)
+  test "specializations should return abstract generalizations in domain model" do
+    create_abstract_generalization
+    assert_equal [Domain::Specialization], Domain.generate.specializations.collect(&:class)
   end
 
-  # test "generalizations should ..." do
-  #   # TODO
-  #   create_model "Post" do
-  #     has_many :assets, :as => :attachable
-  #   end
-  #   create_model "Asset", :attachable => :references do
-  #     belongs_to :attachable, :polymorphic => true
-  #   end
-  #   assert_equal [], Domain.generate.relationships
-  # end
+  test "specializations should return polymorphic and abstract generalizations and specializations in domain model" do
+    create_specialization
+    create_polymorphic_generalization
+    create_abstract_generalization
+    assert_equal [Domain::Specialization] * 3, Domain.generate.specializations.collect(&:class)
+  end
 
   # Erroneous associations ===================================================
   test "relationships should omit bad has_many associations" do
@@ -236,7 +219,7 @@ class DomainTest < ActiveSupport::TestCase
     assert_match /model Bar exists, but is not included in domain/, output
   end
 
-  test "relationships should output a warning when an association to a non existent generalization is encountere" do
+  test "relationships should output a warning when an association to a non existent generalization is encountered" do
     create_model "Foo" do
       has_many :bars, :as => :foo
     end

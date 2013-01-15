@@ -31,7 +31,7 @@ module RailsERD
         # numbers (for source and destination). Can be any of
         # +:one_to_one:+, +:one_to_many+, or +:many_to_many+. The name
         # +:many_to_one+ also exists, but Rails ERD always normalises these
-        # kinds of relationships by inversing them, so they become
+        # kinds of relationships by inverting them, so they become
         # +:one_to_many+ associations.
         #
         # You can also call the equivalent method with a question mark, which

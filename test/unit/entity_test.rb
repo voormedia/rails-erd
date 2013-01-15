@@ -9,6 +9,11 @@ class EntityTest < ActiveSupport::TestCase
     Domain::Entity.new(Domain.new, name)
   end
 
+  def create_abstract_entity(name)
+    model = create_model(name) { self.abstract_class = true }
+    create_entity(model)
+  end
+
   # Entity ===================================================================
   test "model should return active record model" do
     create_models "Foo"
@@ -62,36 +67,6 @@ class EntityTest < ActiveSupport::TestCase
     foo = domain.entity_by_name("Foo")
     assert_equal domain.relationships.select { |r| r.destination == foo }, foo.relationships
   end
-
-  # test "parent should return nil for regular entities" do
-  #   create_model "Foo"
-  #   assert_nil create_entity(Foo).parent
-  # end
-  #
-  # test "parent should return nil for specialized entities with distinct tables" do
-  #   create_model "Foo", :type => :string
-  #   Object.const_set :SpecialFoo, Class.new(Foo)
-  #   SpecialFoo.class_eval do
-  #     self.table_name = "special_foo"
-  #   end
-  #   create_table "special_foo", {}, true
-  #   assert_nil create_entity(SpecialFoo).parent
-  # end
-  #
-  # test "parent should return parent entity for specialized entities" do
-  #   create_model "Foo", :type => :string
-  #   Object.const_set :SpecialFoo, Class.new(Foo)
-  #   domain = Domain.generate
-  #   assert_equal domain.entity_by_name("Foo"), Domain::Entity.from_models(domain, [SpecialFoo]).first.parent
-  # end
-  #
-  # test "parent should return parent entity for specializations of specialized entities" do
-  #   create_model "Foo", :type => :string
-  #   Object.const_set :SpecialFoo, Class.new(Foo)
-  #   Object.const_set :VerySpecialFoo, Class.new(SpecialFoo)
-  #   domain = Domain.generate
-  #   assert_equal domain.entity_by_name("SpecialFoo"), Domain::Entity.from_models(domain, [VerySpecialFoo]).first.parent
-  # end
 
   # Entity properties ========================================================
   test "connected should return false for unconnected entities" do
@@ -148,10 +123,10 @@ class EntityTest < ActiveSupport::TestCase
     assert_equal true, create_entity(VerySpecialFoo).specialized?
   end
 
-  test "abstract should return true for specialized entity" do
+  test "virtual should return true for specialized entity" do
     create_model "Foo", :type => :string
     Object.const_set :SpecialFoo, Class.new(Foo)
-    assert_equal true, create_entity(SpecialFoo).abstract?
+    assert_equal true, create_entity(SpecialFoo).virtual?
   end
 
   test "generalized should return false for regular entity" do
@@ -159,9 +134,9 @@ class EntityTest < ActiveSupport::TestCase
     assert_equal false, create_entity(Concrete).generalized?
   end
 
-  test "abstract should return false for regular entity" do
+  test "virtual should return false for regular entity" do
     create_model "Concrete"
-    assert_equal false, create_entity(Concrete).abstract?
+    assert_equal false, create_entity(Concrete).virtual?
   end
 
   # Attribute processing =====================================================
@@ -196,8 +171,8 @@ class EntityTest < ActiveSupport::TestCase
     assert_equal false, create_generalized_entity("MyAbstractModel").specialized?
   end
 
-  test "abstract should return true for generalized entity" do
-    assert_equal true, create_generalized_entity("MyAbstractModel").abstract?
+  test "virtual should return true for generalized entity" do
+    assert_equal true, create_generalized_entity("MyAbstractModel").virtual?
   end
 
   test "relationships should return relationships for generalized entity" do
@@ -213,17 +188,37 @@ class EntityTest < ActiveSupport::TestCase
     assert_equal domain.relationships, defensible.relationships
   end
 
-  test "relationships should return relationships for generalized entity in reverse alphabetic order" do
-    create_model "Stronghold" do
-      has_many :cannons, :as => :defensible
+  # Abstract generalized entity ==============================================
+  test "name should return given name for abstract generalized entity" do
+    assert_equal "MyAbstractModel", create_abstract_entity("MyAbstractModel").name
+  end
+
+  test "attributes should return empty array for abstract generalized entity" do
+    assert_equal [], create_abstract_entity("MyAbstractModel").attributes
+  end
+
+  test "generalized should return true for abstract generalized entity" do
+    assert_equal true, create_abstract_entity("MyAbstractModel").generalized?
+  end
+
+  test "specialized should return false for abstract generalized entity" do
+    assert_equal false, create_abstract_entity("MyAbstractModel").specialized?
+  end
+
+  test "virtual should return true for abstract generalized entity" do
+    assert_equal true, create_abstract_entity("MyAbstractModel").virtual?
+  end
+
+  test "relationships should return relationships for abstract generalized entity" do
+    create_model "Kingdom"
+    create_model "Structure" do
+      self.abstract_class = true
+      belongs_to :kingdom
     end
-    create_model "Cannon", :defensible => :references do
-      belongs_to :defensible, :polymorphic => true
-    end
+    create_model "Palace", Structure, :kingdom => :references
 
     domain = Domain.generate
-    defensible = domain.entity_by_name("Defensible")
-    assert_equal domain.relationships, defensible.relationships
+    assert_equal domain.relationships, domain.entity_by_name("Structure").relationships
   end
 
   # Children =================================================================

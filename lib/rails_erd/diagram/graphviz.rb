@@ -84,7 +84,7 @@ module RailsERD
       module Simple
         def entity_style(entity, attributes)
           {}.tap do |options|
-            options[:fontcolor] = options[:color] = :grey60 if entity.abstract?
+            options[:fontcolor] = options[:color] = :grey60 if entity.virtual?
           end
         end
 
@@ -211,10 +211,11 @@ module RailsERD
       each_relationship do |relationship|
         from, to = relationship.source, relationship.destination
         unless draw_edge from.name, to.name, relationship_options(relationship)
-          if from.children.any?
-            from.children.each do |child|
-              draw_edge child.name, to.name, relationship_options(relationship)
-            end
+          from.children.each do |child|
+            draw_edge child.name, to.name, relationship_options(relationship)
+          end
+          to.children.each do |child|
+            draw_edge from.name, child.name, relationship_options(relationship)
           end
         end
       end

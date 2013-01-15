@@ -114,7 +114,7 @@ module RailsERD
     end
 
     def models
-      @models ||= @source_models.reject(&:abstract_class?).select { |model| check_model_validity(model) }
+      @models ||= @source_models.select { |model| check_model_validity(model) }
     end
 
     def associations
@@ -122,7 +122,7 @@ module RailsERD
     end
 
     def check_model_validity(model)
-      model.table_exists? or raise "table #{model.table_name} does not exist"
+      model.abstract_class? or model.table_exists? or raise "table #{model.table_name} does not exist"
     rescue => e
       warn "Ignoring invalid model #{model.name} (#{e.message})"
     end

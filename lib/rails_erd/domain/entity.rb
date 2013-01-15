@@ -62,12 +62,13 @@ module RailsERD
       end
 
       # Returns +true+ if this entity is a generalization, which does not
-      # correspond with a database table. Generalized entities are constructed
+      # correspond with a database table. Generalized entities are either
+      # models that are defined as +abstract_class+ or they are constructed
       # from polymorphic interfaces. Any +has_one+ or +has_many+ association
       # that defines a polymorphic interface with <tt>:as => :name</tt> will
       # lead to a generalized entity to be created.
       def generalized?
-        !model
+        !model or !!model.abstract_class?
       end
 
       # Returns +true+ if this entity descends from another entity, and is
@@ -75,15 +76,16 @@ module RailsERD
       # referred to as single-table inheritance. In entity-relationship
       # diagrams it is called specialization.
       def specialized?
-        !generalized? and !model.descends_from_active_record?
+        !!model and !model.descends_from_active_record?
       end
 
       # Returns +true+ if this entity does not correspond directly with a
       # database table (if and only if the entity is specialized or
       # generalized).
-      def abstract?
-        specialized? or generalized?
+      def virtual?
+        generalized? or specialized?
       end
+      alias_method :abstract?, :virtual?
 
       # Returns all child entities, if this is a generalized entity.
       def children

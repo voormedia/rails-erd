@@ -35,12 +35,22 @@ class SpecializationTest < ActiveSupport::TestCase
   end
 
   test "inheritance should be false for polymorphic specializations" do
-    create_generalization
+    create_polymorphic_generalization
     assert_equal [false], Domain.generate.specializations.map(&:inheritance?)
   end
 
   test "polymorphic should be true for polymorphic specializations" do
-    create_generalization
+    create_polymorphic_generalization
+    assert_equal [true], Domain.generate.specializations.map(&:polymorphic?)
+  end
+
+  test "inheritance should be false for abstract specializations" do
+    create_abstract_generalization
+    assert_equal [false], Domain.generate.specializations.map(&:inheritance?)
+  end
+
+  test "polymorphic should be true for abstract specializations" do
+    create_abstract_generalization
     assert_equal [true], Domain.generate.specializations.map(&:polymorphic?)
   end
 

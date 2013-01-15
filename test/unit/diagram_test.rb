@@ -266,26 +266,30 @@ class DiagramTest < ActiveSupport::TestCase
   # Specialization filtering =================================================
   test "generate should not yield specializations" do
     create_specialization
-    create_generalization
+    create_polymorphic_generalization
+    create_abstract_generalization
     assert_equal [], retrieve_specializations
   end
 
   test "generate should yield specializations but not generalizations if inheritance is true" do
     create_specialization
-    create_generalization
+    create_polymorphic_generalization
+    create_abstract_generalization
     assert_equal ["Beer"], retrieve_specializations(:inheritance => true).map { |s| s.specialized.name }
   end
 
   test "generate should yield generalizations but not specializations if polymorphism is true" do
     create_specialization
-    create_generalization
-    assert_equal ["Galleon"], retrieve_specializations(:polymorphism => true).map { |s| s.specialized.name }
+    create_polymorphic_generalization
+    create_abstract_generalization
+    assert_equal ["Galleon", "Palace"], retrieve_specializations(:polymorphism => true).map { |s| s.specialized.name }
   end
 
   test "generate should yield specializations and generalizations if polymorphism and inheritance is true" do
     create_specialization
-    create_generalization
-    assert_equal ["Beer", "Galleon"], retrieve_specializations(:inheritance => true,
+    create_polymorphic_generalization
+    create_abstract_generalization
+    assert_equal ["Beer", "Galleon", "Palace"], retrieve_specializations(:inheritance => true,
       :polymorphism => true).map { |s| s.specialized.name }
   end
 

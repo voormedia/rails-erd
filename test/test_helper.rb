@@ -40,9 +40,10 @@ class ActiveSupport::TestCase
     columns = args.first || {}
     klass = Object.const_set name.to_sym, Class.new(superklass)
     klass.class_eval(&block) if block_given?
-    if superklass == ActiveRecord::Base
+    if superklass == ActiveRecord::Base || superklass.abstract_class?
       create_table Object.const_get(name.to_sym).table_name, columns, Object.const_get(name.to_sym).primary_key rescue nil
     end
+    Object.const_get(name.to_sym)
   end
 
   def create_models(*names)
@@ -98,14 +99,21 @@ class ActiveSupport::TestCase
 
   def create_specialization
     create_model "Beverage", :type => :string
-    Object.const_set :Beer, Class.new(Beverage)
+    create_model "Beer", Beverage
   end
 
-  def create_generalization
+  def create_polymorphic_generalization
     create_model "Cannon"
     create_model "Galleon" do
       has_many :cannons, :as => :defensible
     end
+  end
+
+  def create_abstract_generalization
+    create_model "Structure" do
+      self.abstract_class = true
+    end
+    create_model "Palace", Structure
   end
 
   private

@@ -6,7 +6,10 @@ module RailsERD
     class Specialization
       class << self
         def from_models(domain, models) # @private :nodoc:
-          (inheritance_from_models(domain, models) + polymorphic_from_models(domain, models)).sort
+          models = polymorphic_from_models(domain, models) +
+            inheritance_from_models(domain, models) +
+            abstract_from_models(domain, models)
+          models.sort
         end
 
         private
@@ -22,6 +25,12 @@ module RailsERD
         def inheritance_from_models(domain, models)
           models.reject(&:descends_from_active_record?).collect { |model|
             new(domain, domain.entity_by_name(model.base_class.name), domain.entity_by_name(model.name))
+          }
+        end
+
+        def abstract_from_models(domain, models)
+          models.select(&:abstract_class?).collect(&:descendants).flatten.collect { |model|
+            new(domain, domain.entity_by_name(model.superclass.name), domain.entity_by_name(model.name))
           }
         end
       end
@@ -42,13 +51,15 @@ module RailsERD
         @domain, @generalized, @specialized = domain, generalized, specialized
       end
 
-      def inheritance?
-        !polymorphic?
-      end
-
-      def polymorphic?
+      def generalization?
         generalized.generalized?
       end
+      alias_method :polymorphic?, :generalization?
+
+      def specialization?
+        !generalization?
+      end
+      alias_method :inheritance?, :specialization?
 
       def <=>(other) # @private :nodoc:
         (generalized.name <=> other.generalized.name).nonzero? or (specialized.name <=> other.specialized.name)

@@ -304,7 +304,7 @@ class GraphvizTest < ActiveSupport::TestCase
     assert_equal [["m_Bar", "m_Foo"], ["m_Foo", "m_Bar"]], find_dot_node_pairs(diagram).sort
   end
 
-  test "generate should create edge to generalized entity if polymorphism is true" do
+  test "generate should create edge to polymorphic entity if polymorphism is true" do
     create_model "Cannon", :defensible => :references do
       belongs_to :defensible, :polymorphic => true
     end
@@ -318,7 +318,7 @@ class GraphvizTest < ActiveSupport::TestCase
       find_dot_node_pairs(diagram(:polymorphism => true)).sort
   end
 
-  test "generate should create edge to each child of generalized entity if polymorphism is false" do
+  test "generate should create edge to each child of polymorphic entity if polymorphism is false" do
     create_model "Cannon", :defensible => :references do
       belongs_to :defensible, :polymorphic => true
     end
@@ -329,6 +329,35 @@ class GraphvizTest < ActiveSupport::TestCase
       has_many :cannons, :as => :defensible
     end
     assert_equal [["m_Galleon", "m_Cannon"], ["m_Stronghold", "m_Cannon"]], find_dot_node_pairs(diagram).sort
+  end
+
+  test "generate should create edge to abstract entity if polymorphism is true" do
+    create_model "Person", :settlement => :references
+    create_model "Country" do
+      has_many :settlements
+    end
+    create_model "Settlement" do
+      self.abstract_class = true
+      belongs_to :country
+      has_many :people
+    end
+    create_model "City", Settlement, :country => :references
+    assert_equal [["m_Country", "m_Settlement"], ["m_Settlement", "m_City"], ["m_Settlement", "m_Person"]],
+      find_dot_node_pairs(diagram(:polymorphism => true)).sort
+  end
+
+  test "generate should create edge to each child of abstract entity if polymorphism is false" do
+    create_model "Person", :settlement => :references
+    create_model "Country" do
+      has_many :settlements
+    end
+    create_model "Settlement" do
+      self.abstract_class = true
+      belongs_to :country
+      has_many :people
+    end
+    create_model "City", Settlement, :country => :references
+    assert_equal [["m_City", "m_Person"], ["m_Country", "m_City"]], find_dot_node_pairs(diagram).sort
   end
 
   # Simple notation style ====================================================
