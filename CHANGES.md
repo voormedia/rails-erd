@@ -1,6 +1,9 @@
-Unreleased
-----------
+1.1.0
+-----
 
+* Abstract models (with 'self.abstract_class = true') are now considered for
+  the domain and will be displayed if 'polymorphism=true'. This should also
+  fix errors that could occur if abstract models had any associations.
 * Correctly save Graphviz diagrams with spaces in the filename (contributed by
   Neil Chambers).
 * Add only/exclude to CLI (contributed by Dru Ibarra).
