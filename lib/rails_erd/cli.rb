@@ -34,7 +34,7 @@ Choice.options do
 
   option :polymorphism do
     long "--polymorphism"
-    desc "Display polymorphic relationships."
+    desc "Display polymorphic and abstract entities."
   end
 
   option :no_indirect do
@@ -46,12 +46,12 @@ Choice.options do
     long "--connected"
     desc "Omit entities without relationships."
   end
-  
+
   option :only do
     long "--only"
     desc "Filter to only include listed models in diagram."
   end
-  
+
   option :exclude do
     long "--exclude"
     desc "Filter to exclude listed models in diagram."
