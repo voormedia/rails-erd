@@ -10,15 +10,14 @@ end
 group :development do
   gem "rake"
   gem "yard"
-  gem "redcarpet"
 
   platforms :ruby do
     gem "sqlite3"
+    gem "redcarpet"
   end
 
   platforms :jruby do
-    gem "jdbc-sqlite3"
-    gem "activerecord-jdbc-adapter"
+    gem "activerecord-jdbcsqlite3-adapter"
     gem "jruby-openssl", :require => false # Silence openssl warnings.
   end
 end
