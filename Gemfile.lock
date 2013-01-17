@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    rails-erd (1.0.0)
+    rails-erd (1.1.0)
       activerecord (>= 3.0)
       activesupport (>= 3.0)
       choice (~> 0.1.6)
