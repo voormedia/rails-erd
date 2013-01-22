@@ -31,8 +31,8 @@ module RailsERD
 
         def abstract_from_models(domain, models)
           models.select(&:abstract_class?).collect(&:descendants).flatten.collect { |model|
-            new(domain, domain.entity_by_name(model.superclass.name), domain.entity_by_name(model.name))
-          }
+            new(domain, domain.entity_by_name(model.superclass.name), domain.entity_by_name(model.name)) if domain.entity_by_name(model.name)
+          }.compact
         end
       end
 
