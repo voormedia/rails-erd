@@ -10,6 +10,7 @@ ActiveRecord::Base.establish_connection :adapter => "sqlite3", :database => ":me
 class ActiveSupport::TestCase
   include RailsERD
 
+  setup    :reset_config_file
   teardown :reset_domain
 
   def create_table(table, columns = {}, pk = nil)
@@ -117,6 +118,12 @@ class ActiveSupport::TestCase
   end
 
   private
+
+  def reset_config_file
+    RailsERD::ConfigFile.send :remove_const, :USER_WIDE_CONFIG_FILE
+    RailsERD::ConfigFile.send :const_set, :USER_WIDE_CONFIG_FILE,
+      File.expand_path("../../examples/erdconfig.not_exists", __FILE__)
+  end
 
   def reset_domain
     if defined? ActiveRecord
