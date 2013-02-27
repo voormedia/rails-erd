@@ -1,6 +1,7 @@
 module RailsERD
   class ConfigFile
     USER_WIDE_CONFIG_FILE = File.expand_path(".erdconfig", ENV["HOME"])
+    CURRENT_CONFIG_FILE = File.expand_path(".erdconfig", Dir.pwd)
 
     attr_reader :options
 
@@ -13,16 +14,21 @@ module RailsERD
     end
 
     def load
-      if File.exists?(USER_WIDE_CONFIG_FILE)  
-        YAML.load_file(USER_WIDE_CONFIG_FILE).each do |key, value|
-          key = key.to_sym
-          @options[key] = normalize_value(key, value)
-        end
-      end
+      load_file(USER_WIDE_CONFIG_FILE)
+      load_file(CURRENT_CONFIG_FILE)
       @options
     end
 
     private
+
+    def load_file(path)
+      if File.exists?(path)  
+        YAML.load_file(path).each do |key, value|
+          key = key.to_sym
+          @options[key] = normalize_value(key, value)
+        end
+      end
+    end
 
     def normalize_value(key, value)
       case key

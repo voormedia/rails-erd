@@ -123,6 +123,10 @@ class ActiveSupport::TestCase
     RailsERD::ConfigFile.send :remove_const, :USER_WIDE_CONFIG_FILE
     RailsERD::ConfigFile.send :const_set, :USER_WIDE_CONFIG_FILE,
       File.expand_path("../../examples/erdconfig.not_exists", __FILE__)
+
+    RailsERD::ConfigFile.send :remove_const, :CURRENT_CONFIG_FILE
+    RailsERD::ConfigFile.send :const_set, :CURRENT_CONFIG_FILE,
+      File.expand_path("../../examples/erdconfig.not_exists", __FILE__)
   end
 
   def reset_domain

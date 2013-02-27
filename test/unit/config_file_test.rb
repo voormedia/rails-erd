@@ -6,17 +6,57 @@ class ConfigFileTest < ActiveSupport::TestCase
     RailsERD::ConfigFile.new.send(:normalize_value, key, value)
   end
 
-  test "load_config_gile should return blank hash when USER_WIDE_CONFIG_FILE does not exist." do
-    assert_equal RailsERD::ConfigFile.load, {}
+  test "load_config_gile should return blank hash when neitherCURRENT_CONFIG_FILE nor USER_WIDE_CONFIG_FILE exist." do
+    expected_hash = {}
+    assert_equal expected_hash, RailsERD::ConfigFile.load
   end
 
-  test "load_config_gile should return a hash when USER_WIDE_CONFIG_FILE exists." do
+  test "load_config_gile should return a hash from USER_WIDE_CONFIG_FILE when only USER_WIDE_CONFIG_FILE exists." do
     RailsERD::ConfigFile.send :remove_const, :USER_WIDE_CONFIG_FILE
     RailsERD::ConfigFile.send :const_set, :USER_WIDE_CONFIG_FILE, 
       File.expand_path("../../../examples/erdconfig.example", __FILE__)
 
     expected_hash = {
       :attributes     => [:content, :foreign_key, :inheritance], 
+      :disconnected   => true, 
+      :filename       => "erd", 
+      :filetype       => :pdf, 
+      :indirect       => true, 
+      :inheritance    => false, 
+      :markup         => true, 
+      :notation       => :simple, 
+      :orientation    => :horizontal, 
+      :polymorphism   => false, 
+      :warn           => true, 
+      :title          => "sample title", 
+      :exclude        => nil, 
+      :only           => nil
+    }
+    assert_equal expected_hash, RailsERD::ConfigFile.load
+  end
+
+  test "load_config_gile should return a hash from CURRENT_CONFIG_FILE when only CURRENT_CONFIG_FILE exists." do
+    RailsERD::ConfigFile.send :remove_const, :CURRENT_CONFIG_FILE
+    RailsERD::ConfigFile.send :const_set, :CURRENT_CONFIG_FILE, 
+      File.expand_path("../../../examples/erdconfig.another_example", __FILE__)
+
+    expected_hash = {
+      :attributes => [:primary_key]
+    }
+    assert_equal expected_hash, RailsERD::ConfigFile.load
+  end
+
+  test "load_config_gile should return a hash from CURRENT_CONFIG_FILE overriding USER_WIDE_CONFIG_FILE when both of them exist." do
+    RailsERD::ConfigFile.send :remove_const, :USER_WIDE_CONFIG_FILE
+    RailsERD::ConfigFile.send :const_set, :USER_WIDE_CONFIG_FILE, 
+      File.expand_path("../../../examples/erdconfig.example", __FILE__)
+
+    RailsERD::ConfigFile.send :remove_const, :CURRENT_CONFIG_FILE
+    RailsERD::ConfigFile.send :const_set, :CURRENT_CONFIG_FILE, 
+      File.expand_path("../../../examples/erdconfig.another_example", __FILE__)
+
+    expected_hash = {
+      :attributes => [:primary_key], 
       :disconnected   => true, 
       :filename       => "erd", 
       :filetype       => :pdf, 
