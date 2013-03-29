@@ -190,7 +190,7 @@ module RailsERD
       end
 
       def foreign_key_required?(association)
-        if association.belongs_to?
+        if !association.active_record.abstract_class? and association.belongs_to?
           column = association.active_record.columns_hash[association.send(Domain.foreign_key_method_name)] and !column.null
         end
       end
