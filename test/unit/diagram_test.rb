@@ -341,4 +341,30 @@ class DiagramTest < ActiveSupport::TestCase
     Object.const_set :Whisky, Class.new(Beverage)
     assert_equal [], retrieve_attribute_lists(:inheritance => true)[Whisky].map(&:name)
   end
+
+  test "conflict with settler" do
+    Hash.class_eval do
+      #simulate the method 'only' defined in settler 
+      # (https://github.com/moiristo/settler/blob/master/lib/hash_extension.rb#L4)
+      def only(*selected_keys)
+        {}
+      end
+    end
+
+    begin
+      assert_equal({}, RailsERD.options.only)
+
+      create_model "Book"
+      create_model "Author"
+      assert_equal [Book], retrieve_entities(:only => [:Book]).map(&:model)
+    
+    rescue
+      raise $!
+    ensure
+      Hash.class_eval do
+        undef_method(:only)
+      end
+    end
+  end
+
 end
