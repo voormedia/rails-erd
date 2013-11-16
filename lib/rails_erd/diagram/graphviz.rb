@@ -6,11 +6,12 @@ require "erb"
 # Fix bad RegEx test in Ruby-Graphviz.
 GraphViz::Types::LblString.class_eval do
   def output # @private :nodoc:
-    if /^<.*>$/m =~ @data
-      @data
-    else
-      @data.to_s.inspect.gsub("\\\\", "\\")
-    end
+    #if /^<.*>$/m =~ @data
+    #  @data
+    #else
+    #  @data.to_s.inspect.gsub("\\\\", "\\")
+    #end
+    @data
   end
   alias_method :to_gv, :output
   alias_method :to_s, :output
