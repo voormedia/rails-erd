@@ -174,7 +174,7 @@ module RailsERD
     end
 
     def filtered_attributes(entity)
-      entity.attributes.reject { |attribute|
+      entity.attributes.compact.reject { |attribute|
         # Select attributes that satisfy the conditions in the :attributes option.
         !options.attributes or entity.specialized? or
         [*options.attributes].none? { |type| attribute.send(:"#{type.to_s.chomp('s')}?") }
