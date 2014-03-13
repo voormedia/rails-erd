@@ -58,6 +58,7 @@ module RailsERD
     :notation, :simple,
     :orientation, :horizontal,
     :polymorphism, false,
+    :sort, true,
     :warn, true,
     :title, true,
     :exclude, nil,
