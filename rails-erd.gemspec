@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Rolf Timmermans"]
   s.email       = ["r.timmermans@voormedia.com"]
-  s.homepage    = "http://rails-erd.rubyforge.org/"
+  s.homepage    = "https://github.com/voormedia/rails-erd"
   s.summary     = %q{Entity-relationship diagram for your Rails models.}
   s.description = %q{Automatically generate an entity-relationship diagram (ERD) for your Rails models.}
 
