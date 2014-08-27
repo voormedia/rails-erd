@@ -1,0 +1,12 @@
+language: ruby
+rvm:
+  - 1.9.3
+  - jruby
+before_install:
+  - gem install bundler
+script: bundle exec rake
+matrix:
+  allow_failures:
+    - rvm: jruby
+  fast_finish: true
+cache: bundler
