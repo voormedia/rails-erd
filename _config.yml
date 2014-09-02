@@ -1,4 +1,4 @@
 destination: _generated
 highlighter: pygments
-exclude: [README]
+exclude: [README, Gemfile]
 baseurl: /rails-erd
