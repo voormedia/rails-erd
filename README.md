@@ -8,7 +8,7 @@ Start Jekyll with `bundle exec jekyll serve -w` and view the results in browser 
 `http://localhost:4000/rails-erd/`.
 
 More details about how to use Jekyll with Github Pages at
-https://help.github.com/articles/using-jekyll-with-pages
+https://help.github.com/articles/using-jekyll-with-pages and http://jekyllrb.com/docs/github-pages/
 
 
 License
