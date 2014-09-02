@@ -12,7 +12,7 @@ div.header h1 span.subtitle { display: block; float: right; font-size: 55%; font
 div.header { background: #fff5e4 none; }
 div.header h1, div.header h1 a, div.header h1 span.subtitle { color: #07192b; }
 
-div.summary { padding: 17px 0; background: #327eba url(/images/blue-back.png) repeat-x; color: #fff; font-size: 130%; line-height: 140%; }
+div.summary { padding: 17px 0; background: #327eba url(../images/blue-back.png) repeat-x; color: #fff; font-size: 130%; line-height: 140%; }
 div.summary img { float: right; margin: 0 -20px -10px 0; border-width: 0; }
 div.summary p { width: 410px; margin: 0; padding: 20px 0 0; }
 div.summary p a { display: block; margin: 0; padding: 0; color: #fff; text-decoration: none; }
@@ -27,9 +27,9 @@ div.navigation a:hover { color: #fff; }
 div.navigation a:hover.selected { color: #db972f; }
 div.navigation a span.out { font-size: 90%; margin-right: -10px; }
 
-div.main { margin: 0; padding: 30px 0 50px; background: #fff5e4 url(/images/main-back.png) repeat-x; }
+div.main { margin: 0; padding: 30px 0 50px; background: #fff5e4 url(../images/main-back.png) repeat-x; }
 
-div.footer { margin: 0; padding: 20px 0 180px; background: #327eba url(/images/blue-back.png) repeat-x; color: #fff; font-size: 90%; line-height: 140%; }
+div.footer { margin: 0; padding: 20px 0 180px; background: #327eba url(../images/blue-back.png) repeat-x; color: #fff; font-size: 90%; line-height: 140%; }
 div.footer a { color: #fff; text-decoration: none; }
 div.footer p { margin: 0 0 15px; }
 

@@ -5,7 +5,7 @@
     <meta http-equiv="imagetoolbar" content="no"/>
     <meta http-equiv="X-UA-Compatible" content="IE=8"/>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <link rel="stylesheet" href="/stylesheets/global.css" type="text/css" media="screen"/>
+    <link rel="stylesheet" href="{{ site.baseurl }}/stylesheets/global.css" type="text/css" media="screen"/>
     <meta name="google-site-verification" content="3xA7_gv9Q1kvkHUr5Jw-a9FY2UTgyLKOsz2Ff7K7yTA" />
     <script type="text/javascript">
       var _gaq = _gaq || [];
@@ -23,7 +23,7 @@
       <div class="container">
         <h1 class="clearfix">
           <span class="subtitle">Entity-Relationship Diagrams for Ruby on Rails</span>
-          <a href="/">Rails ERD</a>
+          <a href="{{ site.baseurl }}/">Rails ERD</a>
         </h1>
       </div>
     </div>
@@ -31,7 +31,7 @@
 {% include navigation.html %}
 
 <div class="summary clearfix">
-  <div class="container">{{page.summary}}</div>
+  <div class="container">{{ page.summary | replace: '!BASEURL!', site.baseurl }}</div>
 </div>
 
     <div class="main">

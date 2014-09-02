@@ -4,8 +4,8 @@ Install & Run
 The site uses [Jekyll](http://jekyllrb.com/docs/home/) to generate the content.
 The necessary dependencies are installed with `bundle install`.
 
-Start Jekyll with `bundle exec jekyll serve` and view the results in browser at
-`http://localhost:4000`.
+Start Jekyll with `bundle exec jekyll serve -w` and view the results in browser at
+`http://localhost:4000/rails-erd/`.
 
 More details about how to use Jekyll with Github Pages at
 https://help.github.com/articles/using-jekyll-with-pages
