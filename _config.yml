@@ -2,3 +2,4 @@ destination: _generated
 highlighter: pygments
 exclude: [README, Gemfile]
 baseurl: /rails-erd
+docurl: http://rubydoc.info/github/voormedia/rails-erd/frames
