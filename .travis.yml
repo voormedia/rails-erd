@@ -4,6 +4,8 @@ rvm:
   - jruby
 before_install:
   - gem install bundler
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq graphviz
 script: bundle exec rake
 matrix:
   allow_failures:
