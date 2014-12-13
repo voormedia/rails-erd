@@ -10,7 +10,8 @@ module RailsERD
 
       class << self
         def from_model(domain, model) # @private :nodoc:
-          model.columns.collect { |column| new(domain, model, column) }.sort
+          attributes = model.columns.collect { |column| new(domain, model, column) }
+          RailsERD.options[:sort] ? attributes.sort : attributes
         end
       end
 
