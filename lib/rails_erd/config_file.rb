@@ -1,7 +1,7 @@
 module RailsERD
   class ConfigFile
     USER_WIDE_CONFIG_FILE = File.expand_path(".erdconfig", ENV["HOME"])
-    CURRENT_CONFIG_FILE = File.expand_path(".erdconfig", Dir.pwd)
+    CURRENT_CONFIG_FILE   = File.expand_path(".erdconfig", Dir.pwd)
 
     attr_reader :options
 
@@ -16,6 +16,7 @@ module RailsERD
     def load
       load_file(USER_WIDE_CONFIG_FILE)
       load_file(CURRENT_CONFIG_FILE)
+
       @options
     end
 
@@ -34,7 +35,7 @@ module RailsERD
     private
 
     def load_file(path)
-      if File.exists?(path)  
+      if File.exists?(path)
         YAML.load_file(path).each do |key, value|
           key = key.to_sym
           @options[key] = normalize_value(key, value)
@@ -52,7 +53,7 @@ module RailsERD
           # Comma separated string and strings in array are OK.
           Array(value).join(",").split(",").map { |v| v.strip.to_sym }
         end
-      
+
       # <symbol>
       when :filetype, :notation, :orientation
         value.to_sym
@@ -60,7 +61,7 @@ module RailsERD
       # true | false
       when :disconnected, :indirect, :inheritance, :markup, :polymorphism, :warn
         !!value
-      
+
       # nil | <string>
       when :filename, :only, :exclude
         value.nil? ? nil : value.to_s
