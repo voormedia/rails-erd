@@ -47,6 +47,8 @@ module RailsERD
 
       NODE_WIDTH = 130 # @private :nodoc:
 
+      FONTS = ConfigFile.font_names_based_on_os
+
       # Default graph attributes.
       GRAPH_ATTRIBUTES = {
         :rankdir => :LR,
@@ -57,21 +59,21 @@ module RailsERD
         :concentrate => true,
         :labelloc => :t,
         :fontsize => 13,
-        :fontname => "Arial Bold"
+        :fontname => FONTS[:bold]
       }
 
       # Default node attributes.
       NODE_ATTRIBUTES = {
         :shape => "Mrecord",
         :fontsize => 10,
-        :fontname => "Arial",
+        :fontname => FONTS[:normal],
         :margin => "0.07,0.05",
         :penwidth => 1.0
       }
 
       # Default edge attributes.
       EDGE_ATTRIBUTES = {
-        :fontname => "Arial",
+        :fontname => FONTS[:normal],
         :fontsize => 8,
         :dir => :both,
         :arrowsize => 0.9,

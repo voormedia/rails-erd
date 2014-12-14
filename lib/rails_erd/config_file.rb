@@ -19,6 +19,18 @@ module RailsERD
       @options
     end
 
+    def self.font_names_based_on_os
+      if use_os_x_fonts?
+        { normal: "ArialMT",
+          bold:   "Arial BoldMT",
+          italic: "Arail ItalicMT" }
+      else
+        { normal: "Arial",
+          bold:   "Arial Bold",
+          italic: "Arail Italic" }
+      end
+    end
+
     private
 
     def load_file(path)
@@ -60,6 +72,20 @@ module RailsERD
       else
         value
       end
+    end
+
+    def self.use_os_x_fonts?
+      host = RbConfig::CONFIG['host_os']
+
+      if host.include? "darwin"
+        darwin_version_array = host.split("darwin").last.split(".").map(&:to_i)
+
+        if darwin_version_array[0] == 12 and darwin_version_array[1] >= 5
+          return true
+        end
+      end
+
+      false
     end
   end
 end
