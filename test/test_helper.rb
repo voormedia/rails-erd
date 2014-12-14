@@ -120,12 +120,12 @@ class ActiveSupport::TestCase
   private
 
   def reset_config_file
-    RailsERD::ConfigFile.send :remove_const, :USER_WIDE_CONFIG_FILE
-    RailsERD::ConfigFile.send :const_set, :USER_WIDE_CONFIG_FILE,
+    RailsERD::Config.send :remove_const, :USER_WIDE_CONFIG_FILE
+    RailsERD::Config.send :const_set, :USER_WIDE_CONFIG_FILE,
       File.expand_path("../../examples/erdconfig.not_exists", __FILE__)
 
-    RailsERD::ConfigFile.send :remove_const, :CURRENT_CONFIG_FILE
-    RailsERD::ConfigFile.send :const_set, :CURRENT_CONFIG_FILE,
+    RailsERD::Config.send :remove_const, :CURRENT_CONFIG_FILE
+    RailsERD::Config.send :const_set, :CURRENT_CONFIG_FILE,
       File.expand_path("../../examples/erdconfig.not_exists", __FILE__)
   end
 

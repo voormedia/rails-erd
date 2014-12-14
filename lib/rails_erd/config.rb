@@ -1,5 +1,5 @@
 module RailsERD
-  class ConfigFile
+  class Config
     USER_WIDE_CONFIG_FILE = File.expand_path(".erdconfig", ENV["HOME"])
     CURRENT_CONFIG_FILE   = File.expand_path(".erdconfig", Dir.pwd)
 
