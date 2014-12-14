@@ -6,7 +6,7 @@ class ConfigFileTest < ActiveSupport::TestCase
     RailsERD::ConfigFile.new.send(:normalize_value, key, value)
   end
 
-  test "load_config_gile should return blank hash when neitherCURRENT_CONFIG_FILE nor USER_WIDE_CONFIG_FILE exist." do
+  test "load_config_gile should return blank hash when neither CURRENT_CONFIG_FILE nor USER_WIDE_CONFIG_FILE exist." do
     expected_hash = {}
     assert_equal expected_hash, RailsERD::ConfigFile.load
   end
