@@ -29,6 +29,30 @@ See the [installation instructions](http://voormedia.github.io/rails-erd/install
 
 * Run <tt>bundle exec erd</tt>
 
+### Configuration
+
+Rails ERD has the ability to be configured via the command line or through the use of a YAML file with configuration options set. It will look for this file first at `~/.erdconfig` and then `./.erdconfig` (which will override any settings in `~/.erdconfig`). The format of the file is as follows (shown here with the default settings used if no `.erdconfig` is found):
+
+```
+attributes:
+  - content
+  - foreign_key
+  - inheritance
+disconnected: true
+filename: erd
+filetype: pdf
+indirect: true
+inheritance: false
+markup: true
+notation: simple
+orientation: horizontal
+polymorphism: false
+warn: true
+title: sample title
+exclude: null
+only: 
+```
+
 
 Learn more
 ----------
