@@ -43,7 +43,7 @@ About Rails ERD
 
 Rails ERD was created by Rolf Timmermans (r.timmermans *at* voormedia.com)
 
-Copyright 2010-2013 Voormedia - [www.voormedia.com](http://www.voormedia.com/)
+Copyright 2010-2014 Voormedia - [www.voormedia.com](http://www.voormedia.com/)
 
 
 License
