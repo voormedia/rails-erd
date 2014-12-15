@@ -12,20 +12,20 @@ class ConfigTest < ActiveSupport::TestCase
     set_user_config_file_to("erdconfig.example")
 
     expected_hash = {
-      :attributes     => [:content, :foreign_key, :inheritance],
-      :disconnected   => true,
-      :filename       => "erd",
-      :filetype       => :pdf,
-      :indirect       => true,
-      :inheritance    => false,
-      :markup         => true,
-      :notation       => :simple,
-      :orientation    => :horizontal,
-      :polymorphism   => false,
-      :warn           => true,
-      :title          => "sample title",
-      :exclude        => nil,
-      :only           => nil
+      attributes:   [:content, :foreign_key, :inheritance],
+      disconnected: true,
+      filename:     "erd",
+      filetype:     :pdf,
+      indirect:     true,
+      inheritance:  false,
+      markup:       true,
+      notation:     :simple,
+      orientation:  :horizontal,
+      polymorphism: false,
+      warn:         true,
+      title:        "sample title",
+      exclude:      nil,
+      only:         nil
     }
     assert_equal expected_hash, RailsERD::Config.load
   end
@@ -44,20 +44,20 @@ class ConfigTest < ActiveSupport::TestCase
     set_local_config_file_to("erdconfig.another_example")
 
     expected_hash = {
-      :attributes => [:primary_key],
-      :disconnected   => true,
-      :filename       => "erd",
-      :filetype       => :pdf,
-      :indirect       => true,
-      :inheritance    => false,
-      :markup         => true,
-      :notation       => :simple,
-      :orientation    => :horizontal,
-      :polymorphism   => false,
-      :warn           => true,
-      :title          => "sample title",
-      :exclude        => nil,
-      :only           => nil
+      attributes:   [:primary_key],
+      disconnected: true,
+      filename:     "erd",
+      filetype:     :pdf,
+      indirect:     true,
+      inheritance:  false,
+      markup:       true,
+      notation:     :simple,
+      orientation:  :horizontal,
+      polymorphism: false,
+      warn:         true,
+      title:        "sample title",
+      exclude:      nil,
+      only:         nil
     }
     assert_equal expected_hash, RailsERD::Config.load
   end
