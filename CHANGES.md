@@ -1,3 +1,10 @@
+1.2.0
+-----
+
+* Fixed bug that prevented generation of diagrams on newer versions of OSX
+* Added ability to store CLI configuration options in a config file, both a global version (in the user's home directory) as well as a per-project local versions
+* Added a Code of Conduct for the project
+
 1.1.0
 -----
 
@@ -7,6 +14,7 @@
 * Correctly save Graphviz diagrams with spaces in the filename (contributed by
   Neil Chambers).
 * Add only/exclude to CLI (contributed by Dru Ibarra).
+
 
 1.0.0
 -----
