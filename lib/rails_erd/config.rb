@@ -77,13 +77,13 @@ module RailsERD
 
     def self.use_os_x_fonts?
       host = RbConfig::CONFIG['host_os']
+      return true if host == "darwin"
 
       if host.include? "darwin"
         darwin_version_array = host.split("darwin").last.split(".").map(&:to_i)
 
-        if darwin_version_array[0] == 12 and darwin_version_array[1] >= 5
-          return true
-        end
+        return true if darwin_version_array[0] >= 13
+        return true if darwin_version_array[0] == 12 && darwin_version_array[1] >= 5
       end
 
       false
