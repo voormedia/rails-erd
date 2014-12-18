@@ -1,3 +1,8 @@
+1.2.1
+-----
+
+* Fixes a bug in OS detection for JRuby (and newer MRI Rubies, too)
+
 1.2.0
 -----
 
