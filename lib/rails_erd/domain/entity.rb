@@ -30,7 +30,7 @@ module RailsERD
       # The Active Record model that this entity corresponds to.
       attr_reader :model
 
-      # The name of this entity. Equal to the class name of the corersponding
+      # The name of this entity. Equal to the class name of the corresponding
       # model (for concrete entities) or given name (for abstract entities).
       attr_reader :name
 
