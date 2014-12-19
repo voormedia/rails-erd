@@ -49,7 +49,9 @@ module RailsERD
       attr_reader :specialized
 
       def initialize(domain, generalized, specialized) # @private :nodoc:
-        @domain, @generalized, @specialized = domain, generalized, specialized
+        @domain = domain
+        @generalized = generalized || NullGeneralized.new
+        @specialized = specialized || NullSpecialization.new
       end
 
       def generalization?
@@ -64,6 +66,18 @@ module RailsERD
 
       def <=>(other) # @private :nodoc:
         (generalized.name <=> other.generalized.name).nonzero? or (specialized.name <=> other.specialized.name)
+      end
+    end
+
+    class NullSpecialization
+      def name
+        ""
+      end
+    end
+
+    class NullGeneralized
+      def name
+        ""
       end
     end
   end
