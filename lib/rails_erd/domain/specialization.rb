@@ -1,6 +1,6 @@
 module RailsERD
   class Domain
-    # Describes the specialization of an entity. Specialized entites correspond
+    # Describes the specialization of an entity. Specialized entities correspond
     # to inheritance or polymorphism. In Rails, specialization is referred to
     # as single table inheritance, while generalization is referred to as
     # polymorphism or abstract classes.
