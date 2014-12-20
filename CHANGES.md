@@ -1,3 +1,8 @@
+1.2.2
+-----
+
+* Fixes a bug in sorting abstract classes (Issues #54, #88)
+
 1.2.1
 -----
 
