@@ -43,7 +43,10 @@ module RailsERD
     # title:: The title to add at the top of the diagram. Defaults to
     #         <tt>"YourApplication domain model"</tt>.
     class Graphviz < Diagram
-      NODE_LABEL_TEMPLATES = { :html => "node.html.erb", :record => "node.record.erb" } # @private :nodoc:
+      NODE_LABEL_TEMPLATES = {
+        html:   "node.html.erb",
+        record: "node.record.erb"
+      } # @private :nodoc:
 
       NODE_WIDTH = 130 # @private :nodoc:
 
@@ -51,36 +54,36 @@ module RailsERD
 
       # Default graph attributes.
       GRAPH_ATTRIBUTES = {
-        :rankdir => :LR,
-        :ranksep => 0.5,
-        :nodesep => 0.4,
-        :pad => "0.4,0.4",
-        :margin => "0,0",
-        :concentrate => true,
-        :labelloc => :t,
-        :fontsize => 13,
-        :fontname => FONTS[:bold]
+        rankdir:     :LR,
+        ranksep:     0.5,
+        nodesep:     0.4,
+        pad:         "0.4,0.4",
+        margin:      "0,0",
+        concentrate: true,
+        labelloc:    :t,
+        fontsize:    13,
+        fontname:    FONTS[:bold]
       }
 
       # Default node attributes.
       NODE_ATTRIBUTES = {
-        :shape => "Mrecord",
-        :fontsize => 10,
-        :fontname => FONTS[:normal],
-        :margin => "0.07,0.05",
-        :penwidth => 1.0
+        shape:    "Mrecord",
+        fontsize: 10,
+        fontname: FONTS[:normal],
+        margin:   "0.07,0.05",
+        penwidth: 1.0
       }
 
       # Default edge attributes.
       EDGE_ATTRIBUTES = {
-        :fontname => FONTS[:normal],
-        :fontsize => 8,
-        :dir => :both,
-        :arrowsize => 0.9,
-        :penwidth => 1.0,
-        :labelangle => 32,
-        :labeldistance => 1.8,
-        :fontsize => 7
+        fontname:      FONTS[:normal],
+        fontsize:      8,
+        dir:           :both,
+        arrowsize:     0.9,
+        penwidth:      1.0,
+        labelangle:    32,
+        labeldistance: 1.8,
+        fontsize:      7
       }
 
       module Simple
@@ -101,7 +104,10 @@ module RailsERD
         end
 
         def specialization_style(specialization)
-          { :color => :grey60, :arrowtail => :onormal, :arrowhead => :none, :arrowsize => 1.2 }
+          { color:     :grey60,
+            arrowtail: :onormal,
+            arrowhead: :none,
+            arrowsize: 1.2 }
         end
       end
 
@@ -194,10 +200,12 @@ module RailsERD
           graph.output(filetype => filename.gsub(/\s/,"\\ "))
           filename
         rescue RuntimeError => e
-          raise "Saving diagram failed!\nGraphviz produced errors. Verify it has support for filetype=#{options.filetype}, or use filetype=dot." <<
-            "\nOriginal error: #{e.message.split("\n").last}"
+          raise "Saving diagram failed!\nGraphviz produced errors. Verify it " +
+                  "has support for filetype=#{options.filetype}, or use " +
+                  "filetype=dot.\nOriginal error: #{e.message.split("\n").last}"
         rescue StandardError => e
-          raise "Saving diagram failed!\nVerify that Graphviz is installed and in your path, or use filetype=dot."
+          raise "Saving diagram failed!\nVerify that Graphviz is installed " +
+                  "and in your path, or use filetype=dot."
         end
       end
 
@@ -267,7 +275,7 @@ module RailsERD
 
       def relationship_options(relationship)
         relationship_style(relationship).tap do |options|
-          # Edges with a higher weight are optimised to be shorter and straighter.
+          # Edges with a higher weight are optimized to be shorter and straighter.
           options[:weight] = relationship.strength
 
           # Indirect relationships should not influence node ranks.
