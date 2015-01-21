@@ -49,7 +49,7 @@ module RailsERD
 
       # Returns +true+ if this attribute is the primary key of the entity.
       def primary_key?
-        column.primary
+        @model.primary_key == column.name
       end
 
       # Returns +true+ if this attribute is used as a foreign key for any
