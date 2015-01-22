@@ -11,6 +11,7 @@ Gem::Specification.new do |s|
   s.homepage    = "https://github.com/voormedia/rails-erd"
   s.summary     = %q{Entity-relationship diagram for your Rails models.}
   s.description = %q{Automatically generate an entity-relationship diagram (ERD) for your Rails models.}
+  s.license     = "MIT"
 
   s.rubyforge_project = "rails-erd"
 
