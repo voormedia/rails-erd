@@ -5,6 +5,12 @@ rvm:
   - 2.1.5
   - 2.2.0
   - jruby
+gemfile:
+  - gemfiles/Gemfile-rails.3.2.x
+  - gemfiles/Gemfile-rails.4.0.x
+  - gemfiles/Gemfile-rails.4.1.x
+  - gemfiles/Gemfile-rails.4.2.x
+  - gemfiles/Gemfile-rails.edge
 before_install:
   - gem install bundler
   - sudo apt-get update -qq
@@ -13,5 +19,6 @@ script: bundle exec rake
 matrix:
   allow_failures:
     - rvm: jruby
+    - gemfile: gemfiles/Gemfile-rails.edge
   fast_finish: true
 cache: bundler
