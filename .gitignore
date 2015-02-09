@@ -9,3 +9,4 @@ pkg
 output
 rdoc
 site/_generated
+Gemfile.lock
