@@ -131,6 +131,8 @@ class ActiveSupport::TestCase
     RailsERD::Config.send :remove_const, :CURRENT_CONFIG_FILE
     RailsERD::Config.send :const_set, :CURRENT_CONFIG_FILE,
       File.expand_path("../../examples/erdconfig.not_exists", __FILE__)
+
+    RailsERD.options = RailsERD.default_options.merge(Config.load)
   end
 
   def reset_domain
