@@ -106,7 +106,8 @@ module RailsERD
 
       # Returns any non-standard scale for this attribute (decimal types only).
       def scale
-        column.scale.to_i if column.scale != native_type[:scale] and column.scale.respond_to?(:to_i)
+        return column.scale.to_i if column.scale != native_type[:scale] and column.scale.respond_to?(:to_i)
+        0 if column.precision
       end
 
       # Returns a string that describes the limit for this attribute, such as
