@@ -137,7 +137,7 @@ class ActiveSupport::TestCase
     if defined? ActiveRecord
       ActiveRecord::Base.descendants.each do |model|
         model.reset_column_information
-        Object.send :remove_const, model.name.to_sym
+        Object.send :remove_const, model.name.to_sym if Object.const_defined? model.name.to_sym
       end
       ActiveRecord::Base.connection.tables.each do |table|
         ActiveRecord::Base.connection.drop_table table
