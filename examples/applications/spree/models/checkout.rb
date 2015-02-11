@@ -10,5 +10,5 @@ class Checkout < ActiveRecord::Base
   has_many :payments, :as => :payable
 
   validates :order_id, :shipping_method_id, :presence => true
-  validates :email, :format => { :with => /^\S+@\S+\.\S+$/ }
+  validates :email, :format => { :with => /\A\S+@\S+\.\S+\z/ }
 end

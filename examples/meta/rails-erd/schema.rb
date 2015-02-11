@@ -22,7 +22,7 @@ ActiveRecord::Schema.define do
     t.references :specialized_entity, :null => false
   end
 
-  create_table "attributes", :force => true do |t|
+  create_table "properties", :force => true do |t|
     t.references :entity, :null => false
     t.string :name, :null => false
     t.string :type, :null => false
