@@ -1,14 +1,7 @@
 require File.expand_path("../test_helper", File.dirname(__FILE__))
+require "rails_erd/diagram"
 
 class DiagramTest < ActiveSupport::TestCase
-  def setup
-    load "rails_erd/diagram.rb"
-  end
-
-  def teardown
-    RailsERD.send :remove_const, :Diagram
-  end
-
   def retrieve_entities(options = {})
     klass = Class.new(Diagram)
     [].tap do |entities|
