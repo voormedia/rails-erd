@@ -77,13 +77,12 @@ module RailsERD
       # Default edge attributes.
       EDGE_ATTRIBUTES = {
         fontname:      FONTS[:normal],
-        fontsize:      8,
+        fontsize:      7,
         dir:           :both,
         arrowsize:     0.9,
         penwidth:      1.0,
         labelangle:    32,
         labeldistance: 1.8,
-        fontsize:      7
       }
 
       module Simple
