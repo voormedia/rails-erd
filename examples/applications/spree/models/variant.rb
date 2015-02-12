@@ -5,7 +5,11 @@ class Variant < ActiveRecord::Base
   has_many :inventory_units
   has_many :line_items
   has_and_belongs_to_many :option_values
-  has_many :images, :as => :viewable, :order => :position, :dependent => :destroy
+  if ActiveRecord::VERSION::MAJOR >= 4
+    has_many :images, lambda { order(:position) }, :as => :viewable, :dependent => :destroy
+  else
+    has_many :images, :as => :viewable, :order => :position, :dependent => :destroy
+  end
 
   validate :check_price
   validates :price, :presence => true

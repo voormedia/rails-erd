@@ -2,7 +2,11 @@ require "rubygems"
 require "bundler/setup"
 
 require "active_record"
-require "test/unit"
+if ActiveSupport::VERSION::MAJOR >= 4
+  require "minitest/autorun"
+else
+  require "test/unit"
+end
 require "rails_erd/domain"
 
 ActiveRecord::Base.establish_connection :adapter => "sqlite3", :database => ":memory:"
@@ -127,13 +131,15 @@ class ActiveSupport::TestCase
     RailsERD::Config.send :remove_const, :CURRENT_CONFIG_FILE
     RailsERD::Config.send :const_set, :CURRENT_CONFIG_FILE,
       File.expand_path("../../examples/erdconfig.not_exists", __FILE__)
+
+    RailsERD.options = RailsERD.default_options.merge(Config.load)
   end
 
   def reset_domain
     if defined? ActiveRecord
       ActiveRecord::Base.descendants.each do |model|
         model.reset_column_information
-        Object.send :remove_const, model.name.to_sym
+        Object.send :remove_const, model.name.to_sym if Object.const_defined? model.name.to_sym
       end
       ActiveRecord::Base.connection.tables.each do |table|
         ActiveRecord::Base.connection.drop_table table

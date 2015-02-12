@@ -114,7 +114,7 @@ module RailsERD
     end
 
     def models
-      @models ||= @source_models.select { |model| check_model_validity(model) }
+      @models ||= @source_models.select { |model| check_model_validity(model) }.reject { |model| check_habtm_model(model) }
     end
 
     def associations
@@ -144,6 +144,10 @@ module RailsERD
 
     def association_description(association)
       "#{association.name.inspect} on #{association.active_record}"
+    end
+
+    def check_habtm_model(model)
+      model.name.start_with?("HABTM_")
     end
   end
 end

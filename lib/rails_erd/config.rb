@@ -1,3 +1,5 @@
+require "yaml"
+
 module RailsERD
   class Config
     USER_WIDE_CONFIG_FILE = File.expand_path(".erdconfig", ENV["HOME"])

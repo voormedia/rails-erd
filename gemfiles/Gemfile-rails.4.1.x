@@ -1,10 +1,8 @@
 source "http://rubygems.org"
 
-gemspec
+gemspec :path => ".."
 
-if ENV["edge"]
-  gem "activerecord", :github => "rails/rails"
-end
+gem "activerecord", "~> 4.1.0"
 
 group :development do
   gem "rake"
@@ -13,10 +11,6 @@ group :development do
   platforms :ruby do
     gem "sqlite3"
     gem "redcarpet"
-
-    if RUBY_VERSION > "2.1.0"
-      gem "test-unit" # not bundled in CRuby since 2.2.0
-    end
   end
 
   platforms :jruby do

@@ -54,7 +54,9 @@ Dir["#{File.dirname(__FILE__)}/*/*"].each do |path|
       Object.send :remove_const, model.name.to_sym rescue nil
     end
     ActiveRecord::Base.direct_descendants.clear
-    Arel::Relation.send :class_variable_set, :@@connection_tables_primary_keys, {}
+    if Arel.const_defined?(:Relation)
+      Arel::Relation.send :class_variable_set, :@@connection_tables_primary_keys, {}
+    end
     ActiveSupport::Dependencies::Reference.clear!
   end
 end

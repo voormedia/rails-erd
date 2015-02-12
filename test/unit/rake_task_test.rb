@@ -14,7 +14,6 @@ class RakeTaskTest < ActiveSupport::TestCase
 
   def teardown
     FileUtils.rm "erd.dot" rescue nil
-    RailsERD::Diagram.send :remove_const, :Graphviz rescue nil
   end
 
   define_method :create_app do

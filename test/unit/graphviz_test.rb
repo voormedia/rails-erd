@@ -1,15 +1,14 @@
 require File.expand_path("../test_helper", File.dirname(__FILE__))
+require "rails_erd/diagram/graphviz"
 
 class GraphvizTest < ActiveSupport::TestCase
   def setup
     RailsERD.options.filetype = :png
     RailsERD.options.warn = false
-    load "rails_erd/diagram/graphviz.rb"
   end
 
   def teardown
     FileUtils.rm Dir["erd*.*"] rescue nil
-    RailsERD::Diagram.send :remove_const, :Graphviz rescue nil
   end
 
   def diagram(options = {})

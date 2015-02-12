@@ -1,10 +1,8 @@
 source "http://rubygems.org"
 
-gemspec
+gemspec :path => ".."
 
-if ENV["edge"]
-  gem "activerecord", :github => "rails/rails"
-end
+gem "activerecord", "~> 3.2.0"
 
 group :development do
   gem "rake"
