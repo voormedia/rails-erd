@@ -1,3 +1,8 @@
+1.3.0
+-----
+
+* Added support for Rails 4 (Issues #120, #115, #85, #89, and #68)
+
 1.2.2
 -----
 
