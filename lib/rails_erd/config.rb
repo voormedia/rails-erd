@@ -60,12 +60,15 @@ module RailsERD
       when :filetype, :notation, :orientation
         value.to_sym
 
+      # [<string>]
+      when :only, :exclude
+        Array(value).join(",").split(",").map { |v| v.strip }
       # true | false
       when :disconnected, :indirect, :inheritance, :markup, :polymorphism, :warn
         !!value
 
       # nil | <string>
-      when :filename, :only, :exclude
+      when :filename
         value.nil? ? nil : value.to_s
 
       # true | false | <string>

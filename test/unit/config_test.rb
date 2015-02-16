@@ -24,8 +24,30 @@ class ConfigTest < ActiveSupport::TestCase
       polymorphism: false,
       warn:         true,
       title:        "sample title",
-      exclude:      nil,
-      only:         nil
+      exclude:      [],
+      only:         []
+    }
+    assert_equal expected_hash, RailsERD::Config.load
+  end
+
+  test "load_config_file should return a hash from USER_WIDE_CONFIG_FILE when only USER_WIDE_CONFIG_FILE exists." do
+    set_user_config_file_to("erdconfig.exclude.example")
+
+    expected_hash = {
+      attributes:   [:content, :foreign_key, :inheritance],
+      disconnected: true,
+      filename:     "erd",
+      filetype:     :pdf,
+      indirect:     true,
+      inheritance:  false,
+      markup:       true,
+      notation:     :simple,
+      orientation:  :horizontal,
+      polymorphism: false,
+      warn:         true,
+      title:        "sample title",
+      exclude:      ['Book', 'Author'],
+      only:         []
     }
     assert_equal expected_hash, RailsERD::Config.load
   end
@@ -56,8 +78,8 @@ class ConfigTest < ActiveSupport::TestCase
       polymorphism: false,
       warn:         true,
       title:        "sample title",
-      exclude:      nil,
-      only:         nil
+      exclude:      [],
+      only:         []
     }
     assert_equal expected_hash, RailsERD::Config.load
   end

@@ -118,7 +118,7 @@ module RailsERD
           if key.start_with? "no_"
             opts[key.gsub("no_", "").to_sym] = !value
           elsif value.to_s.include? ","
-            opts[key.to_sym] = value.split(",").map(&:to_sym)
+            opts[key.to_sym] = value.split(",").map(&:to_s)
           else
             opts[key.to_sym] = value
           end
