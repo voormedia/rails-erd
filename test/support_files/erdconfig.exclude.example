@@ -13,6 +13,6 @@ orientation: horizontal
 polymorphism: false
 warn: true
 title: sample title
-exclude:
+exclude: Book,Author
 only: 
 
