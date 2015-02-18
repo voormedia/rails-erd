@@ -53,10 +53,11 @@ markup: true
 notation: simple
 orientation: horizontal
 polymorphism: false
+sort: true
 warn: true
 title: sample title
 exclude: null
-only: 
+only: null
 ```
 
 
