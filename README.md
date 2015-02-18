@@ -5,7 +5,7 @@ Rails ERD - Generate Entity-Relationship Diagrams for Rails applications
 
 The second goal of Rails ERD is to provide you with a tool to inspect your application's domain model. If you don't like the default output, it is very easy to use the API to build your own diagrams.
 
-Rails ERD was created specifically for Rails 3. It uses Active Record's built-in reflection capabilities to figure out how your models are associated.
+Rails ERD was created specifically for Rails and works on versions 3.0-4.2. It uses Active Record's built-in reflection capabilities to figure out how your models are associated.
 
 
 Preview
