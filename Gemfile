@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 source "http://rubygems.org"
 
 gemspec
@@ -24,3 +25,8 @@ group :development do
     gem "jruby-openssl", :require => false # Silence openssl warnings.
   end
 end
+=======
+source 'https://rubygems.org'
+
+gem 'github-pages', '~> 23'
+>>>>>>> FETCH_HEAD
