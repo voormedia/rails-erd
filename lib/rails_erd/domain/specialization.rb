@@ -55,7 +55,7 @@ module RailsERD
       end
 
       def generalization?
-        generalized.try(:generalized?)
+        generalized.generalized?
       end
       alias_method :polymorphic?, :generalization?
 
@@ -73,11 +73,17 @@ module RailsERD
       def name
         ""
       end
+      def generalized?
+        false
+      end
     end
 
     class NullGeneralized
       def name
         ""
+      end
+      def generalized?
+        true
       end
     end
   end
