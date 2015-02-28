@@ -60,6 +60,10 @@ module RailsERD
         !column.null or @model.validators_on(name).map(&:kind).include?(:presence)
       end
 
+       def unique?
+         @model.validators_on(name).map(&:kind).include?(:uniqueness)
+       end
+
       # Returns +true+ if this attribute is the primary key of the entity.
       def primary_key?
         @model.primary_key.to_s == name.to_s
@@ -106,7 +110,10 @@ module RailsERD
       def type_description
         type.to_s.tap do |desc|
           desc << " #{limit_description}" if limit_description
-          desc << " ∗" if mandatory? # Add a hair space + low asterisk (Unicode characters).
+          desc << " ∗" if mandatory? && !primary_key? # Add a hair space + low asterisk (Unicode characters)
+          desc << " U" if unique? && !primary_key? && !foreign_key? # Add U if unique but non-key
+          desc << " PK" if primary_key?
+          desc << " FK" if foreign_key?
         end
       end
 
