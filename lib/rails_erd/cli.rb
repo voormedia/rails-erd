@@ -57,6 +57,12 @@ Choice.options do
     desc "Filter to exclude listed models in diagram."
   end
 
+  option :prepend_primary do
+    long "--prepend_primary=BOOLEAN"
+    desc "Ensure primary key is at start of attribute list"
+    default "false"
+  end
+
   separator ""
   separator "Output options:"
 

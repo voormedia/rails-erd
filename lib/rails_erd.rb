@@ -50,7 +50,8 @@ module RailsERD
         :warn, true,
         :title, true,
         :exclude, nil,
-        :only, nil
+        :only, nil,
+        :prepend_primary, false
       ]
     end
   end
