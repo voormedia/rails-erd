@@ -44,6 +44,16 @@ class AttributeTest < ActiveSupport::TestCase
     assert_equal %w{id a}, Domain::Attribute.from_model(Domain.new, Foo).map(&:name)
   end
 
+  test "from_model should return attributes with PK first if sort is false and prepend_primary is true" do
+    RailsERD.options[:sort]            = false
+    RailsERD.options[:prepend_primary] = true
+
+    create_model "Foo"
+    add_column :foos, :a, :string
+
+    assert_equal %w{id a}, Domain::Attribute.from_model(Domain.new, Foo).map(&:name)
+  end
+
   test "spaceship should sort attributes by name" do
     create_model "Foo", :a => :string, :b => :string, :c => :string
     a = create_attribute(Foo, "a")

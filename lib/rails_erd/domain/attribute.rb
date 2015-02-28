@@ -11,7 +11,19 @@ module RailsERD
       class << self
         def from_model(domain, model) # @private :nodoc:
           attributes = model.columns.collect { |column| new(domain, model, column) }
-          RailsERD.options[:sort] ? attributes.sort : attributes
+          attributes.sort! if RailsERD.options[:sort]
+
+          if RailsERD.options[:prepend_primary]
+            primary_key = ActiveRecord::Base.get_primary_key(model)
+            primary = attributes.detect{ |column| column.name == primary_key }
+
+            if primary
+              attributes.delete(primary)
+              attributes.unshift(primary)
+            end
+          end
+
+          attributes
         end
       end
 
