@@ -11,7 +11,19 @@ module RailsERD
       class << self
         def from_model(domain, model) # @private :nodoc:
           attributes = model.columns.collect { |column| new(domain, model, column) }
-          RailsERD.options[:sort] ? attributes.sort : attributes
+          attributes.sort! if RailsERD.options[:sort]
+
+          if RailsERD.options[:prepend_primary]
+            primary_key = ActiveRecord::Base.get_primary_key(model)
+            primary = attributes.detect{ |column| column.name == primary_key }
+
+            if primary
+              attributes.delete(primary)
+              attributes.unshift(primary)
+            end
+          end
+
+          attributes
         end
       end
 
@@ -47,6 +59,10 @@ module RailsERD
       def mandatory?
         !column.null or @model.validators_on(name).map(&:kind).include?(:presence)
       end
+
+       def unique?
+         @model.validators_on(name).map(&:kind).include?(:uniqueness)
+       end
 
       # Returns +true+ if this attribute is the primary key of the entity.
       def primary_key?
@@ -94,7 +110,10 @@ module RailsERD
       def type_description
         type.to_s.tap do |desc|
           desc << " #{limit_description}" if limit_description
-          desc << " ∗" if mandatory? # Add a hair space + low asterisk (Unicode characters).
+          desc << " ∗" if mandatory? && !primary_key? # Add a hair space + low asterisk (Unicode characters)
+          desc << " U" if unique? && !primary_key? && !foreign_key? # Add U if unique but non-key
+          desc << " PK" if primary_key?
+          desc << " FK" if foreign_key?
         end
       end
 

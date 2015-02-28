@@ -40,7 +40,7 @@ module RailsERD
 
       # Returns an array of attributes for this entity.
       def attributes
-        @attributes ||= if generalized? then [] else Attribute.from_model(domain, model) end
+        @attributes ||= generalized? ? [] : Attribute.from_model(domain, model)
       end
 
       # Returns an array of all relationships that this entity has with other
