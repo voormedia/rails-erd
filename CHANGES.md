@@ -1,3 +1,12 @@
+1.3.1
+-----
+
+* Check that models are not abstract (#47)
+* Added MIT license (#117)
+* Fixed an issue with :only and :exclude options (#122)
+* Added a :sort option to preserve original attribute order (#126)
+* Mark primary and unique keys as such in diagram (#129)
+
 1.3.0
 -----
 
