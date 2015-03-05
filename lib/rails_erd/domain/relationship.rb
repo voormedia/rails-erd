@@ -64,13 +64,13 @@ module RailsERD
       def initialize(domain, associations) # @private :nodoc:
         @domain = domain
         @reverse_associations, @forward_associations =
-        unless any_habtm?(associations)
-          associations.partition(&:belongs_to?)
-        else
+        if any_habtm?(associations)
           # Many-to-many associations don't have a clearly defined direction.
           # We sort by name and use the first model as the source.
           source = associations.map(&:active_record).sort_by(&:name).first
           associations.partition { |association| association.active_record != source }
+        else
+          associations.partition(&:belongs_to?)
         end
 
         assoc = @forward_associations.first || @reverse_associations.first
