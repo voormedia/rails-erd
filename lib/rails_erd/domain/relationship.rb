@@ -63,7 +63,8 @@ module RailsERD
 
       def initialize(domain, associations) # @private :nodoc:
         @domain = domain
-        @reverse_associations, @forward_associations = *unless any_habtm?(associations)
+        @reverse_associations, @forward_associations =
+        unless any_habtm?(associations)
           associations.partition(&:belongs_to?)
         else
           # Many-to-many associations don't have a clearly defined direction.

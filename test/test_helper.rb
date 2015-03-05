@@ -34,7 +34,7 @@ class ActiveSupport::TestCase
   def add_column(*args)
     ActiveRecord::Schema.instance_eval do
       suppress_messages do
-        add_column *args
+        add_column(*args)
       end
     end
     ActiveRecord::Base.clear_cache!

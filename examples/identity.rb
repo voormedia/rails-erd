@@ -33,7 +33,7 @@ class Identity < RailsERD::Diagram
 
   def association_macro(relationship)
     name = relationship.destination.name.underscore
-    macro = case
+    case
     when relationship.to_one?       then "has_one :#{name}"
     when relationship.many_to_many? then "has_and_belongs_to_many :#{name.pluralize}"
     when relationship.to_many?      then "has_many :#{name.pluralize}"
@@ -42,7 +42,7 @@ class Identity < RailsERD::Diagram
 
   def reverse_association_macro(relationship)
     name = relationship.source.name.underscore
-    macro = case
+    case
     when relationship.many_to?      then "has_and_belongs_to_many :#{name.pluralize}"
     when relationship.one_to?       then "belongs_to :#{name}"
     end
