@@ -63,18 +63,10 @@ module RailsERD
 
       def initialize(domain, associations) # @private :nodoc:
         @domain = domain
-        @reverse_associations, @forward_associations =
-        if any_habtm?(associations)
-          # Many-to-many associations don't have a clearly defined direction.
-          # We sort by name and use the first model as the source.
-          source = associations.map(&:active_record).sort_by(&:name).first
-          associations.partition { |association| association.active_record != source }
-        else
-          associations.partition(&:belongs_to?)
-        end
+        @reverse_associations, @forward_associations = partition_associations(associations)
 
         assoc = @forward_associations.first || @reverse_associations.first
-        @source = @domain.entity_by_name(self.class.send(:association_owner, assoc))
+        @source      = @domain.entity_by_name(self.class.send(:association_owner, assoc))
         @destination = @domain.entity_by_name(self.class.send(:association_target, assoc))
         @source, @destination = @destination, @source if assoc.belongs_to?
       end
@@ -152,6 +144,17 @@ module RailsERD
       end
 
       private
+
+      def partition_associations(associations)
+        if any_habtm?(associations)
+          # Many-to-many associations don't have a clearly defined direction.
+          # We sort by name and use the first model as the source.
+          source = associations.map(&:active_record).sort_by(&:name).first
+          associations.partition { |association| association.active_record != source }
+        else
+          associations.partition(&:belongs_to?)
+        end
+      end
 
       def associations_range(associations, absolute_max)
         # The minimum of the range is the maximum value of each association
