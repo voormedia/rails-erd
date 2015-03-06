@@ -1,5 +1,6 @@
 Rails ERD - Generate Entity-Relationship Diagrams for Rails applications
 ========================================================================
+[![Build Status](https://travis-ci.org/voormedia/rails-erd.svg?branch=master)](https://travis-ci.org/voormedia/rails-erd)
 
 [Rails ERD](http://voormedia.github.io/rails-erd/) is a Rails plugin that allows you to easily generate a diagram based on your Active Record models. The diagram gives an overview of how your models are related. Having a diagram that describes your models is perfect documentation for your application.
 
