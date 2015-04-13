@@ -26,11 +26,11 @@ module RailsERD
       if use_os_x_fonts?
         { normal: "ArialMT",
           bold:   "Arial BoldMT",
-          italic: "Arail ItalicMT" }
+          italic: "Arial ItalicMT" }
       else
         { normal: "Arial",
           bold:   "Arial Bold",
-          italic: "Arail Italic" }
+          italic: "Arial Italic" }
       end
     end
 
