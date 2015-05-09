@@ -45,7 +45,7 @@ class AttributeTest < ActiveSupport::TestCase
   end
 
   test "from_model should return attributes with PK first if sort is false and prepend_primary is true" do
-    RailsERD.options[:sort]            = false
+    RailsERD.options[:sort]            = true
     RailsERD.options[:prepend_primary] = true
 
     create_model "Foo"
