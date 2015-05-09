@@ -44,7 +44,7 @@ class AttributeTest < ActiveSupport::TestCase
     assert_equal %w{id a}, Domain::Attribute.from_model(Domain.new, Foo).map(&:name)
   end
 
-  test "from_model should return attributes with PK first if sort is false and prepend_primary is true" do
+  test "from_model should return attributes with PK first if prepend_primary is true" do
     RailsERD.options[:sort]            = true
     RailsERD.options[:prepend_primary] = true
 
