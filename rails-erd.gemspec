@@ -13,6 +13,8 @@ Gem::Specification.new do |s|
   s.description = %q{Automatically generate an entity-relationship diagram (ERD) for your Rails models.}
   s.license     = "MIT"
 
+  s.required_ruby_version = '>= 1.9.3'
+
   s.add_runtime_dependency "activerecord", [">= 3.2"]
   s.add_runtime_dependency "activesupport", [">= 3.2"]
   s.add_runtime_dependency "ruby-graphviz", ["~> 1.0.4"]
