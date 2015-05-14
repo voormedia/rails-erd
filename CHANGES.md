@@ -1,3 +1,10 @@
+1.4.0
+-----
+
+* Drop support for spaces in filenames (#123)
+* Ensure that #generalized? could be used (#127)
+* Fixing typos in font config (#140)
+
 1.3.1
 -----
 
