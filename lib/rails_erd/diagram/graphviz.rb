@@ -194,9 +194,10 @@ module RailsERD
 
       save do
         raise "Saving diagram failed!\nOutput directory '#{File.dirname(filename)}' does not exist." unless File.directory?(File.dirname(filename))
+
         begin
           # GraphViz doesn't like spaces in the filename
-          graph.output(filetype => filename.gsub(/\s/,"\\ "))
+          graph.output(filetype => filename.gsub(/\s/,"_"))
           filename
         rescue RuntimeError => e
           raise "Saving diagram failed!\nGraphviz produced errors. Verify it " +
