@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency "activerecord", ">= 3.2"
   s.add_runtime_dependency "activesupport", ">= 3.2"
   s.add_runtime_dependency "ruby-graphviz", "~> 1.0.4"
-  s.add_runtime_dependency "choice", "~> 0.1.6"
+  s.add_runtime_dependency "choice", "~> 0.2.0"
 
   s.files         = `git ls-files -- {bin,lib,test}/* CHANGES.rdoc LICENSE Rakefile README.md`.split("\n")
   s.test_files    = `git ls-files -- test/*`.split("\n")
