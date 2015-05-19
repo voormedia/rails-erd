@@ -1,0 +1,4 @@
+Add a .rake file that automatically generate the graphical models when you do 
+a db:migrate in development mode:
+
+    rails generate erd:install
