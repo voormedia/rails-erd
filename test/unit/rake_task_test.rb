@@ -160,6 +160,6 @@ Error occurred while loading application: FooBar (RuntimeError)
   test "options task should set known array command line options" do
     ENV["attributes"] = "content,timestamps"
     Rake::Task["erd:options"].execute
-    assert_equal [:content, :timestamps], RailsERD.options.attributes
+    assert_equal %w[content timestamps], RailsERD.options.attributes
   end
 end
