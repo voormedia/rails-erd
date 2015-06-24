@@ -126,27 +126,27 @@ class DiagramTest < ActiveSupport::TestCase
   test "generate should filter excluded entity" do
     create_model "Book"
     create_model "Author"
-    assert_equal [Book], retrieve_entities(:exclude => ['Author']).map(&:model)
+    assert_equal [Book], retrieve_entities(:exclude => [:Author]).map(&:model)
   end
 
   test "generate should filter excluded entities" do
     create_model "Book"
     create_model "Author"
     create_model "Editor"
-    assert_equal [Book], retrieve_entities(:exclude => ['Author', 'Editor']).map(&:model)
+    assert_equal [Book], retrieve_entities(:exclude => [:Author, :Editor]).map(&:model)
   end
 
   test "generate should include only specified entity" do
     create_model "Book"
     create_model "Author"
-    assert_equal [Book], retrieve_entities(:only => ['Book']).map(&:model)
+    assert_equal [Book], retrieve_entities(:only => [:Book]).map(&:model)
   end
 
   test "generate should include only specified entities" do
     create_model "Book"
     create_model "Author"
     create_model "Editor"
-    assert_equal [Author, Editor], retrieve_entities(:only => ['Author', 'Editor']).map(&:model)
+    assert_equal [Author, Editor], retrieve_entities(:only => [:Author, :Editor]).map(&:model)
   end
 
   test "generate should filter disconnected entities if disconnected is false" do
