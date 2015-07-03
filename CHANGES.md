@@ -1,3 +1,13 @@
+1.4.1
+-----
+
+* Improved travis-ci testing
+* Improved speed of Attribute#from_model (#145)
+* Fixed a long-standing bug in rake task (#149)
+* Fixed 'No entities found' error when using filter (#152)
+* Prevent deprecation warning by specifying test order (#153)
+* Updated CODE_OF_CONDUCT
+
 1.4.0
 -----
 
