@@ -14,13 +14,18 @@ module RailsERD
           attributes.sort! if RailsERD.options[:sort]
 
           if RailsERD.options[:prepend_primary]
-            primary_key = ActiveRecord::Base.get_primary_key(model)
-            primary = attributes.detect{ |column| column.name == primary_key }
+            attributes = prepend_primary(model, attributes)
+          end
 
-            if primary
-              attributes.delete(primary)
-              attributes.unshift(primary)
-            end
+          attributes
+        end
+
+        def prepend_primary(model, attributes)
+          primary_key = ActiveRecord::Base.get_primary_key(model)
+          primary = attributes.index { |column| column.name == primary_key }
+
+          if primary
+            attributes[primary], attributes[0] = attributes[0], attributes[primary]
           end
 
           attributes
