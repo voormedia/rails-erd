@@ -8,7 +8,7 @@ namespace :erd do
       RailsERD.options[option.to_sym] = case ENV[option]
       when "true", "yes" then true
       when "false", "no" then false
-      when /,/ then ENV[option].split(/\s*,\s*/).map(&:to_sym)
+      when /,/ then ENV[option].split(/\s*,\s*/)
       else ENV[option].to_sym
       end
     end
