@@ -149,6 +149,13 @@ class DiagramTest < ActiveSupport::TestCase
     assert_equal [Author, Editor], retrieve_entities(:only => [:Author, :Editor]).map(&:model)
   end
 
+  test "generate should include only specified entities (With the class names as strings)" do
+    create_model "Book"
+    create_model "Author"
+    create_model "Editor"
+    assert_equal [Author, Editor], retrieve_entities(:only => ['Author', 'Editor']).map(&:model)
+  end
+
   test "generate should filter disconnected entities if disconnected is false" do
     create_model "Book", :author => :references do
       belongs_to :author
