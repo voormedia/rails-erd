@@ -1,3 +1,9 @@
+1.4.2
+-----
+
+* Fix for issue with strings vs symbols in options (#157)
+* Fix for 'geometry' columns causing errors (#158)
+
 1.4.1
 -----
 
