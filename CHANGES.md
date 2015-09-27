@@ -1,3 +1,8 @@
+1.4.3
+-----
+
+* Fix for bug where defaults were overriding configuration options (#166)
+
 1.4.2
 -----
 
