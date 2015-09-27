@@ -12,19 +12,16 @@ Choice.options do
   option :notation do
     long "--notation=STYLE"
     desc "Diagram notation style, one of simple, bachman, uml or crowsfoot."
-    default "simple"
   end
 
   option :attributes do
     long "--attributes=TYPE,..."
     desc "Attribute groups to display: content, primary_keys, foreign_keys, timestamps and/or inheritance."
-    default "content"
   end
 
   option :orientation do
     long "--orientation=ORIENTATION"
     desc "Orientation of diagram, either horizontal (default) or vertical."
-    default "orientation"
   end
 
   option :inheritance do
@@ -60,13 +57,11 @@ Choice.options do
   option :sort do
     long "--sort=BOOLEAN"
     desc "Sort attribute list alphabetically"
-    default "false"
   end
 
   option :prepend_primary do
     long "--prepend_primary=BOOLEAN"
     desc "Ensure primary key is at start of attribute list"
-    default "false"
   end
 
   separator ""
@@ -75,13 +70,11 @@ Choice.options do
   option :filename do
     long "--filename=FILENAME"
     desc "Basename of the output diagram."
-    default "erd"
   end
 
   option :filetype do
     long "--filetype=TYPE"
     desc "Output file type. Available types depend on the diagram renderer."
-    default "pdf"
   end
 
   option :no_markup do
