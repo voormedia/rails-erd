@@ -4,7 +4,7 @@ require "rails_erd/diagram/graphviz"
 class GraphvizTest < ActiveSupport::TestCase
   def setup
     RailsERD.options.filetype = :png
-    RailsERD.options.warn = false
+    RailsERD.options.warn     = false
   end
 
   def teardown
@@ -76,24 +76,32 @@ class GraphvizTest < ActiveSupport::TestCase
     end
     create_model "Bar", :column => :string
     Diagram::Graphviz.create
+    sleep(0.2)
+
     assert File.exists?("erd.png")
   end
 
   test "create should create output for domain without attributes" do
     create_simple_domain
     Diagram::Graphviz.create
+    sleep(0.2)
+
     assert File.exists?("erd.png")
   end
 
   test "create should write to file with dot extension if type is dot" do
     create_simple_domain
     Diagram::Graphviz.create :filetype => :dot
+    sleep(0.2)
+
     assert File.exists?("erd.dot")
   end
 
   test "create should create output for filenames that have spaces" do
     create_simple_domain
     Diagram::Graphviz.create :filename => "erd with spaces"
+    sleep(0.2)
+
     assert File.exists?("erd_with_spaces.png")
   end
 
@@ -120,12 +128,16 @@ class GraphvizTest < ActiveSupport::TestCase
     end
     create_model "Bar", :column => :string
     Diagram::Graphviz.create(:orientation => :vertical)
+    sleep(0.2)
+
     assert File.exists?("erd.png")
   end
 
   test "create should create output for domain if orientation is vertical" do
     create_simple_domain
     Diagram::Graphviz.create(:orientation => :vertical)
+    sleep(0.2)
+
     assert File.exists?("erd.png")
   end
 
@@ -148,6 +160,8 @@ class GraphvizTest < ActiveSupport::TestCase
     begin
       create_simple_domain
       Diagram::Graphviz.create :filename => "foobar"
+      sleep(0.2)
+
       assert File.exists?("foobar.png")
     ensure
       FileUtils.rm "foobar.png" rescue nil
