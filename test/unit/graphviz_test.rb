@@ -109,7 +109,7 @@ class GraphvizTest < ActiveSupport::TestCase
         def output_and_errors_from_command(*args); raise end
       end
       assert_nothing_raised do
-        Diagram::Graphviz.create :filetype => :dot
+        Diagram::Graphviz.create(:filetype => :dot)
       end
     ensure
       GraphViz.class_eval do

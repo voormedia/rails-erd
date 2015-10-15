@@ -33,8 +33,9 @@ class RakeTaskTest < ActiveSupport::TestCase
   # Diagram generation =======================================================
   test "generate task should create output based on domain model" do
     create_simple_domain
+
+    Diagram.any_instance.expects(:save)
     Rake::Task["erd:generate"].execute
-    assert File.exists?("erd.dot")
   end
 
   test "generate task should not create output if there are no connected models" do
@@ -45,27 +46,35 @@ class RakeTaskTest < ActiveSupport::TestCase
   test "generate task should eager load application environment" do
     eager_loaded, environment_loaded = nil
     create_app
+
     Rails.application.class_eval do
       define_method :eager_load! do
         eager_loaded = true
       end
     end
+
     Rake::Task.define_task :environment do
       environment_loaded = true
     end
+
     create_simple_domain
+
     Rake::Task["erd:generate"].invoke
+
     assert_equal [true, true], [eager_loaded, environment_loaded]
   end
 
   test "generate task should complain if active record is not loaded" do
     create_app
+
     Rails.application.class_eval do
       define_method :eager_load! do end
     end
+
     Rake::Task.define_task :environment
     Object.send :remove_const, :ActiveRecord
     message = nil
+
     begin
       Rake::Task["erd:generate"].invoke
     rescue => e
