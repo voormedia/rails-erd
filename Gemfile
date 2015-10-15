@@ -7,6 +7,7 @@ if ENV["edge"]
 end
 
 group :development do
+  gem 'mocha'
   gem "rake"
   gem "yard"
 
