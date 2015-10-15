@@ -2,11 +2,15 @@ require "rubygems"
 require "bundler/setup"
 
 require "active_record"
+
 if ActiveSupport::VERSION::MAJOR >= 4
   require "minitest/autorun"
+  require 'mocha/mini_test'
 else
   require "test/unit"
+  require 'mocha/test_unit'
 end
+
 require "rails_erd/domain"
 
 ActiveRecord::Base.establish_connection :adapter => "sqlite3", :database => ":memory:"
