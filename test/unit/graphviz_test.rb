@@ -75,34 +75,30 @@ class GraphvizTest < ActiveSupport::TestCase
       belongs_to :bar
     end
     create_model "Bar", :column => :string
-    Diagram::Graphviz.create
-    sleep(0.2)
 
-    assert File.exists?("erd.png")
+    Diagram.any_instance.expects(:save)
+    Diagram::Graphviz.create
   end
 
   test "create should create output for domain without attributes" do
     create_simple_domain
-    Diagram::Graphviz.create
-    sleep(0.2)
 
-    assert File.exists?("erd.png")
+    Diagram.any_instance.expects(:save)
+    Diagram::Graphviz.create
   end
 
   test "create should write to file with dot extension if type is dot" do
     create_simple_domain
-    Diagram::Graphviz.create :filetype => :dot
-    sleep(0.2)
 
-    assert File.exists?("erd.dot")
+    Diagram.any_instance.expects(:save)
+    Diagram::Graphviz.create(:filetype => :dot)
   end
 
   test "create should create output for filenames that have spaces" do
     create_simple_domain
-    Diagram::Graphviz.create :filename => "erd with spaces"
-    sleep(0.2)
 
-    assert File.exists?("erd_with_spaces.png")
+    Diagram.any_instance.expects(:save)
+    Diagram::Graphviz.create(:filename => "erd with spaces")
   end
 
   test "create should write to file with dot extension without requiring graphviz" do
@@ -127,18 +123,16 @@ class GraphvizTest < ActiveSupport::TestCase
       belongs_to :bar
     end
     create_model "Bar", :column => :string
-    Diagram::Graphviz.create(:orientation => :vertical)
-    sleep(0.2)
 
-    assert File.exists?("erd.png")
+    Diagram.any_instance.expects(:save)
+    Diagram::Graphviz.create(:orientation => :vertical)
   end
 
   test "create should create output for domain if orientation is vertical" do
     create_simple_domain
-    Diagram::Graphviz.create(:orientation => :vertical)
-    sleep(0.2)
 
-    assert File.exists?("erd.png")
+    Diagram.any_instance.expects(:save)
+    Diagram::Graphviz.create(:orientation => :vertical)
   end
 
   test "create should not create output if there are no connected models" do
@@ -156,26 +150,16 @@ class GraphvizTest < ActiveSupport::TestCase
     assert_match /No entities found/, message
   end
 
-  test "create should write to given file name plus extension if present" do
-    begin
-      create_simple_domain
-      Diagram::Graphviz.create :filename => "foobar"
-      sleep(0.2)
-
-      assert File.exists?("foobar.png")
-    ensure
-      FileUtils.rm "foobar.png" rescue nil
-    end
-  end
-
   test "create should abort and complain if output directory does not exist" do
     message = nil
+
     begin
       create_simple_domain
-      Diagram::Graphviz.create :filename => "does_not_exist/foo"
+      Diagram::Graphviz.create(:filename => "does_not_exist/foo")
     rescue => e
       message = e.message
     end
+
     assert_match /Output directory 'does_not_exist' does not exist/, message
   end
 
