@@ -1,3 +1,9 @@
+1.4.4
+-----
+
+* Return nil if native_type is geography (#168)
+* Change tests to address flickering failures on Travis-CI
+
 1.4.3
 -----
 
