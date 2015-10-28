@@ -174,7 +174,6 @@ module RailsERD
     end
 
     def filtered_attributes(entity)
-      return [] if options.attributes == "false"
       entity.attributes.reject { |attribute|
         # Select attributes that satisfy the conditions in the :attributes option.
         !options.attributes or entity.specialized? or

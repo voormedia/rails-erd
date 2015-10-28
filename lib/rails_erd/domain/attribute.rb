@@ -89,8 +89,9 @@ module RailsERD
       end
 
       # Method allows false to be set as an attributes option when making custom graphs.
-      # Its functionality is implemented in the filtered_attributes method.
+      # It rejects all attributes when called from Diagram#filtered_attributes method
       def false?
+        false
       end
 
       # Returns +true+ if this attribute is one of the standard 'magic' Rails
