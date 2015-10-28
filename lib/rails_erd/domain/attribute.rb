@@ -88,6 +88,12 @@ module RailsERD
         @model.inheritance_column == name
       end
 
+      # Method allows false to be set as an attributes option when making custom graphs.
+      # It rejects all attributes when called from Diagram#filtered_attributes method
+      def false?
+        false
+      end
+
       # Returns +true+ if this attribute is one of the standard 'magic' Rails
       # timestamp columns, being +created_at+, +updated_at+, +created_on+ or
       # +updated_on+.

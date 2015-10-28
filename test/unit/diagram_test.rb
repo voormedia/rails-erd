@@ -310,6 +310,14 @@ class DiagramTest < ActiveSupport::TestCase
     assert_equal %w{id}, retrieve_attribute_lists(:attributes => [:primary_keys])[Book].map(&:name)
   end
 
+  test "generate should yield [] if attributes = false" do
+    create_model "Book", :title => :string
+    create_model "Page", :book => :references do
+      belongs_to :book
+    end
+    assert_equal [], retrieve_attribute_lists(:attributes => [:false])[Book].map(&:name)
+  end
+
   test "generate should yield foreign key attributes if included" do
     create_model "Book", :author => :references do
       belongs_to :author

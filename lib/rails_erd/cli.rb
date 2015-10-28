@@ -16,7 +16,7 @@ Choice.options do
 
   option :attributes do
     long "--attributes=TYPE,..."
-    desc "Attribute groups to display: content, primary_keys, foreign_keys, timestamps and/or inheritance."
+    desc "Attribute groups to display: false, content, primary_keys, foreign_keys, timestamps and/or inheritance."
   end
 
   option :orientation do

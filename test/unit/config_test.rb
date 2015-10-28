@@ -12,7 +12,7 @@ class ConfigTest < ActiveSupport::TestCase
     set_user_config_file_to("erdconfig.example")
 
     expected_hash = {
-      attributes:   [:content, :foreign_key, :inheritance],
+      attributes:   [:content, :foreign_key, :inheritance, :false],
       disconnected: true,
       filename:     "erd",
       filetype:     :pdf,
@@ -34,7 +34,7 @@ class ConfigTest < ActiveSupport::TestCase
     set_user_config_file_to("erdconfig.exclude.example")
 
     expected_hash = {
-      attributes:   [:content, :foreign_key, :inheritance],
+      attributes:   [:content, :foreign_key, :inheritance, :false],
       disconnected: true,
       filename:     "erd",
       filetype:     :pdf,
