@@ -72,6 +72,17 @@ class DomainTest < ActiveSupport::TestCase
     assert_equal ["Palace", "Structure"], Domain.generate.entities.collect(&:name)
   end
 
+  test "entities should exclude models without a class name" do
+    create_models "Foo", "Bar"
+    Foo.stubs(:name).returns(nil)
+
+    begin
+      assert_equal ["Bar"], Domain.generate.entities.collect(&:name)
+    ensure
+      Foo.unstub(:name) # required so `reset_domain` works
+    end
+  end
+
   # Relationship processing ==================================================
   test "relationships should return empty array for empty domain" do
     assert_equal [], Domain.generate.relationships
