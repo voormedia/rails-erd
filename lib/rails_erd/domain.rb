@@ -122,9 +122,17 @@ module RailsERD
     end
 
     def check_model_validity(model)
-      model.abstract_class? or model.table_exists? or raise "table #{model.table_name} does not exist"
+      if model.abstract_class? || model.table_exists?
+        if model.name.nil?
+          raise "is anonymous class"
+        else
+          true
+        end
+      else
+        raise "table #{model.table_name} does not exist"
+      end
     rescue => e
-      warn "Ignoring invalid model #{model.name} (#{e.message})"
+      warn "Ignoring invalid model #{model.name} (#{e.message})".squish
     end
 
     def check_association_validity(association)
