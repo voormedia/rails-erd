@@ -132,7 +132,7 @@ module RailsERD
         raise "table #{model.table_name} does not exist"
       end
     rescue => e
-      warn "Ignoring invalid model #{model.name} (#{e.message})".squish
+      warn "Ignoring invalid model #{model.name} (#{e.message})"
     end
 
     def check_association_validity(association)
