@@ -59,14 +59,14 @@ class GraphvizTest < ActiveSupport::TestCase
     end
   end
 
-  test "rank direction should be lr for horizontal orientation" do
+  test "rank direction should be tb for horizontal orientation" do
     create_simple_domain
-    assert_equal '"LR"', diagram(:orientation => :horizontal).graph[:rankdir].to_s
+    assert_equal '"TB"', diagram(:orientation => :horizontal).graph[:rankdir].to_s
   end
 
-  test "rank direction should be tb for vertical orientation" do
+  test "rank direction should be lr for vertical orientation" do
     create_simple_domain
-    assert_equal '"TB"', diagram(:orientation => :vertical).graph[:rankdir].to_s
+    assert_equal '"LR"', diagram(:orientation => :vertical).graph[:rankdir].to_s
   end
 
   # Diagram generation =======================================================
