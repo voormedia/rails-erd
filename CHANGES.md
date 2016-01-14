@@ -1,3 +1,9 @@
+1.4.5
+-----
+
+* Fix bug in `auto generate diagram` (#176)
+* Protect against `nil` model names (#177, #178)
+
 1.4.4
 -----
 
