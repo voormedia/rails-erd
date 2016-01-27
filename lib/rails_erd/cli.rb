@@ -152,6 +152,7 @@ module RailsERD
       # TODO: Add support for different kinds of environment.
       require "#{path}/config/environment"
       Rails.application.eager_load!
+    rescue TypeError
     end
 
     def create_diagram
