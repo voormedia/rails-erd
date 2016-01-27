@@ -123,7 +123,7 @@ module RailsERD
     # Generates the diagram, but does not save the output. It is called
     # internally by Diagram#create.
     def generate
-      instance_eval &callbacks[:setup]
+      instance_eval(&callbacks[:setup])
 
       filtered_entities.each do |entity|
         instance_exec entity, filtered_attributes(entity), &callbacks[:each_entity]
@@ -139,7 +139,7 @@ module RailsERD
     end
 
     def save
-      instance_eval &callbacks[:save]
+      instance_eval(&callbacks[:save])
     end
 
     private
