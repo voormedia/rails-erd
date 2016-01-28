@@ -49,6 +49,11 @@ Choice.options do
     desc "Filter to only include listed models in diagram."
   end
 
+  option :only_recursion_depth do
+    long "--only_recursion_depth=INTEGER"
+    desc "Recurses into relations specified by --only upto a depth N."
+  end
+
   option :exclude do
     long "--exclude"
     desc "Filter to exclude listed models in diagram."

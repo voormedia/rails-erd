@@ -60,6 +60,7 @@ warn: true
 title: sample title
 exclude: null
 only: null
+only_recursion_depth: null
 prepend_primary: false
 ```
 
