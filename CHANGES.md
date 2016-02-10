@@ -1,3 +1,9 @@
+1.4.6
+-----
+* Revert auto-generation of diagrams added in #176 (#191)
+* Fix some Ruby warnings (#187)
+* Rescue from TypeError when loading target app (#185)
+
 1.4.5
 -----
 
