@@ -57,7 +57,7 @@ module RailsERD
         end
 
       # <symbol>
-      when :filetype, :notation, :orientation
+      when :filetype, :notation
         value.to_sym
 
       # [<string>]
@@ -68,7 +68,7 @@ module RailsERD
         !!value
 
       # nil | <string>
-      when :filename
+      when :filename, :orientation
         value.nil? ? nil : value.to_s
 
       # true | false | <string>
