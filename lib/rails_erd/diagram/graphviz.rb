@@ -183,7 +183,7 @@ module RailsERD
         EDGE_ATTRIBUTES.each  { |attribute, value| graph.edge[attribute] = value }
 
         # Switch rank direction if we're creating a vertically oriented graph.
-        graph[:rankdir] = (options.orientation == "horizontal") ? :LR : :TB
+        graph[:rankdir] = (options.orientation == "vertical") ? :LR : :TB
 
         # Title of the graph itself.
         graph[:label] = "#{title}\\n\\n" if title
