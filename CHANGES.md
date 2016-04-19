@@ -1,3 +1,9 @@
+1.4.7
+-----
+* Fixed grouping of associations (#190)
+* Fixed issue with command line options (#198)
+* Fixed horizontally graph when vertical was wanted and viceversa (#183)
+
 1.4.6
 -----
 * Revert auto-generation of diagrams added in #176 (#191)
