@@ -64,6 +64,11 @@ Choice.options do
     desc "Ensure primary key is at start of attribute list"
   end
 
+  option :cluster do
+    long "--cluster"
+    desc "Display models in subgraphs based on their namespace."
+  end
+
   separator ""
   separator "Output options:"
 

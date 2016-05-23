@@ -92,6 +92,10 @@ module RailsERD
         @children ||= domain.specializations_by_entity_name(name).map(&:specialized)
       end
 
+      def namespace
+        name.scan(/(.*)::.*/).dig(0,0)
+      end
+
       def to_s # @private :nodoc:
         name
       end

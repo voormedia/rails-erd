@@ -63,8 +63,10 @@ module RailsERD
       # [<string>]
       when :only, :exclude
         Array(value).join(",").split(",").map { |v| v.strip }
+
       # true | false
-      when :disconnected, :indirect, :inheritance, :markup, :polymorphism, :warn
+      when :disconnected, :indirect, :inheritance, :markup, :polymorphism,
+           :warn, :cluster
         !!value
 
       # nil | <string>
