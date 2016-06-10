@@ -186,6 +186,15 @@ class DomainTest < ActiveSupport::TestCase
     assert_equal [Domain::Specialization] * 3, Domain.generate.specializations.collect(&:class)
   end
 
+  test "specializations should return specializations in domain model once for descendants of abstract class" do
+    create_model "Thing" do
+      self.abstract_class = true
+    end
+    create_model "Beverage", Thing, :type => :string
+    create_model "Beer", Beverage
+    assert_equal [Domain::Specialization], Domain.generate.specializations.collect(&:class)
+  end
+
   # Erroneous associations ===================================================
   test "relationships should omit bad has_many associations" do
     create_model "Foo" do
