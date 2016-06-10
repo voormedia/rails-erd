@@ -106,6 +106,7 @@ class GraphvizTest < ActiveSupport::TestCase
     begin
       GraphViz.class_eval do
         alias_method :old_output_and_errors_from_command, :output_and_errors_from_command
+        undef :output_and_errors_from_command
         def output_and_errors_from_command(*args); raise end
       end
       assert_nothing_raised do
@@ -113,6 +114,7 @@ class GraphvizTest < ActiveSupport::TestCase
       end
     ensure
       GraphViz.class_eval do
+        undef :output_and_errors_from_command
         alias_method :output_and_errors_from_command, :old_output_and_errors_from_command
       end
     end
