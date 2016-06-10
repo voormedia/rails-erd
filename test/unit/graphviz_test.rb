@@ -137,7 +137,7 @@ class GraphvizTest < ActiveSupport::TestCase
 
   test "create should not create output if there are no connected models" do
     Diagram::Graphviz.create rescue nil
-    assert !File.exists?("erd.png")
+    assert !File.exist?("erd.png")
   end
 
   test "create should abort and complain if there are no connected models" do

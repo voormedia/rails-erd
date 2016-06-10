@@ -40,7 +40,7 @@ class RakeTaskTest < ActiveSupport::TestCase
 
   test "generate task should not create output if there are no connected models" do
     Rake::Task["erd:generate"].execute rescue nil
-    assert !File.exists?("erd.dot")
+    assert !File.exist?("erd.dot")
   end
 
   test "generate task should eager load application environment" do
