@@ -51,6 +51,7 @@ module RailsERD
         :title, true,
         :exclude, nil,
         :only, nil,
+        :only_recursion_depth, nil,
         :prepend_primary, false
       ]
     end

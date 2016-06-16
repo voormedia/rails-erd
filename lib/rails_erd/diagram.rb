@@ -125,6 +125,14 @@ module RailsERD
     def generate
       instance_eval(&callbacks[:setup])
 
+      if options.only_recursion_depth.present?
+        depth = options.only_recursion_depth.to_i
+        options.only.dup.each do |class_name|
+          options.only += recurse_into_relationships(@domain.entity_by_name(class_name), depth)
+        end
+        options.only.uniq!
+      end
+
       filtered_entities.each do |entity|
         instance_exec entity, filtered_attributes(entity), &callbacks[:each_entity]
       end
@@ -136,6 +144,26 @@ module RailsERD
       filtered_relationships.each do |relationship|
         instance_exec relationship, &callbacks[:each_relationship]
       end
+    end
+
+    def recurse_into_relationships(entity, max_level, current_level = 0)
+      return [] unless entity
+      return [] if max_level == current_level
+
+      relationships = entity.relationships.reject{|r| r.indirect? || r.recursive?}
+
+      relationships.map do |relationship|
+        other_entitiy = if relationship.source == entity
+                          relationship.destination
+                        else
+                          relationship.source
+                        end
+        if other_entitiy and !other_entitiy.generalized?
+          [other_entitiy.name] + recurse_into_relationships(other_entitiy, max_level, current_level + 1)
+        else
+          []
+        end
+      end.flatten.uniq
     end
 
     def save
