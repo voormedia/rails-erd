@@ -1,3 +1,13 @@
+1.5.0
+-----
+* New option of 'clustering' by namespace (#205)
+* Support for 'only_models_include_depth' option (#219)
+* Added basic support for non-Rails apps (#208)
+* Avoid duplicate specializations when using STI with an abstract base class (#211)
+* Fixed Ruby 2.1 deprecation warnings (#209)
+* Fixes to tests (#210, #213)
+* Various documentation fixes (#203, #212)
+
 1.4.7
 -----
 * Fixed grouping of associations (#190)
