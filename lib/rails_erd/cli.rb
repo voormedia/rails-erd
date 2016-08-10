@@ -69,6 +69,11 @@ Choice.options do
     desc "Ensure primary key is at start of attribute list"
   end
 
+  option :cluster do
+    long "--cluster"
+    desc "Display models in subgraphs based on their namespace."
+  end
+
   separator ""
   separator "Output options:"
 
@@ -154,9 +159,14 @@ module RailsERD
 
     def load_application
       $stderr.puts "Loading application in '#{File.basename(path)}'..."
-      # TODO: Add support for different kinds of environment.
-      require "#{path}/config/environment"
-      Rails.application.eager_load!
+      begin
+        environment_path = "#{path}/config/environment.rb"
+        require environment_path
+      rescue ::LoadError
+        puts "Please create a file in '#{environment_path}' that loads your application environment."
+        raise
+      end
+      Rails.application.eager_load! if defined? Rails
     rescue TypeError
     end
 

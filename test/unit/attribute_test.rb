@@ -4,6 +4,7 @@ require File.expand_path("../test_helper", File.dirname(__FILE__))
 class AttributeTest < ActiveSupport::TestCase
   def with_native_limit(type, new_limit)
     ActiveRecord::Base.connection.class_eval do
+      undef :native_database_types
       define_method :native_database_types do
         super().tap do |types|
           types[type][:limit] = new_limit
@@ -13,6 +14,7 @@ class AttributeTest < ActiveSupport::TestCase
     yield
   ensure
     ActiveRecord::Base.connection.class_eval do
+      undef :native_database_types
       define_method :native_database_types do
         super()
       end

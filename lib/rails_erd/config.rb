@@ -57,18 +57,20 @@ module RailsERD
         end
 
       # <symbol>
-      when :filetype, :notation, :orientation
+      when :filetype, :notation
         value.to_sym
 
       # [<string>]
       when :only, :exclude
         Array(value).join(",").split(",").map { |v| v.strip }
+
       # true | false
-      when :disconnected, :indirect, :inheritance, :markup, :polymorphism, :warn
+      when :disconnected, :indirect, :inheritance, :markup, :polymorphism,
+           :warn, :cluster
         !!value
 
       # nil | <string>
-      when :filename
+      when :filename, :orientation
         value.nil? ? nil : value.to_s
 
       # true | false | <string>

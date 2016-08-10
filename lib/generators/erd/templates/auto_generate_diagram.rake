@@ -2,5 +2,5 @@
 # NOTE: are sensitive to local FS writes, and besides -- it's just not proper
 # NOTE: to have a dev-mode tool do its thing in production.
 if Rails.env.development?
-  RailsERD::Engine.load_tasks
+  Erd.load_tasks
 end

@@ -183,7 +183,7 @@ module RailsERD
         EDGE_ATTRIBUTES.each  { |attribute, value| graph.edge[attribute] = value }
 
         # Switch rank direction if we're creating a vertically oriented graph.
-        graph[:rankdir] = :TB if options.orientation == :vertical
+        graph[:rankdir] = (options.orientation == "vertical") ? :LR : :TB
 
         # Title of the graph itself.
         graph[:label] = "#{title}\\n\\n" if title
@@ -210,7 +210,14 @@ module RailsERD
       end
 
       each_entity do |entity, attributes|
-        draw_node entity.name, entity_options(entity, attributes)
+        if options[:cluster] && entity.namespace
+          cluster_name = "cluster_#{entity.namespace}"
+          cluster = graph.get_graph(cluster_name) ||
+                    graph.add_graph(cluster_name, label: entity.namespace)
+          draw_cluster_node cluster, entity.name, entity_options(entity, attributes)
+        else
+          draw_node entity.name, entity_options(entity, attributes)
+        end
       end
 
       each_specialization do |specialization|
@@ -233,15 +240,19 @@ module RailsERD
       private
 
       def node_exists?(name)
-        !!graph.get_node(escape_name(name))
+        !!graph.search_node(escape_name(name))
       end
 
       def draw_node(name, options)
         graph.add_nodes escape_name(name), options
       end
 
+      def draw_cluster_node(cluster, name, options)
+        cluster.add_nodes escape_name(name), options
+      end
+
       def draw_edge(from, to, options)
-        graph.add_edges graph.get_node(escape_name(from)), graph.get_node(escape_name(to)), options if node_exists?(from) and node_exists?(to)
+        graph.add_edges graph.search_node(escape_name(from)), graph.search_node(escape_name(to)), options if node_exists?(from) and node_exists?(to)
       end
 
       def escape_name(name)

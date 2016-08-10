@@ -146,6 +146,7 @@ class ActiveSupport::TestCase
   def reset_domain
     if defined? ActiveRecord
       ActiveRecord::Base.descendants.each do |model|
+        next if model.name == "ActiveRecord::InternalMetadata"
         model.reset_column_information
         Object.send :remove_const, model.name.to_sym if Object.const_defined? model.name.to_sym
       end

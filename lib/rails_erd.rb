@@ -1,6 +1,5 @@
 require "active_support/ordered_options"
 require "rails_erd/railtie" if defined? Rails
-require "rails_erd/engine" if defined? Rails
 require "rails_erd/config"
 
 # Welcome to the API documentation of Rails ERD. If you wish to extend or
@@ -53,7 +52,8 @@ module RailsERD
         :exclude, nil,
         :only, nil,
         :only_recursion_depth, nil,
-        :prepend_primary, false
+        :prepend_primary, false,
+        :cluster, false,
       ]
     end
   end

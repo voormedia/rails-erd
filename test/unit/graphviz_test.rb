@@ -59,14 +59,14 @@ class GraphvizTest < ActiveSupport::TestCase
     end
   end
 
-  test "rank direction should be lr for horizontal orientation" do
+  test "rank direction should be tb for horizontal orientation" do
     create_simple_domain
-    assert_equal '"LR"', diagram(:orientation => :horizontal).graph[:rankdir].to_s
+    assert_equal '"TB"', diagram(:orientation => "horizontal").graph[:rankdir].to_s
   end
 
-  test "rank direction should be tb for vertical orientation" do
+  test "rank direction should be lr for vertical orientation" do
     create_simple_domain
-    assert_equal '"TB"', diagram(:orientation => :vertical).graph[:rankdir].to_s
+    assert_equal '"LR"', diagram(:orientation => "vertical").graph[:rankdir].to_s
   end
 
   # Diagram generation =======================================================
@@ -106,6 +106,7 @@ class GraphvizTest < ActiveSupport::TestCase
     begin
       GraphViz.class_eval do
         alias_method :old_output_and_errors_from_command, :output_and_errors_from_command
+        undef :output_and_errors_from_command
         def output_and_errors_from_command(*args); raise end
       end
       assert_nothing_raised do
@@ -113,6 +114,7 @@ class GraphvizTest < ActiveSupport::TestCase
       end
     ensure
       GraphViz.class_eval do
+        undef :output_and_errors_from_command
         alias_method :output_and_errors_from_command, :old_output_and_errors_from_command
       end
     end
@@ -137,7 +139,7 @@ class GraphvizTest < ActiveSupport::TestCase
 
   test "create should not create output if there are no connected models" do
     Diagram::Graphviz.create rescue nil
-    assert !File.exists?("erd.png")
+    assert !File.exist?("erd.png")
   end
 
   test "create should abort and complain if there are no connected models" do
