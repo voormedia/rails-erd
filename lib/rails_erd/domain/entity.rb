@@ -93,7 +93,8 @@ module RailsERD
       end
 
       def namespace
-        name.scan(/(.*)::.*/).dig(0,0)
+        module_match = name.scan(/(.*)::.*/)
+        module_match[0] && module_match[0][0]
       end
 
       def to_s # @private :nodoc:
