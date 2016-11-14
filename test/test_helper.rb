@@ -48,6 +48,29 @@ class ActiveSupport::TestCase
     ActiveRecord::Base.clear_cache!
   end
 
+  def create_module_model(full_name,*args,&block)
+    superklass = args.first.kind_of?(Class) ? args.shift : ActiveRecord::Base
+
+    names = full_name.split('::')
+
+    parent_module = names[0..-1].inject(Object) do |parent,child|
+      parent = parent.const_set(child.to_sym, Module.new)
+    end
+
+    parent_module ||= Object
+    name = names.last
+
+    columns = args.first || {}
+    klass = parent_module.const_set name.to_sym, Class.new(superklass)
+    konstant = parent_module.const_get(name.to_sym)
+
+    if superklass == ActiveRecord::Base || superklass.abstract_class?
+      create_table konstant.table_name, columns, konstant.primary_key rescue nil
+    end
+    klass.class_eval(&block) if block_given?
+    konstant
+  end
+
   def create_model(name, *args, &block)
     superklass = args.first.kind_of?(Class) ? args.shift : ActiveRecord::Base
     columns = args.first || {}
@@ -143,12 +166,35 @@ class ActiveSupport::TestCase
     RailsERD.options = RailsERD.default_options.merge(Config.load)
   end
 
+  def name_to_object_symbol_pairs(name)
+    parts = name.to_s.split('::')
+
+    return [] if parts.first == '' || parts.count == 0
+
+    parts[1..-1].inject([[Object, parts.first.to_sym]]) do |pairs,string|
+      last_parent, last_child = pairs.last
+
+      break pairs unless last_parent.const_defined?(last_child)
+
+      next_parent = last_parent.const_get(last_child)
+      next_child = string.to_sym
+      pairs << [next_parent, next_child]
+    end
+  end
+
+  def remove_fully_qualified_constant(name)
+    pairs = name_to_object_symbol_pairs(name)
+    pairs.reverse.each do |parent, child|
+      parent.send(:remove_const,child) if parent.const_defined?(child)
+    end
+  end
+
   def reset_domain
     if defined? ActiveRecord
       ActiveRecord::Base.descendants.each do |model|
         next if model.name == "ActiveRecord::InternalMetadata"
         model.reset_column_information
-        Object.send :remove_const, model.name.to_sym if Object.const_defined? model.name.to_sym
+        remove_fully_qualified_constant(model.name)
       end
       ActiveRecord::Base.connection.tables.each do |table|
         ActiveRecord::Base.connection.drop_table table

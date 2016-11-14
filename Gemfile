@@ -11,6 +11,11 @@ group :development do
   gem "rake"
   gem "yard"
 
+  platforms :ruby_21 do
+    gem "activerecord", "< 5.0"
+    gem "activesupport", "< 5.0"
+  end
+
   platforms :ruby do
     gem "sqlite3"
     gem "redcarpet"
