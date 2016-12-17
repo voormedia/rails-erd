@@ -186,12 +186,28 @@ module RailsERD
       }.compact.tap do |entities|
         raise "No entities found; create your models first!" if entities.empty?
       end
+      @domain.entities.reject do |entity|
+        if entity.model.table_exists?
+          false
+        else
+          warn "Ignoring model #{entity.model} - table not present"
+          true
+        end
+      end
     end
 
     def filtered_relationships
       @domain.relationships.reject { |relationship|
         !options.indirect && relationship.indirect?
       }
+      @domain.relationships.reject do |relationship|
+        if relationship.source.model.table_exists? and relationship.destination.model.table_exists?
+          false
+        else
+          warn "Ignoring relationship between #{relationship.source.model} and #{relationship.destination.model} - table not present"
+          true
+        end
+      end
     end
 
     def filtered_specializations
