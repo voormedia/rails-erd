@@ -196,9 +196,11 @@ class ActiveSupport::TestCase
         model.reset_column_information
         remove_fully_qualified_constant(model.name)
       end
+
       tables_and_views.each do |table|
         ActiveRecord::Base.connection.drop_table table
       end
+
       ActiveRecord::Base.direct_descendants.clear
       ActiveSupport::Dependencies::Reference.clear!
       ActiveRecord::Base.clear_cache!
