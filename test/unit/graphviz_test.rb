@@ -281,7 +281,7 @@ class GraphvizTest < ActiveSupport::TestCase
       belongs_to :author
     end
     create_model "Author", :name => :string
-    assert_match %r(\A"\{\w+|.*\}"\Z)m, find_dot_node(diagram(:orientation => :horizontal), "m_Author")[:label].to_gv
+    assert_match %r(\A"\{\w+\|.*\}"\Z)m, find_dot_node(diagram(:orientation => :horizontal), "m_Author")[:label].to_gv
   end
 
   test "node record labels should not have direction reversing braces for vertical orientation" do
@@ -290,7 +290,7 @@ class GraphvizTest < ActiveSupport::TestCase
       belongs_to :author
     end
     create_model "Author", :name => :string
-    assert_match %r(\A"\w+|.*"\Z)m, find_dot_node(diagram(:orientation => :vertical), "m_Author")[:label].to_gv
+    assert_match %r(\A"\w+\|.*"\Z)m, find_dot_node(diagram(:orientation => :vertical), "m_Author")[:label].to_gv
   end
 
   test "generate should create edge for each relationship" do
