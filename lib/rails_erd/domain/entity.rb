@@ -93,7 +93,7 @@ module RailsERD
       end
 
       def namespace
-        name.scan(/(.*)::.*/).dig(0,0)
+        name.scan(/(.*)::.*/).first.first
       end
 
       def to_s # @private :nodoc:
