@@ -228,7 +228,7 @@ class GraphvizTest < ActiveSupport::TestCase
       belongs_to :bar
     end
     create_model "Bar"
-    assert_equal %Q("Bar"), find_dot_node(diagram, "m_Bar")[:label].to_gv
+    assert_equal %Q("{Bar}"), find_dot_node(diagram, "m_Bar")[:label].to_gv
   end
 
   test "generate should add attributes to entity html labels" do
@@ -246,7 +246,7 @@ class GraphvizTest < ActiveSupport::TestCase
       belongs_to :bar
     end
     create_model "Bar", :column => :string, :column_two => :boolean
-    assert_equal %Q("Bar|column (string)\\ncolumn_two (boolean)\\n"), find_dot_node(diagram, "m_Bar")[:label].to_gv
+    assert_equal %Q("{Bar|column (string)\\ncolumn_two (boolean)\\n}"), find_dot_node(diagram, "m_Bar")[:label].to_gv
   end
 
   test "generate should not add any attributes to entity labels if attributes is set to false" do
