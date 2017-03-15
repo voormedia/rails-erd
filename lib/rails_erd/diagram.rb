@@ -7,7 +7,7 @@ module RailsERD
   # and (optionally) +save+.
   #
   # As an example, a diagram class that generates code that can be used with
-  # yUML (http://yuml.me) can be as simple as:
+  # yUML (https://yuml.me) can be as simple as:
   #
   #   require "rails_erd/diagram"
   #
