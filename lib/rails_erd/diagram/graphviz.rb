@@ -192,9 +192,6 @@ module RailsERD
         # Style of splines
         graph[:splines] = options.splines unless options.splines.nil?
 
-        # Shape of nodes
-        graph.node[:shape] = options.node_shape if options.node_shape
-
         # Setup notation options.
         extend self.class.const_get(options.notation.to_s.capitalize.to_sym)
       end
