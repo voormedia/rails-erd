@@ -63,6 +63,7 @@ only: null
 only_recursion_depth: null
 prepend_primary: false
 cluster: false
+splines: spline
 ```
 
 

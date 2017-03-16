@@ -62,7 +62,8 @@ module RailsERD
         concentrate: true,
         labelloc:    :t,
         fontsize:    13,
-        fontname:    FONTS[:bold]
+        fontname:    FONTS[:bold],
+        splines:     'spline'
       }
 
       # Default node attributes.
@@ -189,7 +190,10 @@ module RailsERD
         graph[:label] = "#{title}\\n\\n" if title
 
         # Style of splines
-        graph[:splines] = options.splines
+        graph[:splines] = options.splines unless options.splines.nil?
+
+        # Shape of nodes
+        graph.node[:shape] = options.node_shape if options.node_shape
 
         # Setup notation options.
         extend self.class.const_get(options.notation.to_s.capitalize.to_sym)

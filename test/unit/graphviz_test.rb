@@ -186,6 +186,16 @@ class GraphvizTest < ActiveSupport::TestCase
     assert_equal '"Domain model\n\n"', diagram.graph.graph[:label].to_s
   end
 
+  test "generate should add default value for splines attribute" do
+    create_simple_domain
+    assert_equal '"spline"', diagram.graph.graph[:splines].to_s
+  end
+
+  test "generate should add set value for splines attribute" do
+    create_simple_domain
+    assert_equal '"ortho"', diagram(splines: 'ortho').graph.graph[:splines].to_s
+  end
+
   test "generate should add title with application name to graph" do
     begin
       Object::Quux = Module.new
