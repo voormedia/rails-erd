@@ -1,4 +1,4 @@
-# Extracted from http://github.com/eric/friendly_id
+# Extracted from https://github.com/eric/friendly_id
 class ActiveRecord::Base
   def self.has_friendly_id(column, options = {})
     if options[:use_slug]
