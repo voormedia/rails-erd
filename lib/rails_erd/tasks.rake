@@ -45,4 +45,6 @@ namespace :erd do
 end
 
 desc "Generate an Entity-Relationship Diagram based on your models"
-task :erd => "erd:generate"
+task :erd => "erd:generate" do
+  RailsERD::Custom.new( "Lead", "lead", 1)
+end
