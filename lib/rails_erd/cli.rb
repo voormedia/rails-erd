@@ -74,6 +74,11 @@ Choice.options do
     desc "Display models in subgraphs based on their namespace."
   end
 
+  option :splines do
+    long "--splines=SPLINE_TYPE"
+    desc "Control how edges are represented. See http://www.graphviz.org/doc/info/attrs.html#d:splines for values."
+  end
+
   separator ""
   separator "Output options:"
 
