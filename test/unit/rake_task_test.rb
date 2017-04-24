@@ -100,12 +100,13 @@ class RakeTaskTest < ActiveSupport::TestCase
     rescue => e
       message = e.message
     end
-    assert_match /#{Regexp.escape(<<-MSG.strip).gsub("xxx", ".*?")}/, message
+    assert_match(/#{Regexp.escape(<<-MSG.strip).gsub("xxx", ".*?")}/, message
 Loading models failed!
 Error occurred while loading application: FooBar (RuntimeError)
     test/unit/rake_task_test.rb:#{l1}:in `xxx'
     test/unit/rake_task_test.rb:#{l2}:in `xxx'
     MSG
+    )
   end
 
   test "generate task should reraise if application could not be loaded and trace option is enabled" do
