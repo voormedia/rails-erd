@@ -10,6 +10,7 @@ gemfile:
   - gemfiles/Gemfile-rails.4.0.x
   - gemfiles/Gemfile-rails.4.1.x
   - gemfiles/Gemfile-rails.4.2.x
+  - gemfiles/Gemfile-rails.5.0.x
   - gemfiles/Gemfile-rails.edge
 before_install:
   - gem install bundler
@@ -17,6 +18,13 @@ before_install:
   - sudo apt-get install -qq graphviz
 script: bundle exec rake
 matrix:
+  exclude:
+    - rvm: 1.9.3
+      gemfile: gemfiles/Gemfile-rails.5.0.x
+    - rvm: 2.0
+      gemfile: gemfiles/Gemfile-rails.5.0.x
+    - rvm: 2.1
+      gemfile: gemfiles/Gemfile-rails.5.0.x
   allow_failures:
     - rvm: jruby
     - gemfile: gemfiles/Gemfile-rails.edge
