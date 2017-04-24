@@ -23,7 +23,7 @@ Requirements
 ---------------
 
 * Ruby 1.9.3+
-* ActiveRecord 3.x
+* ActiveRecord 3.x - 5.0.x
 
 Getting started
 ---------------
@@ -41,7 +41,7 @@ See the [installation instructions](https://voormedia.github.io/rails-erd/instal
 
 Rails ERD has the ability to be configured via the command line or through the use of a YAML file with configuration options set. It will look for this file first at `~/.erdconfig` and then `./.erdconfig` (which will override any settings in `~/.erdconfig`). The format of the file is as follows (shown here with the default settings used if no `.erdconfig` is found). More information on [customization options](https://voormedia.github.io/rails-erd/customise.html) can be found in Rails ERD's project documentation.
 
-```
+```yaml
 attributes:
   - content
   - foreign_key

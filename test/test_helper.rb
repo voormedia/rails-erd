@@ -150,12 +150,20 @@ class ActiveSupport::TestCase
         model.reset_column_information
         Object.send :remove_const, model.name.to_sym if Object.const_defined? model.name.to_sym
       end
-      ActiveRecord::Base.connection.tables.each do |table|
+      tables_and_views.each do |table|
         ActiveRecord::Base.connection.drop_table table
       end
       ActiveRecord::Base.direct_descendants.clear
       ActiveSupport::Dependencies::Reference.clear!
       ActiveRecord::Base.clear_cache!
+    end
+  end
+
+  def tables_and_views
+    if ActiveRecord::VERSION::MAJOR >= 5
+      ActiveRecord::Base.connection.data_sources
+    else
+      ActiveRecord::Base.connection.tables
     end
   end
 end

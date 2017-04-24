@@ -225,7 +225,7 @@ class DomainTest < ActiveSupport::TestCase
     output = collect_stdout do
       Domain.generate.relationships
     end
-    assert_match /Ignoring invalid association :flabs on Foo/, output
+    assert_match(/Ignoring invalid association :flabs on Foo/, output)
   end
 
   test "relationships should output a warning when an association to model outside domain is encountered" do
@@ -236,7 +236,7 @@ class DomainTest < ActiveSupport::TestCase
     output = collect_stdout do
       Domain.new([Foo]).relationships
     end
-    assert_match /model Bar exists, but is not included in domain/, output
+    assert_match(/model Bar exists, but is not included in domain/, output)
   end
 
   test "relationships should output a warning when an association to a non existent generalization is encountered" do
@@ -249,7 +249,7 @@ class DomainTest < ActiveSupport::TestCase
     output = collect_stdout do
       Domain.generate.relationships
     end
-    assert_match /polymorphic interface FooBar does not exist/, output
+    assert_match(/polymorphic interface FooBar does not exist/, output)
   end
 
   test "relationships should not warn when a bad association is encountered if warnings are disabled" do
@@ -273,6 +273,6 @@ class DomainTest < ActiveSupport::TestCase
     output = collect_stdout do
       Domain.generate.entities
     end
-    assert_match /Ignoring invalid model Foo \(table foos does not exist\)/, output
+    assert_match(/Ignoring invalid model Foo \(table foos does not exist\)/, output)
   end
 end

@@ -224,14 +224,14 @@ class AttributeTest < ActiveSupport::TestCase
   test "limit should return nil if there is no limit" do
     create_model "Foo"
     add_column :foos, :my_txt, :text
-    assert_equal nil, create_attribute(Foo, "my_txt").limit
+    assert_nil create_attribute(Foo, "my_txt").limit
   end
 
   test "limit should return nil if equal to standard database limit" do
     with_native_limit :string, 456 do
       create_model "Foo"
       add_column :foos, :my_str, :string, :limit => 456
-      assert_equal nil, create_attribute(Foo, "my_str").limit
+      assert_nil create_attribute(Foo, "my_str").limit
     end
   end
 
@@ -252,7 +252,7 @@ class AttributeTest < ActiveSupport::TestCase
   test "limit should return nil for decimal columns if equal to standard database limit" do
     create_model "Foo"
     add_column :foos, :num, :decimal
-    assert_equal nil, create_attribute(Foo, "num").limit
+    assert_nil create_attribute(Foo, "num").limit
   end
 
   test "limit should return nil if type is unsupported by rails" do
@@ -262,7 +262,7 @@ class AttributeTest < ActiveSupport::TestCase
         add_column "foos", "a", "REAL"
       end
     end
-    assert_equal nil, create_attribute(Foo, "a").limit
+    assert_nil create_attribute(Foo, "a").limit
   end
 
   test "limit should return nil for oddball column types that misuse the limit attribute" do
@@ -274,7 +274,7 @@ class AttributeTest < ActiveSupport::TestCase
         { :srid => 4326, :type => "point", :geographic => true }
       end
     end
-    assert_equal nil, attribute.limit
+    assert_nil attribute.limit
   end
 
   test "scale should return scale for decimal columns if nonstandard" do
@@ -286,7 +286,7 @@ class AttributeTest < ActiveSupport::TestCase
   test "scale should return nil for decimal columns if equal to standard database limit" do
     create_model "Foo"
     add_column :foos, :num, :decimal
-    assert_equal nil, create_attribute(Foo, "num").scale
+    assert_nil create_attribute(Foo, "num").scale
   end
 
   test "scale should return zero for decimal columns if left to default setting when specifying precision" do
@@ -302,7 +302,7 @@ class AttributeTest < ActiveSupport::TestCase
         add_column "foos", "a", "REAL"
       end
     end
-    assert_equal nil, create_attribute(Foo, "a").scale
+    assert_nil create_attribute(Foo, "a").scale
   end
 
   test "scale should return nil for oddball column types that misuse the scale attribute" do
@@ -313,6 +313,6 @@ class AttributeTest < ActiveSupport::TestCase
         1..5
       end
     end
-    assert_equal nil, attribute.scale
+    assert_nil attribute.scale
   end
 end
