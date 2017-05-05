@@ -11,3 +11,4 @@ rdoc
 site/_generated
 Gemfile.lock
 gemfiles/*.lock
+.idea/
