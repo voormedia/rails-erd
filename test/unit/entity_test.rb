@@ -249,4 +249,14 @@ class EntityTest < ActiveSupport::TestCase
     assert_equal [domain.entity_by_name("Galleon"), domain.entity_by_name("Stronghold")],
       domain.entity_by_name("Defensible").children
   end
+
+  test "namespace defaults to nil" do
+    create_model "Foo"
+    assert_nil create_entity(Foo).namespace
+  end
+
+  test "namespace returns appropriate modules" do
+    entity = Domain::Entity.new(Domain.new, "Foo::Bar::Qux")
+    assert_equal "Foo::Bar", entity.namespace
+  end
 end
