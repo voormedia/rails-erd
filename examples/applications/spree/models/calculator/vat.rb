@@ -21,7 +21,7 @@ class Calculator::Vat < Calculator
   def self.calculate_tax(order, rates=default_rates)
     return 0 if rates.empty?
     # note: there is a bug with associations in rails 2.1 model caching so we're using this hack
-    # (see http://rails.lighthouseapp.com/projects/8994/tickets/785-caching-models-fails-in-development)
+    # (see https://rails.lighthouseapp.com/projects/8994/tickets/785-caching-models-fails-in-development)
     cache_hack = rates.first.respond_to?(:tax_category_id)
 
     taxable_totals = {}

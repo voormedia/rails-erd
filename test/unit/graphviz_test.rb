@@ -149,7 +149,7 @@ class GraphvizTest < ActiveSupport::TestCase
     rescue => e
       message = e.message
     end
-    assert_match /No entities found/, message
+    assert_match(/No entities found/, message)
   end
 
   test "create should abort and complain if output directory does not exist" do
@@ -162,7 +162,7 @@ class GraphvizTest < ActiveSupport::TestCase
       message = e.message
     end
 
-    assert_match /Output directory 'does_not_exist' does not exist/, message
+    assert_match(/Output directory 'does_not_exist' does not exist/, message)
   end
 
   test "create should not fail when reserved words are used as node names" do
@@ -184,6 +184,16 @@ class GraphvizTest < ActiveSupport::TestCase
   test "generate should add title to graph" do
     create_simple_domain
     assert_equal '"Domain model\n\n"', diagram.graph.graph[:label].to_s
+  end
+
+  test "generate should add default value for splines attribute" do
+    create_simple_domain
+    assert_equal '"spline"', diagram.graph.graph[:splines].to_s
+  end
+
+  test "generate should add set value for splines attribute" do
+    create_simple_domain
+    assert_equal '"ortho"', diagram(splines: 'ortho').graph.graph[:splines].to_s
   end
 
   test "generate should add title with application name to graph" do
@@ -228,7 +238,7 @@ class GraphvizTest < ActiveSupport::TestCase
       belongs_to :bar
     end
     create_model "Bar"
-    assert_equal %Q("Bar"), find_dot_node(diagram, "m_Bar")[:label].to_gv
+    assert_equal %Q("{Bar}"), find_dot_node(diagram, "m_Bar")[:label].to_gv
   end
 
   test "generate should add attributes to entity html labels" do
@@ -246,7 +256,7 @@ class GraphvizTest < ActiveSupport::TestCase
       belongs_to :bar
     end
     create_model "Bar", :column => :string, :column_two => :boolean
-    assert_equal %Q("Bar|column (string)\\ncolumn_two (boolean)\\n"), find_dot_node(diagram, "m_Bar")[:label].to_gv
+    assert_equal %Q("{Bar|column (string)\\ncolumn_two (boolean)\\n}"), find_dot_node(diagram, "m_Bar")[:label].to_gv
   end
 
   test "generate should not add any attributes to entity labels if attributes is set to false" do
@@ -257,40 +267,40 @@ class GraphvizTest < ActiveSupport::TestCase
     assert_no_match %r{contents}, find_dot_node(diagram(:attributes => false), "m_Jar")[:label].to_gv
   end
 
-  test "node html labels should have direction reversing braces for vertical orientation" do
+  test "node html labels should have direction reversing braces for horizontal orientation" do
     RailsERD.options.markup = true
     create_model "Book", :author => :references do
       belongs_to :author
     end
     create_model "Author", :name => :string
-    assert_match %r(\A<\{\s*<.*\|.*>\s*\}>\Z)m, find_dot_node(diagram(:orientation => :vertical), "m_Author")[:label].to_gv
+    assert_match %r(\A<\{\s*<.*\|.*>\s*\}>\Z)m, find_dot_node(diagram(:orientation => :horizontal), "m_Author")[:label].to_gv
   end
 
-  test "node html labels should not have direction reversing braces for horizontal orientation" do
+  test "node html labels should not have direction reversing braces for vertical orientation" do
     RailsERD.options.markup = true
     create_model "Book", :author => :references do
       belongs_to :author
     end
     create_model "Author", :name => :string
-    assert_match %r(\A<\s*<.*\|.*>\s*>\Z)m, find_dot_node(diagram(:orientation => :horizontal), "m_Author")[:label].to_gv
+    assert_match %r(\A<\s*<.*\|.*>\s*>\Z)m, find_dot_node(diagram(:orientation => :vertical), "m_Author")[:label].to_gv
   end
 
-  test "node record labels should have direction reversing braces for vertical orientation" do
+  test "node record labels should have direction reversing braces for horizontal orientation" do
     RailsERD.options.markup = false
     create_model "Book", :author => :references do
       belongs_to :author
     end
     create_model "Author", :name => :string
-    assert_match %r(\A"\{\w+|.*\}"\Z)m, find_dot_node(diagram(:orientation => :vertical), "m_Author")[:label].to_gv
+    assert_match %r(\A"\{\w+\|.*\}"\Z)m, find_dot_node(diagram(:orientation => :horizontal), "m_Author")[:label].to_gv
   end
 
-  test "node record labels should not have direction reversing braces for horizontal orientation" do
+  test "node record labels should not have direction reversing braces for vertical orientation" do
     RailsERD.options.markup = false
     create_model "Book", :author => :references do
       belongs_to :author
     end
     create_model "Author", :name => :string
-    assert_match %r(\A"\w+|.*"\Z)m, find_dot_node(diagram(:orientation => :horizontal), "m_Author")[:label].to_gv
+    assert_match %r(\A"\w+\|.*"\Z)m, find_dot_node(diagram(:orientation => :vertical), "m_Author")[:label].to_gv
   end
 
   test "generate should create edge for each relationship" do

@@ -7,7 +7,7 @@ module RailsERD
   # and (optionally) +save+.
   #
   # As an example, a diagram class that generates code that can be used with
-  # yUML (http://yuml.me) can be as simple as:
+  # yUML (https://yuml.me) can be as simple as:
   #
   #   require "rails_erd/diagram"
   #
@@ -124,13 +124,12 @@ module RailsERD
     # internally by Diagram#create.
     def generate
       instance_eval(&callbacks[:setup])
-
       if options.only_recursion_depth.present?
         depth = options.only_recursion_depth.to_i
-        options.only.dup.each do |class_name|
-          options.only += recurse_into_relationships(@domain.entity_by_name(class_name), depth)
+        options[:only].dup.each do |class_name|
+          options[:only]+= recurse_into_relationships(@domain.entity_by_name(class_name), depth)
         end
-        options.only.uniq!
+        options[:only].uniq!
       end
 
       filtered_entities.each do |entity|
@@ -179,7 +178,7 @@ module RailsERD
     def filtered_entities
       @domain.entities.reject { |entity|
         options.exclude.present? && entity.model && [options.exclude].flatten.map(&:to_sym).include?(entity.name.to_sym) or
-        options.only.present? && entity.model && ![options.only].flatten.map(&:to_sym).include?(entity.name.to_sym) or
+        options[:only].present? && entity.model && ![options[:only]].flatten.map(&:to_sym).include?(entity.name.to_sym) or
         !options.inheritance && entity.specialized? or
         !options.polymorphism && entity.generalized? or
         !options.disconnected && entity.disconnected?

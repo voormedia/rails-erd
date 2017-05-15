@@ -74,6 +74,11 @@ Choice.options do
     desc "Display models in subgraphs based on their namespace."
   end
 
+  option :splines do
+    long "--splines=SPLINE_TYPE"
+    desc "Control how edges are represented. See http://www.graphviz.org/doc/info/attrs.html#d:splines for values."
+  end
+
   separator ""
   separator "Output options:"
 
@@ -166,7 +171,10 @@ module RailsERD
         puts "Please create a file in '#{environment_path}' that loads your application environment."
         raise
       end
-      Rails.application.eager_load! if defined? Rails
+      if defined? Rails
+        Rails.application.eager_load!
+        Rails.application.config.eager_load_namespaces.each(&:eager_load!)
+      end
     rescue TypeError
     end
 

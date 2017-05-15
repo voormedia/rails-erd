@@ -265,4 +265,14 @@ class EntityTest < ActiveSupport::TestCase
     create_module_model "Augur::Chisel::Saw::Plane"
     assert_equal "Augur::Chisel::Saw", create_entity(Augur::Chisel::Saw::Plane).namespace
   end
+  
+  test "namespace defaults to nil" do
+    create_model "Foo"
+    assert_nil create_entity(Foo).namespace
+  end
+
+  test "namespace returns appropriate modules" do
+    entity = Domain::Entity.new(Domain.new, "Foo::Bar::Qux")
+    assert_equal "Foo::Bar", entity.namespace
+  end
 end
