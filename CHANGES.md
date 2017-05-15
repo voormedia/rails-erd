@@ -1,3 +1,16 @@
+1.5.1
+-----
+* Improved < Ruby 2.3 support (#239)
+* Squashed once and for all the horizontal vs vertical orientation bugs (#241)
+* Added option for specifying spline types (#242)
+* Added a check for Graphviz installation before building out object graph (#248)
+* Fixed a bug in auto-generation rake task (#252)
+* `--cluster` option will work more reliably now! (#253)
+* Because it is 2017, we added Rails 5 to our official test matrix (#254)
+* Fixed a bug in `--only` that prevented it from working reliably (#257)
+* Added eager loading across all namespaces in the app (#258)
+* Minor improvements to tests (#228)
+
 1.5.0
 -----
 * New option of 'clustering' by namespace (#205)
