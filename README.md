@@ -66,6 +66,11 @@ cluster: false
 splines: spline
 ```
 
+Auto generation
+---------------
+
+* Run <tt>rails generate erd:install</tt>
+* Run <tt>rails db:migrate</tt>, then the diagram is generated
 
 Learn more
 ----------
