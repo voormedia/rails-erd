@@ -4,8 +4,8 @@ require "rails_erd/version"
 Gem::Specification.new do |s|
   s.name        = "rails-erd"
   s.version     = RailsERD::VERSION
-  s.authors     = ["Rolf Timmermans"]
-  s.email       = ["r.timmermans@voormedia.com"]
+  s.authors     = ["Rolf Timmermans", "Kerri Miller"]
+  s.email       = ["r.timmermans@voormedia.com", "kerrizor@kerrizor.com"]
   s.homepage    = "https://github.com/voormedia/rails-erd"
   s.summary     = "Entity-relationship diagram for your Rails models."
   s.description = "Automatically generate an entity-relationship diagram (ERD) for your Rails models."
