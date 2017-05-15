@@ -20,6 +20,7 @@ class RakeTaskTest < ActiveSupport::TestCase
     Object::Quux = Module.new
     Object::Quux::Application = Class.new
     Object::Rails = Struct.new(:application).new(Object::Quux::Application.new)
+
     Rails.class_eval do
       define_method :backtrace_cleaner do
         ActiveSupport::BacktraceCleaner.new.tap do |cleaner|
