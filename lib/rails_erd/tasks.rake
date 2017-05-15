@@ -31,7 +31,10 @@ namespace :erd do
     say "Loading code in search of Active Record models..."
     begin
       Rails.application.eager_load!
-      Rails.application.config.eager_load_namespaces.each(&:eager_load!)
+
+      if Rails.application.respond_to?(:config) && !Rails.application.config.nil?
+        Rails.application.config.eager_load_namespaces.each(&:eager_load!)
+      end
     rescue Exception => err
       if Rake.application.options.trace
         raise
