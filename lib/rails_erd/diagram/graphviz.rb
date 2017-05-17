@@ -2,6 +2,7 @@
 require "rails_erd/diagram"
 require "graphviz"
 require "erb"
+require "fileutils"
 
 # Fix bad RegEx test in Ruby-Graphviz.
 GraphViz::Types::LblString.class_eval do
@@ -197,6 +198,8 @@ module RailsERD
       end
 
       save do
+        FileUtils.mkdir_p(File.dirname(filename))
+        
         raise "Saving diagram failed!\nOutput directory '#{File.dirname(filename)}' does not exist." unless File.directory?(File.dirname(filename))
 
         begin
