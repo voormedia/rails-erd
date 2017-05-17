@@ -162,7 +162,7 @@ class GraphvizTest < ActiveSupport::TestCase
       message = e.message
     end
 
-    assert_not(message)
+    assert_equal(nil, message)
   end
 
   test "create should not fail when reserved words are used as node names" do
