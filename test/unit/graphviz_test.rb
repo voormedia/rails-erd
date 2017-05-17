@@ -152,7 +152,7 @@ class GraphvizTest < ActiveSupport::TestCase
     assert_match(/No entities found/, message)
   end
 
-  test "create should abort and complain if output directory does not exist" do
+  test "create should not abort and complain if output directory does not exist" do
     message = nil
 
     begin
@@ -162,7 +162,7 @@ class GraphvizTest < ActiveSupport::TestCase
       message = e.message
     end
 
-    assert_match(/Output directory 'does_not_exist' does not exist/, message)
+    assert_not(message)
   end
 
   test "create should not fail when reserved words are used as node names" do
