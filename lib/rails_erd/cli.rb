@@ -173,7 +173,7 @@ module RailsERD
       end
       if defined? Rails
         Rails.application.eager_load!
-        Rails.application.config.eager_load_namespaces.each(&:eager_load!)
+        Rails.application.config.eager_load_namespaces.each(&:eager_load!) if Rails.application.config.respond_to?(:eager_load_namespaces)
       end
     rescue TypeError
     end

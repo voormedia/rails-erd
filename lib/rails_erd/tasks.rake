@@ -33,7 +33,7 @@ namespace :erd do
       Rails.application.eager_load!
 
       if Rails.application.respond_to?(:config) && !Rails.application.config.nil?
-        Rails.application.config.eager_load_namespaces.each(&:eager_load!)
+        Rails.application.config.eager_load_namespaces.each(&:eager_load!) if Rails.application.config.respond_to?(:eager_load_namespaces)
       end
     rescue Exception => err
       if Rake.application.options.trace
