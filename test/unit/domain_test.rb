@@ -28,7 +28,7 @@ class DomainTest < ActiveSupport::TestCase
       belongs_to :bar
     end
     create_model "Bar"
-    assert_match %r{#<RailsERD::Domain:.*>}, Domain.generate.inspect
+    assert_match(/#<RailsERD::Domain:.*>/, Domain.generate.inspect)
   end
 
   # Entity processing ========================================================

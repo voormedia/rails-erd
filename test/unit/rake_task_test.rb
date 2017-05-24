@@ -102,6 +102,7 @@ class RakeTaskTest < ActiveSupport::TestCase
       message = e.message
     end
     assert_match(/#{Regexp.escape(<<-MSG.strip).gsub("xxx", ".*?")}/, message
+
 Loading models failed!
 Error occurred while loading application: FooBar (RuntimeError)
     test/unit/rake_task_test.rb:#{l1}:in `xxx'
