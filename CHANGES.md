@@ -1,5 +1,10 @@
+1.5.2
+-----
+  * Disable calls to `eager_load_namespaces` < Rails 5 (#263)
+
 1.5.1
 -----
+
 * Improved < Ruby 2.3 support (#239)
 * Squashed once and for all the horizontal vs vertical orientation bugs (#241)
 * Added option for specifying spline types (#242)
