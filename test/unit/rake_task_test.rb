@@ -173,4 +173,16 @@ Error occurred while loading application: FooBar (RuntimeError)
     Rake::Task["erd:options"].execute
     assert_equal %w[content timestamps], RailsERD.options.attributes
   end
+
+  test "options task should set known integer command line options when value is only digits" do
+    ENV["only_recursion_depth"] = "2"
+    Rake::Task["erd:options"].execute
+    assert_equal 2, RailsERD.options.only_recursion_depth
+  end
+
+  test "options task sets known command line options as symbols when not boolean or numeric" do
+    ENV["only_recursion_depth"] = "test"
+    Rake::Task["erd:options"].execute
+    assert_equal :test, RailsERD.options.only_recursion_depth
+  end
 end
