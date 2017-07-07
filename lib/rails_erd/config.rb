@@ -7,17 +7,21 @@ module RailsERD
 
     attr_reader :options
 
-    def self.load
-      new.load
+    def self.load(extra_config_file=nil)
+      new.load extra_config_file
     end
 
     def initialize
       @options = {}
     end
 
-    def load
+    def load(extra_config_file=nil)
       load_file(USER_WIDE_CONFIG_FILE)
       load_file(CURRENT_CONFIG_FILE)
+      if extra_config_file
+        extra_config_path = File.expand_path(extra_config_file, Dir.pwd)
+        load_file(extra_config_path) if File.exist?(extra_config_path)
+      end
 
       @options
     end
