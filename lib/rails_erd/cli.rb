@@ -1,3 +1,4 @@
+require "rails_erd"
 require "choice"
 
 Choice.options do
@@ -125,6 +126,12 @@ Choice.options do
       exit
     end
   end
+
+  option :config_file do
+    short "-c"
+    long "--config=FILENAME"
+    desc "Configuration file to use"
+  end
 end
 
 module RailsERD
@@ -142,6 +149,9 @@ module RailsERD
           else
             opts[key.to_sym] = value
           end
+        end
+        if options[:config_file] != ''
+          RailsERD.options = RailsERD.default_options.merge(Config.load(options[:config_file]))
         end
         new(path, options).start
       end
