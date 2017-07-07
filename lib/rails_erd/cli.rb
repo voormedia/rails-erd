@@ -150,7 +150,7 @@ module RailsERD
             opts[key.to_sym] = value
           end
         end
-        if options[:config_file] != ''
+        if options[:config_file] && options[:config_file] != ''
           RailsERD.options = RailsERD.default_options.merge(Config.load(options[:config_file]))
         end
         new(path, options).start
