@@ -125,7 +125,7 @@ module RailsERD
     def generate
       instance_eval(&callbacks[:setup])
       if options.only_recursion_depth.present?
-        depth = options.only_recursion_depth.to_i
+        depth = options.only_recursion_depth.to_s.to_i
         options[:only].dup.each do |class_name|
           options[:only]+= recurse_into_relationships(@domain.entity_by_name(class_name), depth)
         end
