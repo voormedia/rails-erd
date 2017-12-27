@@ -69,8 +69,8 @@ splines: spline
 Auto generation
 ---------------
 
-* Run <tt>rails generate erd:install</tt>
-* Run <tt>rails db:migrate</tt>, then the diagram is generated
+* Run <tt>bundle exec rails g erd:install</tt>
+* Run <tt>bundle exec rails db:migrate</tt>, then the diagram is generated
 
 Learn more
 ----------
