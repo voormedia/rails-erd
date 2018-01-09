@@ -30,7 +30,7 @@ Getting started
 
 See the [installation instructions](https://voormedia.github.io/rails-erd/install.html) for a complete description of how to install Rails ERD. Here's a summary:
 
-* Install Graphviz 2.22+ ([how?](https://voormedia.github.io/rails-erd/install.html)). On MacOS with Homebrew run `brew install graphviz`.
+* Install Graphviz 2.22+ ([how?](https://voormedia.github.io/rails-erd/install.html)). On macOS with Homebrew run `brew install graphviz`.
 
 * Add <tt>gem 'rails-erd', require: false, group: :development</tt> to your application's Gemfile
 
@@ -69,8 +69,8 @@ splines: spline
 Auto generation
 ---------------
 
-* Run <tt>rails generate erd:install</tt>
-* Run <tt>rails db:migrate</tt>, then the diagram is generated
+* Run <tt>bundle exec rails g erd:install</tt>
+* Run <tt>bundle exec rails db:migrate</tt>, then the diagram is generated
 
 Learn more
 ----------
