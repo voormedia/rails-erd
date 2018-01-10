@@ -86,6 +86,11 @@ module RailsERD
         labeldistance: 1.8,
       }
 
+      # Default cluster attributes.
+      CLUSTER_ATTRIBUTES = {
+        margin: "10,10"
+      }
+
       module Simple
         def entity_style(entity, attributes)
           {}.tap do |options|
@@ -216,8 +221,10 @@ module RailsERD
       each_entity do |entity, attributes|
         if options[:cluster] && entity.namespace
           cluster_name = "cluster_#{entity.namespace}"
+          cluster_options = CLUSTER_ATTRIBUTES.merge(label: entity.namespace)
           cluster = graph.get_graph(cluster_name) ||
-                    graph.add_graph(cluster_name, label: entity.namespace)
+                    graph.add_graph(cluster_name, cluster_options)
+
           draw_cluster_node cluster, entity.name, entity_options(entity, attributes)
         else
           draw_node entity.name, entity_options(entity, attributes)
