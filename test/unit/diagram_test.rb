@@ -136,6 +136,15 @@ class DiagramTest < ActiveSupport::TestCase
     assert_equal [Book], retrieve_entities(:exclude => [:Author, :Editor]).map(&:model)
   end
 
+  test "generate should filter excluded polymorphic entities" do
+    create_model "Cannon"
+    create_model "Galleon" do
+      has_many :cannons, as: :defensible
+    end
+    assert_equal ["Cannon", "Galleon"], retrieve_entities(polymorphism: true, exclude: :Defensible).map(&:name)
+  end
+
+
   test "generate should include only specified entity" do
     create_model "Book"
     create_model "Author"
