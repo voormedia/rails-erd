@@ -173,4 +173,10 @@ Error occurred while loading application: FooBar (RuntimeError)
     Rake::Task["erd:options"].execute
     assert_equal %w[content timestamps], RailsERD.options.attributes
   end
+
+  test "options task should set single parameter to only as array xxx" do
+    ENV["only"] = "model"
+    Rake::Task["erd:options"].execute
+    assert_equal ["model"], RailsERD.options.only
+  end
 end
