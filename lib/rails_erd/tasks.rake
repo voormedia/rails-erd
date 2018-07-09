@@ -21,7 +21,7 @@ namespace :erd do
       when /,/ then ENV[option].split(/\s*,\s*/)
       else
 	if option == 'only'
-	  [ENV[option].flatten
+	  [ENV[option]]
         else
 	  ENV[option].to_sym
 	end
