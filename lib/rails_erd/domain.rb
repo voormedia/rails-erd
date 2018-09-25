@@ -141,7 +141,10 @@ module RailsERD
 
       if association.options[:polymorphic]
         entity_name = association.class_name
-        entity_by_name(entity_name) or raise "polymorphic interface #{entity_name} does not exist"
+        entity = entity_by_name(entity_name)
+        if entity.nil? || entity.generalized?
+         raise "polymorphic interface #{entity_name} does not exist"
+        end
       else
         entity_name = association.klass.name # Raises NameError if the associated class cannot be found.
         entity_by_name(entity_name) or raise "model #{entity_name} exists, but is not included in domain"
