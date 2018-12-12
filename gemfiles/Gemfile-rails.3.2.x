@@ -5,7 +5,7 @@ gemspec :path => ".."
 gem "activerecord", "~> 3.2.0"
 
 group :development do
-  gem 'mocha'
+  gem 'mocha', '1.4.0'
   gem "rake"
   gem "yard"
 
