@@ -7,6 +7,7 @@ if ENV["edge"]
 end
 
 group :development do
+  gem 'minitest', '5.10.1'
   gem 'mocha'
   gem "rake"
   gem "yard"
@@ -29,4 +30,8 @@ group :development do
     gem "activerecord-jdbcsqlite3-adapter"
     gem "jruby-openssl", :require => false # Silence openssl warnings.
   end
+end
+
+group :test do
+  gem 'minitest', '5.10.1'
 end
