@@ -17,8 +17,7 @@ gemfile:
   - gemfiles/Gemfile-rails.5.0.x
   - gemfiles/Gemfile-rails.edge
 before_install:
-  - gem update --system
-  - gem install bundler
+  - gem install bundler -v '< 2'
   - sudo apt-get update -qq
   - sudo apt-get install -qq graphviz
 script: bundle exec rake
