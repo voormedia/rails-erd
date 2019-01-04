@@ -4,6 +4,10 @@ rvm:
   - 2.0
   - 2.1
   - 2.2
+  - 2.3
+  - 2.4
+  - 2.5
+  - 2.6
   - jruby
 gemfile:
   - gemfiles/Gemfile-rails.3.2.x
@@ -13,7 +17,7 @@ gemfile:
   - gemfiles/Gemfile-rails.5.0.x
   - gemfiles/Gemfile-rails.edge
 before_install:
-  - gem install bundler
+  - gem install bundler -v '< 2'
   - sudo apt-get update -qq
   - sudo apt-get install -qq graphviz
 script: bundle exec rake
