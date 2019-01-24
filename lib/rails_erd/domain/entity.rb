@@ -93,7 +93,7 @@ module RailsERD
       end
 
       def namespace
-        $1 if name.match /(.*)::.*/
+        $1 if name.match(/(.*)::.*/)
       end
 
       def to_s # @private :nodoc:
