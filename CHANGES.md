@@ -1,3 +1,9 @@
+1.6.0
+-----
+  * Drop support for rails < 4.2
+  * Drop support for ruby < 2.2
+  * Run the test suite with rails 5.1 and 5.2
+
 1.5.2
 -----
   * Disable calls to `eager_load_namespaces` < Rails 5 (#263)
