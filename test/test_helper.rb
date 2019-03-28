@@ -3,13 +3,8 @@ require "bundler/setup"
 
 require "active_record"
 
-if ActiveSupport::VERSION::MAJOR >= 4
-  require "minitest/autorun"
-  require 'mocha/mini_test'
-else
-  require "test/unit"
-  require 'mocha/test_unit'
-end
+require "minitest/autorun"
+require 'mocha/minitest'
 
 require "rails_erd/domain"
 
