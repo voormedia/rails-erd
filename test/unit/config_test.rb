@@ -61,6 +61,29 @@ class ConfigTest < ActiveSupport::TestCase
     assert_equal expected_hash, RailsERD::Config.load
   end
 
+  test "load_config_file should return a hash from the configured config file when a new config file is given as an argument" do
+    set_local_config_file_to("erdconfig.another_example")
+
+    expected_hash = {
+      attributes:   [:content, :foreign_key, :inheritance, :false],
+      disconnected: true,
+      filename:     "erd",
+      filetype:     :pdf,
+      indirect:     true,
+      inheritance:  false,
+      markup:       true,
+      notation:     :simple,
+      orientation:  "horizontal",
+      polymorphism: false,
+      warn:         true,
+      title:        "sample title",
+      exclude:      [],
+      only:         []
+    }
+
+    assert_equal expected_hash, RailsERD::Config.load("test/support_files/erdconfig.example")
+  end
+
   test "load_config_gile should return a hash from CURRENT_CONFIG_FILE overriding USER_WIDE_CONFIG_FILE when both of them exist." do
     set_user_config_file_to("erdconfig.example")
     set_local_config_file_to("erdconfig.another_example")
