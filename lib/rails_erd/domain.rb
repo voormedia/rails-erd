@@ -140,14 +140,24 @@ module RailsERD
       association.check_validity!
 
       if association.options[:polymorphic]
-        entity_name = association.class_name
-        entity_by_name(entity_name) or raise "polymorphic interface #{entity_name} does not exist"
+        check_polymorphic_association_validity(association)
       else
         entity_name = association.klass.name # Raises NameError if the associated class cannot be found.
         entity_by_name(entity_name) or raise "model #{entity_name} exists, but is not included in domain"
       end
     rescue => e
       warn "Ignoring invalid association #{association_description(association)} (#{e.message})"
+    end
+
+    def check_polymorphic_association_validity(association)
+      entity_name = association.class_name
+      entity = entity_by_name(entity_name)
+
+      if entity || (entity && entity.generalized?)
+        return entity
+      else
+        raise("polymorphic interface #{entity_name} does not exist")
+      end
     end
 
     def association_description(association)
