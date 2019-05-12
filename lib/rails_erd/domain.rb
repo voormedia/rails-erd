@@ -152,8 +152,11 @@ module RailsERD
     def check_polymorphic_association_validity(association)
       entity_name = association.class_name
       entity = entity_by_name(entity_name)
-      if entity.nil? || entity.generalized?
-        raise "polymorphic interface #{entity_name} does not exist"
+
+      if entity || entity&.generalized?
+        return entity
+      else
+        raise("polymorphic interface #{entity_name} does not exist")
       end
     end
 
