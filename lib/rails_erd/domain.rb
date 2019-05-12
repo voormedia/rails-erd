@@ -153,7 +153,7 @@ module RailsERD
       entity_name = association.class_name
       entity = entity_by_name(entity_name)
 
-      if entity || entity&.generalized?
+      if entity || (entity && entity.generalized?)
         return entity
       else
         raise("polymorphic interface #{entity_name} does not exist")
