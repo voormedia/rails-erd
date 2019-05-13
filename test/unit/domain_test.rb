@@ -127,6 +127,8 @@ class DomainTest < ActiveSupport::TestCase
   end
 
   test "relationships should count relationship between same models with distinct foreign key seperately" do
+    skip "multiple edges between the same objects can cause segfaults in some versions of Graphviz"
+
     create_model "Foo", :bar => :references, :special_bar => :references do
       belongs_to :bar
     end
