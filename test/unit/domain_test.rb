@@ -127,15 +127,21 @@ class DomainTest < ActiveSupport::TestCase
   end
 
   test "relationships should count relationship between same models with distinct foreign key seperately" do
-    skip "multiple edges between the same objects can cause segfaults in some versions of Graphviz"
+    # TODO: Once we drop Rails 3.2 support, we _should_ be able to drop the
+    #   :respond_to? check
+    #
+    if respond_to? :skip
+      skip("multiple edges between the same objects can cause segfaults in some versions of Graphviz")
 
-    create_model "Foo", :bar => :references, :special_bar => :references do
-      belongs_to :bar
+      create_model "Foo", :bar => :references, :special_bar => :references do
+        belongs_to :bar
+      end
+      create_model "Bar" do
+        has_many :foos, :foreign_key => :special_bar_id
+      end
+
+      assert_equal [Domain::Relationship] * 2, Domain.generate.relationships.collect(&:class)
     end
-    create_model "Bar" do
-      has_many :foos, :foreign_key => :special_bar_id
-    end
-    assert_equal [Domain::Relationship] * 2, Domain.generate.relationships.collect(&:class)
   end
 
   test "relationships should use model name first in alphabet as source for many to many relationships" do

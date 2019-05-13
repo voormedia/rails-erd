@@ -304,16 +304,21 @@ class GraphvizTest < ActiveSupport::TestCase
   end
 
   test "generate should create edge for each relationship" do
-    skip "multiple edges between the same objects can cause segfaults in some versions of Graphviz"
+    # TODO: Once we drop Rails 3.2 support, we _should_ be able to drop the
+    #   :respond_to? check
+    #
+    if respond_to? :skip
+      skip("multiple edges between the same objects can cause segfaults in some versions of Graphviz")
 
-    create_model "Foo", :bar => :references do
-      belongs_to :bar
-    end
-    create_model "Bar", :foo => :references do
-      belongs_to :foo
-    end
+      create_model "Foo", :bar => :references do
+        belongs_to :bar
+      end
+      create_model "Bar", :foo => :references do
+        belongs_to :foo
+      end
 
-    assert_equal [["m_Bar", "m_Foo"], ["m_Foo", "m_Bar"]], find_dot_node_pairs(diagram).sort
+      assert_equal [["m_Bar", "m_Foo"], ["m_Foo", "m_Bar"]], find_dot_node_pairs(diagram).sort
+    end
   end
 
   test "generate should create edge to polymorphic entity if polymorphism is true" do
