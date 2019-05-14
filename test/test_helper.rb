@@ -198,7 +198,15 @@ class ActiveSupport::TestCase
       tables_and_views.each do |table|
         ActiveRecord::Base.connection.drop_table table
       end
-      ActiveRecord::Base.direct_descendants.clear
+
+      if ActiveRecord.version >= Gem::Version.new("6.0.0.rc1")
+        cv = ActiveSupport::DescendantsTracker.class_variable_get(:@@direct_descendants)
+        cv.delete(ActiveRecord::Base)
+        ActiveSupport::DescendantsTracker.class_variable_set(:@@direct_descendants, cv)
+      else
+        ActiveRecord::Base.direct_descendants.clear
+      end
+
       ActiveSupport::Dependencies::Reference.clear!
       ActiveRecord::Base.clear_cache!
     end
