@@ -1,6 +1,22 @@
+1.6.0
+-----
+* Dropping support for Ruby < 2.2 and Rails < 4.2 (#323)
+* Added early support for Rails 6.0 (#329)
+* Documentation updates (#268, #269, #276, #288, #295)
+* Removed restriction that allowed to exclude only models from a diagram (#279)
+* Added additional margins to cluster (#280)
+* Deprecate safe_level of ERB.new in Ruby 2.6 (#297)
+* Fixed only_recursion_depth option failure when used from rake erd task (#266, #324)
+* Allow extra config files to be listed via cli (#275, #326)
+* Fixed long-standing segfault issue by removing identifier from association_identity (#296, #327)
+* Fix for bug when parameter to only option is a single model (#300, #328)
+* Properly handle custom version classes. (#304, #325)
+* Fixed a warning from Ruby RE ambiguous arguments (#315)
+* Updated gem dependencies (#311, #313)
+
 1.5.2
 -----
-  * Disable calls to `eager_load_namespaces` < Rails 5 (#263)
+* Disable calls to `eager_load_namespaces` < Rails 5 (#263)
 
 1.5.1
 -----
