@@ -72,6 +72,7 @@ class ActiveSupport::TestCase
     superklass = args.first.kind_of?(Class) ? args.shift : ActiveRecord::Base
     columns = args.first || {}
     klass = Object.const_set name.to_sym, Class.new(superklass)
+
     if superklass == ActiveRecord::Base || superklass.abstract_class?
       create_table Object.const_get(name.to_sym).table_name, columns, Object.const_get(name.to_sym).primary_key rescue nil
     end
@@ -193,6 +194,7 @@ class ActiveSupport::TestCase
         model.reset_column_information
         remove_fully_qualified_constant(model.name)
       end
+
       tables_and_views.each do |table|
         ActiveRecord::Base.connection.drop_table table
       end
