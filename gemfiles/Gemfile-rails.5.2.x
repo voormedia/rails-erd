@@ -2,10 +2,9 @@ source "http://rubygems.org"
 
 gemspec :path => ".."
 
-gem "activerecord", "~> 4.1.0"
+gem "activerecord", "~> 5.2.0"
 
 group :development do
-  gem 'minitest', '5.10.1'
   gem 'mocha'
   gem "rake"
   gem "yard"
