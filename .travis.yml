@@ -11,6 +11,7 @@ gemfile:
   - gemfiles/Gemfile-rails.5.0.x
   - gemfiles/Gemfile-rails.5.1.x
   - gemfiles/Gemfile-rails.5.2.x
+  - gemfiles/Gemfile-rails.6.0.x
   - gemfiles/Gemfile-rails.edge
 before_install:
   - gem install bundler -v '< 2'
@@ -22,4 +23,17 @@ matrix:
     - rvm: jruby
     - gemfile: gemfiles/Gemfile-rails.edge
   fast_finish: true
+  exclude:
+    - rvm: 2.2
+      gemfile: gemfiles/Gemfile-rails.6.0.x
+    - rvm: 2.2
+      gemfile: gemfiles/Gemfile-rails.edge
+    - rvm: 2.3
+      gemfile: gemfiles/Gemfile-rails.6.0.x
+    - rvm: 2.3
+      gemfile: gemfiles/Gemfile-rails.edge
+    - rvm: 2.4
+      gemfile: gemfiles/Gemfile-rails.6.0.x
+    - rvm: 2.4
+      gemfile: gemfiles/Gemfile-rails.edge
 cache: bundler

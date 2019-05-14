@@ -1,6 +1,7 @@
 require "rubygems"
 require "bundler/setup"
 require 'pry'
+require 'pry-nav'
 
 require "active_record"
 
@@ -71,6 +72,7 @@ class ActiveSupport::TestCase
     superklass = args.first.kind_of?(Class) ? args.shift : ActiveRecord::Base
     columns = args.first || {}
     klass = Object.const_set name.to_sym, Class.new(superklass)
+
     if superklass == ActiveRecord::Base || superklass.abstract_class?
       create_table Object.const_get(name.to_sym).table_name, columns, Object.const_get(name.to_sym).primary_key rescue nil
     end
@@ -192,10 +194,19 @@ class ActiveSupport::TestCase
         model.reset_column_information
         remove_fully_qualified_constant(model.name)
       end
+
       tables_and_views.each do |table|
         ActiveRecord::Base.connection.drop_table table
       end
-      ActiveRecord::Base.direct_descendants.clear
+
+      if ActiveRecord.version >= Gem::Version.new("6.0.0.rc1")
+        cv = ActiveSupport::DescendantsTracker.class_variable_get(:@@direct_descendants)
+        cv.delete(ActiveRecord::Base)
+        ActiveSupport::DescendantsTracker.class_variable_set(:@@direct_descendants, cv)
+      else
+        ActiveRecord::Base.direct_descendants.clear
+      end
+
       ActiveSupport::Dependencies::Reference.clear!
       ActiveRecord::Base.clear_cache!
     end
