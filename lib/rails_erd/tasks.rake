@@ -60,7 +60,7 @@ namespace :erd do
     require "rails_erd/diagram/graphviz"
     file = RailsERD::Diagram::Graphviz.create
 
-    say "Done! Saved diagram to #{file}."
+    say "Done! Saved diagram to ./#{file}."
   end
 end
 
