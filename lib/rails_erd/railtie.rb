@@ -4,7 +4,7 @@ module RailsERD
   # of your domain model.
   class Railtie < Rails::Railtie
     rake_tasks do
-      load "rails_erd/tasks.rake"
+      load "tasks/erd.rake"
     end
   end
 end

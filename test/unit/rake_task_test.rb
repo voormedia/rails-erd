@@ -5,7 +5,7 @@ class RakeTaskTest < ActiveSupport::TestCase
 
   def setup
     require "rake"
-    load "rails_erd/tasks.rake"
+    load "tasks/erd.rake"
 
     RailsERD.options.filetype = :dot
     RailsERD.options.warn = false
