@@ -36,7 +36,11 @@ namespace :erd do
 
     say "Loading code in search of Active Record models..."
     begin
-      Rails.application.eager_load!
+      if Rails.application.respond_to?(:config) && Rails.application.config.autoloader == :zeitwerk
+        Zeitwerk::Loader.eager_load_all
+      else
+        Rails.application.eager_load!
+      end
 
       if Rails.application.respond_to?(:config) && !Rails.application.config.nil?
         Rails.application.config.eager_load_namespaces.each(&:eager_load!) if Rails.application.config.respond_to?(:eager_load_namespaces)
