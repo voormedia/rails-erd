@@ -49,7 +49,13 @@ module RailsERD
     # Returns the domain model name, which is the name of your Rails
     # application or +nil+ outside of Rails.
     def name
-      defined? Rails and Rails.application and Rails.application.class.parent.name
+      if defined? Rails && Rails.application
+        if rails_6_1_or_above?
+          Rails.application.class.module_parent_name
+        else
+          Rails.application.class.parent.name
+        end
+      end
     end
 
     # Returns all entities of your domain model.
@@ -166,6 +172,10 @@ module RailsERD
 
     def check_habtm_model(model)
       model.name.start_with?("HABTM_")
+    end
+
+    def rails_6_1_or_above? 
+      (Rails::VERSION::MAJOR == 6 && Rails::VERSION::MINOR >= 1) || Rails::VERSION::MAJOR > 6
     end
   end
 end
