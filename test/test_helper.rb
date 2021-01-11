@@ -175,6 +175,8 @@ class ActiveSupport::TestCase
 
     parts[1..-1].inject([[Object, parts.first.to_sym]]) do |pairs, string|
       last_parent, last_child = pairs.last
+      # Fixes for Rails 6. No idea if this is actually correct as I can't decipher what the heck is going on in this
+      # code.
       if last_child == :ActiveRecord || last_child == :primary
         break []
       end
