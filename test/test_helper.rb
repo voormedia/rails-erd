@@ -19,11 +19,15 @@ end
 class ActiveSupport::TestCase
   include RailsERD
 
-  setup    :reset_config_file
+  setup :reset_config_file
   teardown :reset_domain
 
   def create_table(table, columns = {}, pk = nil)
-    opts = if pk then { :primary_key => pk } else { :id => false } end
+    opts = if pk then
+             { :primary_key => pk }
+           else
+             { :id => false }
+           end
     ActiveRecord::Schema.instance_eval do
       suppress_messages do
         create_table table, opts do |t|
@@ -45,12 +49,12 @@ class ActiveSupport::TestCase
     ActiveRecord::Base.clear_cache!
   end
 
-  def create_module_model(full_name,*args,&block)
+  def create_module_model(full_name, *args, &block)
     superklass = args.first.kind_of?(Class) ? args.shift : ActiveRecord::Base
 
     names = full_name.split('::')
 
-    parent_module = names[0..-1].inject(Object) do |parent,child|
+    parent_module = names[0..-1].inject(Object) do |parent, child|
       parent = parent.const_set(child.to_sym, Module.new)
     end
 
@@ -155,11 +159,11 @@ class ActiveSupport::TestCase
   def reset_config_file
     RailsERD::Config.send :remove_const, :USER_WIDE_CONFIG_FILE
     RailsERD::Config.send :const_set, :USER_WIDE_CONFIG_FILE,
-      File.expand_path("../../examples/erdconfig.not_exists", __FILE__)
+                          File.expand_path("../../examples/erdconfig.not_exists", __FILE__)
 
     RailsERD::Config.send :remove_const, :CURRENT_CONFIG_FILE
     RailsERD::Config.send :const_set, :CURRENT_CONFIG_FILE,
-      File.expand_path("../../examples/erdconfig.not_exists", __FILE__)
+                          File.expand_path("../../examples/erdconfig.not_exists", __FILE__)
 
     RailsERD.options = RailsERD.default_options.merge(Config.load)
   end
@@ -169,8 +173,11 @@ class ActiveSupport::TestCase
 
     return [] if parts.first == '' || parts.count == 0
 
-    parts[1..-1].inject([[Object, parts.first.to_sym]]) do |pairs,string|
+    parts[1..-1].inject([[Object, parts.first.to_sym]]) do |pairs, string|
       last_parent, last_child = pairs.last
+      if last_child == :ActiveRecord || last_child == :primary
+        break []
+      end
 
       break pairs unless last_parent.const_defined?(last_child)
 
@@ -183,7 +190,7 @@ class ActiveSupport::TestCase
   def remove_fully_qualified_constant(name)
     pairs = name_to_object_symbol_pairs(name)
     pairs.reverse.each do |parent, child|
-      parent.send(:remove_const,child) if parent.const_defined?(child)
+      parent.send(:remove_const, child) if parent.const_defined?(child)
     end
   end
 
@@ -199,7 +206,7 @@ class ActiveSupport::TestCase
         ActiveRecord::Base.connection.drop_table table
       end
 
-      if ActiveRecord.version >= Gem::Version.new("6.0.0.rc1")
+      if ActiveRecord::VERSION::MAJOR >= 6
         cv = ActiveSupport::DescendantsTracker.class_variable_get(:@@direct_descendants)
         cv.delete(ActiveRecord::Base)
         ActiveSupport::DescendantsTracker.class_variable_set(:@@direct_descendants, cv)
