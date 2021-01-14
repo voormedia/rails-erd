@@ -16,6 +16,14 @@ if ActiveSupport::TestCase.respond_to?(:test_order=)
   ActiveSupport::TestCase.test_order = :random
 end
 
+# Patch to make Rails 6.1 work.
+module Kernel
+  # class_eval on an object acts like singleton_class.class_eval.
+  def class_eval(*args, &block)
+    singleton_class.class_eval(*args, &block)
+  end
+end
+
 class ActiveSupport::TestCase
   include RailsERD
 

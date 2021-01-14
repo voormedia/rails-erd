@@ -17,8 +17,8 @@ group :development do
   gem "yard"
 
   platforms :ruby do
-    gem "activerecord", "< 6.1"
-    gem "activesupport", "< 6.1"
+    gem "activerecord", "< 7.0"
+    gem "activesupport", "< 7.0"
     gem "sqlite3", '~> 1.4'
     gem "redcarpet"
 
