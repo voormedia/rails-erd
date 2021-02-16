@@ -267,11 +267,12 @@ class AttributeTest < ActiveSupport::TestCase
 
   test "limit should return nil for oddball column types that misuse the limit attribute" do
     create_model "Business", :location => :integer do
-    define_singleton_method :limit do
-      # https://github.com/voormedia/rails-erd/issues/21
-      { :srid => 4326, :type => "point", :geographic => true }
+      define_singleton_method :limit do
+        # https://github.com/voormedia/rails-erd/issues/21
+        { :srid => 4326, :type => "point", :geographic => true }
+      end
     end
-  end
+
     attribute = create_attribute(Business, "location")
     assert_nil attribute.limit
   end
