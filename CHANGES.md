@@ -1,3 +1,7 @@
+1.6.1
+-----
+* Added support for Rails 6.1 (#365)
+
 1.6.0
 -----
 * Dropping support for Ruby < 2.2 and Rails < 4.2 (#323)
