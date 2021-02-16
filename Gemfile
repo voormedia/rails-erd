@@ -6,19 +6,20 @@ if ENV["edge"]
   gem "activerecord", :github => "rails/rails"
 end
 
+
+group :development, :test do
+  gem 'minitest', '~> 5.14.0'
+end
+
 group :development do
-  gem 'minitest', '5.10.1'
   gem 'mocha'
   gem "rake"
   gem "yard"
 
-  platforms :ruby_21 do
-    gem "activerecord", "< 5.0"
-    gem "activesupport", "< 5.0"
-  end
-
   platforms :ruby do
-    gem "sqlite3"
+    gem "activerecord", "< 7.0"
+    gem "activesupport", "< 7.0"
+    gem "sqlite3", '~> 1.4'
     gem "redcarpet"
 
     if RUBY_VERSION > "2.1.0"
@@ -30,8 +31,4 @@ group :development do
     gem "activerecord-jdbcsqlite3-adapter"
     gem "jruby-openssl", :require => false # Silence openssl warnings.
   end
-end
-
-group :test do
-  gem 'minitest', '5.10.1'
 end

@@ -16,6 +16,14 @@ if ActiveSupport::TestCase.respond_to?(:test_order=)
   ActiveSupport::TestCase.test_order = :random
 end
 
+# Patch to make Rails 6.1 work.
+module Kernel
+  # class_eval on an object acts like singleton_class.class_eval.
+  def class_eval(*args, &block)
+    singleton_class.class_eval(*args, &block)
+  end
+end
+
 class ActiveSupport::TestCase
   include RailsERD
 
@@ -171,6 +179,11 @@ class ActiveSupport::TestCase
 
     parts[1..-1].inject([[Object, parts.first.to_sym]]) do |pairs,string|
       last_parent, last_child = pairs.last
+      # Fixes for Rails 6. No idea if this is actually correct as I can't decipher what the heck is going on in this
+      # code.
+      if last_child == :ActiveRecord || last_child == :primary
+        break []
+      end
 
       break pairs unless last_parent.const_defined?(last_child)
 

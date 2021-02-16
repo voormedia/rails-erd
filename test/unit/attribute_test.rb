@@ -3,9 +3,9 @@ require File.expand_path("../test_helper", File.dirname(__FILE__))
 
 class AttributeTest < ActiveSupport::TestCase
   def with_native_limit(type, new_limit)
-    ActiveRecord::Base.connection.class_eval do
+    ActiveRecord::Base.connection.singleton_class.class_eval do
       undef :native_database_types
-      define_method :native_database_types do
+      define_method(:native_database_types) do
         super().tap do |types|
           types[type][:limit] = new_limit
         end
@@ -13,9 +13,9 @@ class AttributeTest < ActiveSupport::TestCase
     end
     yield
   ensure
-    ActiveRecord::Base.connection.class_eval do
+    ActiveRecord::Base.connection.singleton_class.class_eval do
       undef :native_database_types
-      define_method :native_database_types do
+      define_method(:native_database_types) do
         super()
       end
     end
@@ -266,14 +266,14 @@ class AttributeTest < ActiveSupport::TestCase
   end
 
   test "limit should return nil for oddball column types that misuse the limit attribute" do
-    create_model "Business", :location => :integer
-    attribute = create_attribute(Business, "location")
-    attribute.column.class_eval do
-      define_method :limit do
+    create_model "Business", :location => :integer do
+      define_singleton_method :limit do
         # https://github.com/voormedia/rails-erd/issues/21
         { :srid => 4326, :type => "point", :geographic => true }
       end
     end
+
+    attribute = create_attribute(Business, "location")
     assert_nil attribute.limit
   end
 
@@ -306,13 +306,12 @@ class AttributeTest < ActiveSupport::TestCase
   end
 
   test "scale should return nil for oddball column types that misuse the scale attribute" do
-    create_model "Kobold", :size => :integer
-    attribute = create_attribute(Kobold, "size")
-    attribute.column.class_eval do
+    create_model "Kobold", :size => :integer do
       define_method :scale do
         1..5
       end
     end
+    attribute = create_attribute(Kobold, "size")
     assert_nil attribute.scale
   end
 end
