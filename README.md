@@ -32,6 +32,8 @@ See the [installation instructions](https://voormedia.github.io/rails-erd/instal
 
 * Install Graphviz 2.22+ ([how?](https://voormedia.github.io/rails-erd/install.html)). On macOS with Homebrew run `brew install graphviz`.
 
+* on linux - `sudo apt-get install graphviz`
+
 * Add <tt>gem 'rails-erd', group: :development</tt> to your application's Gemfile
 
 * Run <tt>bundle exec erd</tt>
