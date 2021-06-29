@@ -1,7 +1,9 @@
 require 'graphviz/utils'
 
-def say(message)
-  puts message unless Rake.application.options.silent
+module ErdRakeHelper
+  def say(message)
+    puts message unless Rake.application.options.silent
+  end
 end
 
 namespace :erd do
@@ -31,6 +33,8 @@ namespace :erd do
   end
 
   task :load_models do
+    include ErdRakeHelper
+
     say "Loading application environment..."
     Rake::Task[:environment].invoke
 
@@ -55,6 +59,8 @@ namespace :erd do
   end
 
   task :generate => [:check_dependencies, :options, :load_models] do
+    include ErdRakeHelper
+
     say "Generating Entity-Relationship Diagram for #{ActiveRecord::Base.descendants.length} models..."
 
     require "rails_erd/diagram/graphviz"
