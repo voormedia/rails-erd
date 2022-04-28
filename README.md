@@ -64,6 +64,10 @@ only_recursion_depth: null
 prepend_primary: false
 cluster: false
 splines: spline
+fonts:
+ normal: "Arial"
+ bold: "Arial Bold"
+ italic: "Arial Italic"
 ```
 
 Auto generation
