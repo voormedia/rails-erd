@@ -215,15 +215,18 @@ class ActiveSupport::TestCase
         ActiveRecord::Base.connection.drop_table table
       end
 
-      if ActiveRecord.version >= Gem::Version.new("6.0.0.rc1")
+      if ActiveRecord.version >= Gem::Version.new("7.0.0")
+        ActiveSupport::DescendantsTracker.clear(ActiveRecord::Base.subclasses)
+      elsif ActiveRecord.version >= Gem::Version.new("6.0.0.rc1")
         cv = ActiveSupport::DescendantsTracker.class_variable_get(:@@direct_descendants)
         cv.delete(ActiveRecord::Base)
         ActiveSupport::DescendantsTracker.class_variable_set(:@@direct_descendants, cv)
+        ActiveSupport::Dependencies::Reference.clear!
       else
         ActiveRecord::Base.direct_descendants.clear
+        ActiveSupport::Dependencies::Reference.clear!
       end
-
-      ActiveSupport::Dependencies::Reference.clear!
+      
       ActiveRecord::Base.clear_cache!
     end
   end
