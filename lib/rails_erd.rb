@@ -40,6 +40,7 @@ module RailsERD
         :disconnected, true,
         :filename, "erd",
         :filetype, :pdf,
+        :fonts, {},
         :indirect, true,
         :inheritance, false,
         :markup, true,

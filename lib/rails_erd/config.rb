@@ -81,6 +81,12 @@ module RailsERD
       when :title
         value.is_a?(String) ? value : !!value
 
+      # nil | <Hash>
+      when :fonts
+        if value
+          Hash(value).transform_keys(&:to_sym)
+        end
+
       else
         value
       end

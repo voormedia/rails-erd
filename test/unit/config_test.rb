@@ -115,6 +115,12 @@ class ConfigTest < ActiveSupport::TestCase
     assert_equal [:content, :primary_keys], normalize_value(:attributes, ["content", "primary_keys"])
   end
 
+  test "normalize_value should return hash with symbol keys when key is :fonts and value is a hash." do
+    fonts_value = { "normal" => "Arial", "bold" => "Arial Bold", "italic" => "Arial Italic" }
+    expected = {:normal => "Arial", :bold => "Arial Bold", :italic => "Arial Italic"}
+    assert_equal expected, normalize_value(:fonts, fonts_value)
+  end
+
   def normalize_value(key, value)
     RailsERD::Config.new.send(:normalize_value, key, value)
   end
