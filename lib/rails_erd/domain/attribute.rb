@@ -119,7 +119,7 @@ module RailsERD
       # <tt>:decimal, :precision => 5, :scale => 2/tt>:: decimal (5,2)
       # <tt>:boolean, :null => false</tt>:: boolean *
       def type_description
-        type.to_s.tap do |desc|
+        type.to_s.dup.tap do |desc|
           desc << " #{limit_description}" if limit_description
           desc << " ∗" if mandatory? && !primary_key? # Add a hair space + low asterisk (Unicode characters)
           desc << " U" if unique? && !primary_key? && !foreign_key? # Add U if unique but non-key
