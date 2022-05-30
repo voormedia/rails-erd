@@ -30,7 +30,14 @@ module RailsERD
         end
 
         def abstract_from_models(domain, models)
-          models.select(&:abstract_class?).collect(&:direct_descendants).flatten.collect { |model|
+          abstract_classes = models.select(&:abstract_class?)          
+          direct_descendants = if ActiveRecord.version >= Gem::Version.new("7.0.0")
+                                 abstract_classes.collect(&:subclasses)
+                               else
+                                 abstract_classes.collect(&:direct_descendants)
+                               end
+          
+          direct_descendants.flatten.collect { |model|
             new(domain, domain.entity_by_name(model.superclass.name), domain.entity_by_name(model.name))
           }
         end

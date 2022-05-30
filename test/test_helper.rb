@@ -34,9 +34,11 @@ class ActiveSupport::TestCase
     opts = if pk then { :primary_key => pk } else { :id => false } end
     ActiveRecord::Schema.instance_eval do
       suppress_messages do
-        create_table table, opts do |t|
-          columns.each do |column, type|
-            t.send type, column
+        unless ActiveRecord::Base.connection.table_exists?(table)
+          create_table table, **opts do |t|
+            columns.each do |column, type|
+              t.send type, column
+            end
           end
         end
       end
@@ -47,7 +49,8 @@ class ActiveSupport::TestCase
   def add_column(*args)
     ActiveRecord::Schema.instance_eval do
       suppress_messages do
-        add_column(*args)
+        opts = args.slice!(3) || {}
+        add_column(*args, **opts)
       end
     end
     ActiveRecord::Base.clear_cache!
@@ -82,7 +85,7 @@ class ActiveSupport::TestCase
     klass = Object.const_set name.to_sym, Class.new(superklass)
 
     if superklass == ActiveRecord::Base || superklass.abstract_class?
-      create_table Object.const_get(name.to_sym).table_name, columns, Object.const_get(name.to_sym).primary_key rescue nil
+      create_table Object.const_get(name.to_sym).table_name, columns, Object.const_get(name.to_sym).primary_key
     end
     klass.class_eval(&block) if block_given?
     Object.const_get(name.to_sym)
@@ -212,15 +215,18 @@ class ActiveSupport::TestCase
         ActiveRecord::Base.connection.drop_table table
       end
 
-      if ActiveRecord.version >= Gem::Version.new("6.0.0.rc1")
+      if ActiveRecord.version >= Gem::Version.new("7.0.0")
+        ActiveSupport::DescendantsTracker.clear(ActiveRecord::Base.subclasses)
+      elsif ActiveRecord.version >= Gem::Version.new("6.0.0.rc1")
         cv = ActiveSupport::DescendantsTracker.class_variable_get(:@@direct_descendants)
         cv.delete(ActiveRecord::Base)
         ActiveSupport::DescendantsTracker.class_variable_set(:@@direct_descendants, cv)
+        ActiveSupport::Dependencies::Reference.clear!
       else
         ActiveRecord::Base.direct_descendants.clear
+        ActiveSupport::Dependencies::Reference.clear!
       end
-
-      ActiveSupport::Dependencies::Reference.clear!
+      
       ActiveRecord::Base.clear_cache!
     end
   end
