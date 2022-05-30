@@ -1,3 +1,11 @@
+1.7.0
+-----
+* Added support for Rails 7.0 and Ruby 3.0 (#379)
+* Added optional configuration to set which fonts to use (#378)
+* Improvements to rake tasks (#333, #373)
+* Made loading environment.rb optional (#371)
+
+
 1.6.1
 -----
 * Added support for Rails 6.1 (#365)
