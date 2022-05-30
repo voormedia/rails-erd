@@ -174,17 +174,25 @@ module RailsERD
 
     def load_application
       $stderr.puts "Loading application in '#{File.basename(path)}'..."
-      begin
-        environment_path = "#{path}/config/environment.rb"
-        require environment_path
-      rescue ::LoadError
-        puts "Please create a file in '#{environment_path}' that loads your application environment."
-        raise
-      end
+      environment_path = "#{path}/config/environment.rb"
+      require environment_path
+
       if defined? Rails
         Rails.application.eager_load!
         Rails.application.config.eager_load_namespaces.each(&:eager_load!) if Rails.application.config.respond_to?(:eager_load_namespaces)
       end
+    rescue ::LoadError
+      error_message = <<~EOS
+        Tried to load your application environment from '#{environment_path}' but the file was not present.
+        This means that your models might not get loaded fully when the diagram gets buiilt. This can
+        make your entity diagram incomplete.
+
+        However, if you are using ActiveRecord without Rails just make sure your models get
+        loaded eagerly before we generate the ERD (for example, explicitly require your application
+        bootstrap file before calling rails-erd from your Rakefile). We will continue without loading the environment file,
+        and recommend you check your diagram for missing models after it gets generated.
+      EOS
+      puts error_message
     rescue TypeError
     end
 
