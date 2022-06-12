@@ -2,6 +2,8 @@ name: Tests
 on:
   pull_request:
   push:
+    branches:
+      - master
 permissions:
   contents: read
 
@@ -32,7 +34,5 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby_version }}
         bundler-cache: true
-    - name: Install dependencies
-      run: bundle install
     - name: Run tests
       run: bundle exec rake test
