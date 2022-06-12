@@ -2,7 +2,7 @@ source "http://rubygems.org"
 
 gemspec :path => ".."
 
-gem "activerecord", "~> 5.2.0"
+gem "activerecord", "~> 5.2.8"
 
 group :development do
   gem 'mocha'
