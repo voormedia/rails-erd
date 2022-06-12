@@ -53,7 +53,13 @@ Dir["#{File.dirname(__FILE__)}/*/*"].each do |path|
     ActiveRecord::Base.descendants.each do |model|
       Object.send :remove_const, model.name.to_sym rescue nil
     end
-    ActiveRecord::Base.direct_descendants.clear
+
+    if ActiveRecord.version >= Gem::Version.new("7.0.0")
+      ActiveRecord::Base.subclasses.clear
+    else
+      ActiveRecord::Base.direct_descendants.clear
+    end
+
     if Arel.const_defined?(:Relation)
       Arel::Relation.send :class_variable_set, :@@connection_tables_primary_keys, {}
     end
