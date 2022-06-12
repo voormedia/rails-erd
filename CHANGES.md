@@ -1,3 +1,8 @@
+1.7.1
+-----
+* Fix for frozen string error (#382)
+* Updated graphviz docs for linux (#351)
+
 1.7.0
 -----
 * Added support for Rails 7.0 and Ruby 3.0 (#379)
