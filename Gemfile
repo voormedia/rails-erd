@@ -8,7 +8,7 @@ end
 
 
 group :development, :test do
-  gem 'minitest', '~> 5.14.0'
+  gem 'minitest'
 end
 
 group :development do
@@ -19,7 +19,7 @@ group :development do
   platforms :ruby do
     gem "activerecord", "< 7.0"
     gem "activesupport", "< 7.0"
-    gem "sqlite3", '~> 1.4'
+    gem "sqlite3"
     gem "redcarpet"
 
     if RUBY_VERSION > "2.1.0"
