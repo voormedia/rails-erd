@@ -20,7 +20,6 @@ jobs:
           - 6.0.x
           - 6.1.x
           - 7.0.x
-          - edge
     name: Ruby ${{ matrix.ruby_version }} on Rails ${{ matrix.rails_version }}
     env:
       BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/Gemfile-rails.${{ matrix.rails_version }}

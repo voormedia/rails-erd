@@ -19,7 +19,7 @@ group :development do
   platforms :ruby do
     gem "activerecord", "< 7.0"
     gem "activesupport", "< 7.0"
-    gem "sqlite3"
+    gem "sqlite3", '~> 1.4'
     gem "redcarpet"
 
     if RUBY_VERSION > "2.1.0"
