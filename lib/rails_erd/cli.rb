@@ -184,7 +184,7 @@ module RailsERD
     rescue ::LoadError
       error_message = <<~EOS
         Tried to load your application environment from '#{environment_path}' but the file was not present.
-        This means that your models might not get loaded fully when the diagram gets buiilt. This can
+        This means that your models might not get loaded fully when the diagram gets built. This can
         make your entity diagram incomplete.
 
         However, if you are using ActiveRecord without Rails just make sure your models get
