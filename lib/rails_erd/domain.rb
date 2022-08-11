@@ -120,7 +120,32 @@ module RailsERD
     end
 
     def models
-      @models ||= @source_models.select { |model| check_model_validity(model) }.reject { |model| check_habtm_model(model) }
+      @models ||= @source_models
+                    .reject { |model| tableless_rails_models.include?(model) }
+                    .select { |model| check_model_validity(model) }
+                    .reject { |model| check_habtm_model(model) }
+    end
+
+    # Returns Rails model classes defined in the app
+    def rails_models
+      %w(
+        ActionMailbox::InboundEmail
+        ActiveStorage::Attachment
+        ActiveStorage::Blob
+        ActiveStorage::VariantRecord
+        ActionText::RichText
+        ActionText::EncryptedRichText
+      ).map{ |model| Object.const_get(model) rescue nil }.compact
+    end
+
+    def tableless_rails_models
+      @tableless_rails_models ||= begin
+        if defined? Rails
+          rails_models.reject{ |model| model.table_exists? }
+        else
+          []
+        end
+      end
     end
 
     def associations

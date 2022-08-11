@@ -283,4 +283,14 @@ class DomainTest < ActiveSupport::TestCase
     end
     assert_match(/Ignoring invalid model Foo \(table foos does not exist\)/, output)
   end
+
+  test "entities should not output a warning when a Rails model table does not exist" do
+    module ActionMailbox; end
+
+    Object.const_set :InboundEmail, ActionMailbox
+    output = collect_stdout do
+      Domain.generate.entities
+    end
+    assert_equal "", output
+  end
 end
