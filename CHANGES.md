@@ -1,3 +1,12 @@
+1.7.2
+-----
+* Suppress warnings for tableless Rails models (#390)
+* Fix example erdconfig foreign keys (docs) (#392)
+* Replace CI badge from Travis to GH Actions (#393)
+* Fix spelling error in error msg (#394)
+* Handle deprecated direct_descendants (#395)
+* Map foreign keys & current column name to symbols (#397)
+
 1.7.1
 -----
 * Fix for frozen string error (#382)
