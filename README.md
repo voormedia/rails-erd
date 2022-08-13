@@ -46,7 +46,7 @@ Rails ERD has the ability to be configured via the command line or through the u
 ```yaml
 attributes:
   - content
-  - foreign_key
+  - foreign_keys
   - inheritance
 disconnected: true
 filename: erd
