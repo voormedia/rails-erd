@@ -257,7 +257,7 @@ class DomainTest < ActiveSupport::TestCase
     output = collect_stdout do
       Domain.generate.relationships
     end
-    assert_match(/polymorphic interface FooBar does not exist/, output)
+    assert_match(/Warning: Ignoring invalid association :foo_bar on Bar/, output)
   end
 
   test "relationships should not warn when a bad association is encountered if warnings are disabled" do
