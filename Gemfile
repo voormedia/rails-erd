@@ -8,7 +8,7 @@ end
 
 
 group :development, :test do
-  gem 'minitest', '~> 5.14.0'
+  gem 'minitest'
 end
 
 group :development do
