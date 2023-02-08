@@ -63,8 +63,17 @@ namespace :erd do
 
     say "Generating Entity-Relationship Diagram for #{ActiveRecord::Base.descendants.length} models..."
 
-    require "rails_erd/diagram/graphviz"
-    file = RailsERD::Diagram::Graphviz.create
+    file = case RailsERD.options.generator
+    when :mermaid
+      require "rails_erd/diagram/mermaid"
+      RailsERD::Diagram::Mermaid.create
+    when :graphviz
+      require "rails_erd/diagram/graphviz"
+      RailsERD::Diagram::Graphviz.create
+    else
+      raise "Unknown generator: #{RailsERD.options.generator}"
+    end
+
 
     say "Done! Saved diagram to ./#{file}"
   end

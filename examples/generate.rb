@@ -3,6 +3,7 @@ require "bundler/setup"
 
 require "active_record"
 require "rails_erd/diagram/graphviz"
+require "rails_erd/diagram/mermaid"
 require "active_support/dependencies"
 
 output_dir = File.expand_path("output", ".")
@@ -44,9 +45,17 @@ Dir["#{File.dirname(__FILE__)}/*/*"].each do |path|
         # Generate ERD.
         outfile = RailsERD::Diagram::Graphviz.new(domain, default_options.merge(specific_options)).create
 
-        puts "   - #{notation} notation saved to #{outfile}"
+        puts "   - Graphviz #{notation} notation saved to #{outfile}"
       end
     end
+
+    filename = File.expand_path("#{output_dir}/#{name}", File.dirname(__FILE__))
+    default_options = { :filetype => "txt", :filename => filename }
+    specific_options = eval((File.read("#{path}/options.rb") rescue "")) || {}
+
+    outfile = RailsERD::Diagram::Mermaid.new(domain, default_options.merge(specific_options)).create
+    puts "   - Mermaid saved to #{outfile}"
+
     puts
   ensure
     # Completely remove all loaded Active Record models.
