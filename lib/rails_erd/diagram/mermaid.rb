@@ -54,11 +54,23 @@ module RailsERD
       end
 
       def relation_arrow(relationship)
-        arrow_body = relationship.indirect? ? ".." : "--"
-        arrow_head = relationship.to_many? ?  ">" : ""
-        arrow_tail = relationship.many_to? ? "<" : ""
+        arrow_body = arrow_body relationship
+        arrow_head = arrow_head relationship
+        arrow_tail = arrow_tail relationship
 
         "#{arrow_tail}#{arrow_body}#{arrow_head}"
+      end
+
+      def arrow_body(relationship)
+        relationship.indirect? ? ".." : "--"
+      end
+
+      def arrow_head(relationship)
+        relationship.to_many? ?  ">" : ""
+      end
+
+      def arrow_tail(relationship)
+        relationship.many_to? ? "<" : ""
       end
 
     end
