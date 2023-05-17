@@ -8,10 +8,12 @@ end
 
 namespace :erd do
   task :check_dependencies do
-    include GraphViz::Utils
-    unless find_executable("dot", nil)
-      raise "Unable to find GraphViz's \"dot\" executable. Please " \
-            "visit https://voormedia.github.io/rails-erd/install.html for installation instructions."
+    if RailsERD.options.generator == :graphviz
+      include GraphViz::Utils
+      unless find_executable("dot", nil)
+        raise "#{RailsERD.options.generator} Unable to find GraphViz's \"dot\" executable. Please " \
+              "visit https://voormedia.github.io/rails-erd/install.html for installation instructions."
+      end
     end
   end
 
@@ -58,13 +60,22 @@ namespace :erd do
     raise "Active Record was not loaded." unless defined? ActiveRecord
   end
 
-  task :generate => [:check_dependencies, :options, :load_models] do
+  task :generate => [:options, :check_dependencies, :load_models] do
     include ErdRakeHelper
 
     say "Generating Entity-Relationship Diagram for #{ActiveRecord::Base.descendants.length} models..."
 
-    require "rails_erd/diagram/graphviz"
-    file = RailsERD::Diagram::Graphviz.create
+    file = case RailsERD.options.generator
+    when :mermaid
+      require "rails_erd/diagram/mermaid"
+      RailsERD::Diagram::Mermaid.create
+    when :graphviz
+      require "rails_erd/diagram/graphviz"
+      RailsERD::Diagram::Graphviz.create
+    else
+      raise "Unknown generator: #{RailsERD.options.generator}"
+    end
+
 
     say "Done! Saved diagram to ./#{file}"
   end

@@ -61,7 +61,7 @@ module RailsERD
         end
 
       # <symbol>
-      when :filetype, :notation
+      when :filetype, :notation, :generator
         value.to_sym
 
       # [<string>]

@@ -36,6 +36,7 @@ module RailsERD
 
     def default_options
       ActiveSupport::OrderedOptions[
+        :generator, :graphviz,
         :attributes, :content,
         :disconnected, true,
         :filename, "erd",
