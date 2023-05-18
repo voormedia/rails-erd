@@ -31,6 +31,8 @@ module RailsERD
 
       each_relationship do |relationship|
         from, to = relationship.source, relationship.destination
+        next unless node_exists?(from) && node_exists?(to)
+
         graph << "\t`#{from.name}` #{relation_arrow(relationship)} `#{to.name}`"
 
         from.children.each do |child|
@@ -71,6 +73,15 @@ module RailsERD
 
       def arrow_tail(relationship)
         relationship.many_to? ? "<" : ""
+      end
+
+      def node_exists?(name)
+        # 適切な判定方法かというとイマイチだが変なモデル名でなければこれで動きはする
+        graph.include?("\tclass `#{name}`")
+      end
+
+      def escape_name(name)
+        name
       end
 
     end
