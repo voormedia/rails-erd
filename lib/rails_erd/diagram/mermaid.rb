@@ -76,13 +76,8 @@ module RailsERD
       end
 
       def node_exists?(name)
-        # 適切な判定方法かというとイマイチだが変なモデル名でなければこれで動きはする
         # I'm not sure if this is the proper way to judge, but it works as long as you don't use a weird model name.
         graph.include?("\tclass `#{name}`")
-      end
-
-      def escape_name(name)
-        name
       end
 
     end
