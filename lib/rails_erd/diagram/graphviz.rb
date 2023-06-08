@@ -221,9 +221,8 @@ module RailsERD
       each_entity do |entity, attributes|
         if options[:cluster] && entity.namespace
           cluster_name = "cluster_#{entity.namespace}"
-          cluster_options = CLUSTER_ATTRIBUTES.merge(label: entity.namespace)
           cluster = graph.get_graph(cluster_name) ||
-                    graph.add_graph(cluster_name, cluster_options)
+                    graph.add_graph(cluster_name, cluster_attributes)
 
           draw_cluster_node cluster, entity.name, entity_options(entity, attributes)
         else
@@ -249,6 +248,10 @@ module RailsERD
       end
 
       private
+
+      def cluster_attributes(entity)
+        CLUSTER_ATTRIBUTES.merge(label: entity.namespace)
+      end
 
       def node_exists?(name)
         !!graph.search_node(escape_name(name))
