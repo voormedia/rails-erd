@@ -98,6 +98,33 @@ module RailsERD
           end
         end
 
+        def table_style(entity, attributes)
+          {
+            bgcolor: "transparent" ,
+            border: "0",
+            align: "center",
+            cellspacing: "0.5",
+            cellpadding: "0",
+            width:  NODE_WIDTH + 4,
+          }.tap do |style_hash|
+            def style_hash.to_s # dirty, dirty hack.  let's us mod this hash as usual, then converts to html attributes when it gets stringified.
+              self.map { |key, value| "#{key}=\"#{value}\"" }.join(" ")
+            end
+          end
+        end
+
+        def row_style(entity, attribute)
+          {
+            align: "left",
+            bgcolor: 'transparent',
+            width: NODE_WIDTH ,
+          }.tap do |style_hash|
+            def style_hash.to_s # dirty, dirty hack.  let's us mod this hash as usual, then converts to html attributes when it gets stringified.
+              self.map { |key, value| "#{key}=\"#{value}\"" }.join(" ")
+            end
+          end
+        end
+
         def relationship_style(relationship)
           {}.tap do |options|
             options[:style] = :dotted if relationship.indirect?
