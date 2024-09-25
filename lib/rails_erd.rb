@@ -58,6 +58,8 @@ module RailsERD
         :only_recursion_depth, nil,
         :prepend_primary, false,
         :cluster, false,
+        :table_names, false,
+        :native_types, false
       ]
     end
 

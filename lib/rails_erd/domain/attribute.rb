@@ -49,7 +49,7 @@ module RailsERD
       # The type of the attribute, equal to the Rails migration type. Can be any
       # of +:string+, +:integer+, +:boolean+, +:text+, etc.
       def type
-        column.type or column.sql_type.downcase.to_sym
+        !RailsERD.options[:native_types] and column.type or column.sql_type.downcase.to_sym
       end
 
       # Returns +true+ if this attribute is a content column, that is, if it

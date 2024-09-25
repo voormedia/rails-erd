@@ -1,6 +1,6 @@
 <% if options.orientation == :horizontal %>{<% end %>
 <table border="0" align="center" cellspacing="0.5" cellpadding="0" width="<%= NODE_WIDTH + 4 %>">
-  <tr><td align="center" valign="bottom" width="<%= NODE_WIDTH %>"><font face="<%= FONTS[:bold] %>" point-size="11"><%= entity.name %></font></td></tr>
+  <tr><td align="center" valign="bottom" width="<%= NODE_WIDTH %>"><font face="<%= FONTS[:bold] %>" point-size="11"><%= entity.label %></font></td></tr>
 </table>
 <% if attributes.any? %>
 |
