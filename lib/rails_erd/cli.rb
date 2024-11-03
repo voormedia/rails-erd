@@ -164,7 +164,7 @@ module RailsERD
 
     def initialize(path, options)
       @path, @options = path, options
-      require "rails_erd/diagram/graphviz" if options.generator == :graphviz
+      require "rails_erd/diagram/graphviz" if options[:generator] == :graphviz
     end
 
     def start

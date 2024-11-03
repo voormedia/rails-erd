@@ -135,6 +135,20 @@ module RailsERD
         ActiveStorage::VariantRecord
         ActionText::RichText
         ActionText::EncryptedRichText
+        SolidQueue::Message
+        SolidCache::Entry
+        SolidQueue::Semaphore
+        SolidQueue::RecurringTask
+        SolidQueue::Process
+        SolidQueue::Pause
+        SolidQueue::Job
+        SolidQueue::ScheduledExecution
+        SolidQueue::RecurringExecution
+        SolidQueue::ReadyExecution
+        SolidQueue::FailedExecution
+        SolidQueue::ClaimedExecution
+        SolidQueue::BlockedExecution
+        SolidQueue::Execution
       ).map{ |model| Object.const_get(model) rescue nil }.compact
     end
 
