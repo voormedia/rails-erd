@@ -83,7 +83,7 @@ module RailsERD
           .flatten
           .map do |associaton|
             result = associaton.send(Domain.foreign_key_method_name)
-            if result.class == Array
+            if result.respond_to?(:to_ary)
               result.join("_").to_sym
             else
               result.to_sym
