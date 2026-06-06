@@ -12,8 +12,9 @@ module RailsERD
       setup do
         self.graph = [diagram_type]
 
-        # hard code to RL to make it easier to view diagrams from GitHub
-        self.graph << "\tdirection RL"
+        # Respect orientation option: horizontal = TB (top-down), vertical = LR (left-right)
+        direction = (options.orientation.to_s == "vertical") ? "LR" : "TB"
+        self.graph << "\tdirection #{direction}"
       end
 
       each_entity do |entity, attributes|

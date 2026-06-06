@@ -38,16 +38,16 @@ module RailsERD
 
     def default_options
       ActiveSupport::OrderedOptions[
-        :generator, :graphviz,
+        :generator, :mermaid,
         :attributes, :content,
         :disconnected, true,
         :filename, "erd",
-        :filetype, :pdf,
+        :filetype, :mmd,
         :fonts, {},
         :indirect, true,
         :inheritance, false,
         :markup, true,
-        :mermaid_style, :classdiagram,
+        :mermaid_style, :erdiagram,
         :notation, :simple,
         :orientation, :horizontal,
         :polymorphism, false,

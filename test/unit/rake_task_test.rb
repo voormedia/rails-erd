@@ -200,11 +200,11 @@ Error occurred while loading application: FooBar (RuntimeError)
 
   test "options task sets generator type" do
     Rake::Task["erd:options"].execute
-    assert_equal :graphviz, RailsERD.options.generator
-
-    ENV["generator"] = "mermaid"
-    Rake::Task["erd:options"].execute
     assert_equal :mermaid, RailsERD.options.generator
+
+    ENV["generator"] = "graphviz"
+    Rake::Task["erd:options"].execute
+    assert_equal :graphviz, RailsERD.options.generator
   end
 
   test "options task should set single parameter to only as array xxx" do

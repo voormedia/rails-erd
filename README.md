@@ -24,20 +24,26 @@ Requirements
 
 * Ruby 3.1+
 * ActiveRecord 7.0+
-* Graphviz 2.22+
+* Graphviz 2.22+ (optional - only needed for PDF/PNG output)
 
 Getting started
 ---------------
 
 See the [installation instructions](https://voormedia.github.io/rails-erd/install.html) for a complete description of how to install Rails ERD. Here's a summary:
 
-* Install Graphviz 2.22+ ([how?](https://voormedia.github.io/rails-erd/install.html)). On macOS with Homebrew run `brew install graphviz`.
-
-* on linux - `sudo apt-get install graphviz`
-
 * Add <tt>gem 'rails-erd', group: :development</tt> to your application's Gemfile
 
 * Run <tt>bundle exec erd</tt>
+
+This generates a Mermaid diagram (`erd.mmd`) by default. Mermaid diagrams render natively in GitHub, GitLab, and many documentation tools.
+
+**For PDF/PNG output (optional):**
+
+* Install Graphviz 2.22+ ([how?](https://voormedia.github.io/rails-erd/install.html)). On macOS with Homebrew run `brew install graphviz`, on Linux run `sudo apt-get install graphviz`.
+
+* Add `gem 'ruby-graphviz'` to your Gemfile
+
+* Run `bundle exec erd generator=graphviz filetype=pdf`
 
 ### Configuration
 
@@ -51,11 +57,12 @@ attributes:
   - content
 disconnected: true
 filename: erd
-filetype: pdf
+filetype: mmd
+generator: mermaid
 indirect: true
 inheritance: false
 markup: true
-mermaid_style: classdiagram
+mermaid_style: erdiagram
 notation: simple
 orientation: horizontal
 polymorphism: false
@@ -91,29 +98,24 @@ Or via command line:
 bundle exec erd filename="docs/erd"
 ```
 
-Mermaid output
---------------
+Mermaid output (default)
+------------------------
 
-Rails ERD can generate [Mermaid](https://mermaid.js.org/) diagrams instead of Graphviz:
+Rails ERD generates [Mermaid](https://mermaid.js.org/) diagrams by default. Mermaid is a text-based diagramming format that renders natively in GitHub, GitLab, Notion, and many other tools.
 
-```bash
-bundle exec erd generator=mermaid
-```
-
-By default, Mermaid output uses `classDiagram` syntax. You can switch to the more traditional `erDiagram` syntax with crow's foot notation:
+By default, Mermaid output uses `erDiagram` syntax with crow's foot notation, PK/FK markers, and proper cardinality. You can switch to `classDiagram` syntax if preferred:
 
 ```bash
-bundle exec erd generator=mermaid mermaid_style=erdiagram
+bundle exec erd mermaid_style=classdiagram
 ```
 
 Or in your `.erdconfig`:
 
 ```yaml
-generator: mermaid
-mermaid_style: erdiagram
+mermaid_style: classdiagram
 ```
 
-The `erDiagram` style produces output like:
+The default `erDiagram` style produces output like:
 
 ```mermaid
 erDiagram
@@ -129,6 +131,19 @@ erDiagram
   Organization ||--o{ User : ""
 ```
 
+Graphviz output
+---------------
+
+For PDF, PNG, or SVG output, you can use the Graphviz generator:
+
+```bash
+bundle exec erd generator=graphviz filetype=pdf
+```
+
+This requires:
+* The `ruby-graphviz` gem in your Gemfile
+* Graphviz installed on your system (`brew install graphviz` or `apt-get install graphviz`)
+
 Auto generation
 ---------------
 
@@ -141,12 +156,19 @@ Using in a gem (without Rails)
 If you want to use Rails ERD in a gem that defines ActiveRecord models but doesn't include Rails/Railties, you can use the API directly:
 
 ```ruby
-require 'rails_erd/diagram/graphviz'
+require 'rails_erd/diagram/mermaid'
 
 # Ensure your models are loaded
 require_relative 'lib/my_gem/models'
 
 # Generate the diagram
+RailsERD::Diagram::Mermaid.create
+```
+
+For Graphviz output:
+
+```ruby
+require 'rails_erd/diagram/graphviz'
 RailsERD::Diagram::Graphviz.create
 ```
 

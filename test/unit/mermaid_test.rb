@@ -5,6 +5,7 @@ class MermaidTest < ActiveSupport::TestCase
   def setup
     RailsERD.options.filetype = :png
     RailsERD.options.warn     = false
+    RailsERD.options.mermaid_style = :classdiagram
   end
 
   def teardown
@@ -35,10 +36,17 @@ class MermaidTest < ActiveSupport::TestCase
     end
   end
 
-  test "direction should be right to left" do
+  test "direction should be top to bottom by default" do
     create_simple_domain
 
-    assert_equal "\tdirection RL", diagram.graph[1]
+    assert_equal "\tdirection TB", diagram.graph[1]
+  end
+
+  test "direction should be left to right when orientation is vertical" do
+    create_simple_domain
+
+    d = Diagram::Mermaid.new(Domain.generate, orientation: :vertical).tap { |diag| diag.generate }
+    assert_equal "\tdirection LR", d.graph[1]
   end
 
 
@@ -52,7 +60,7 @@ class MermaidTest < ActiveSupport::TestCase
 
     expected = [
       "classDiagram",
-      "\tdirection RL",
+      "\tdirection TB",
       "\tclass `Bar`",
       "\t`Bar` : +string column",
       "\tclass `Foo`",
@@ -68,7 +76,7 @@ class MermaidTest < ActiveSupport::TestCase
 
     expected = [
       "classDiagram",
-      "\tdirection RL",
+      "\tdirection TB",
       "\tclass `Bar`",
       "\tclass `Beer`",
       "\t`Bar` --> `Beer`"
@@ -109,7 +117,7 @@ class MermaidTest < ActiveSupport::TestCase
 
     expected = [
       "classDiagram",
-      "\tdirection RL",
+      "\tdirection TB",
       "\tclass `Bar`",
       "\t`Bar` : +string column",
       "\t`Bar` : +boolean column_two",
@@ -128,7 +136,7 @@ class MermaidTest < ActiveSupport::TestCase
 
     expected = [
       "classDiagram",
-      "\tdirection RL",
+      "\tdirection TB",
       "\tclass `Jar`",
       "\tclass `Lid`",
       "\t`Jar` --> `Lid`"
@@ -152,7 +160,7 @@ class MermaidTest < ActiveSupport::TestCase
 
     expected = [
       "classDiagram",
-      "\tdirection RL",
+      "\tdirection TB",
       "\tclass `Cannon`",
       "\tclass `Defensible`",
       "\tclass `Galleon`",
@@ -183,7 +191,7 @@ class MermaidTest < ActiveSupport::TestCase
 
     expected = [
       "classDiagram",
-      "\tdirection RL",
+      "\tdirection TB",
       "\tclass `Cannon`",
       "\tclass `Galleon`",
       "\tclass `Stronghold`",
@@ -199,7 +207,7 @@ class MermaidTest < ActiveSupport::TestCase
 
     expected = [
       "classDiagram",
-      "\tdirection RL",
+      "\tdirection TB",
       "\tclass `Many`",
       "\tclass `One`",
       "\t`One` --> `Many`"
@@ -225,7 +233,7 @@ class MermaidTest < ActiveSupport::TestCase
 
     expected = [
       "classDiagram",
-      "\tdirection RL",
+      "\tdirection TB",
       "\tclass `Bar`",
       "\tclass `Baz`",
       "\tclass `Foo`",
@@ -242,7 +250,7 @@ class MermaidTest < ActiveSupport::TestCase
 
     expected = [
       "classDiagram",
-      "\tdirection RL",
+      "\tdirection TB",
       "\tclass `Many`",
       "\tclass `More`",
       "\t`Many` <--> `More`"
@@ -256,7 +264,7 @@ class MermaidTest < ActiveSupport::TestCase
 
     expected = [
       "classDiagram",
-      "\tdirection RL",
+      "\tdirection TB",
       "\tclass `One`",
       "\tclass `Other`",
       "\t`One` -- `Other`"
@@ -273,7 +281,7 @@ class MermaidTest < ActiveSupport::TestCase
 
     expected = [
       "classDiagram",
-      "\tdirection RL",
+      "\tdirection TB",
       "\tclass `Emperor`",
       "\t`Emperor` -- `Emperor`"
     ]
@@ -289,7 +297,7 @@ class MermaidTest < ActiveSupport::TestCase
     result = diagram(:mermaid_style => :erdiagram).graph.uniq
 
     assert_equal "erDiagram", result[0]
-    assert_equal "\tdirection RL", result[1]
+    assert_equal "\tdirection TB", result[1]
     # Entity blocks are joined with newlines
     assert result.any? { |line| line.include?("Bar {") }
     assert result.any? { |line| line.include?("Beer {") }

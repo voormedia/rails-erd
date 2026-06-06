@@ -8,20 +8,21 @@ class CLITest < ActiveSupport::TestCase
   end
 
   # Generator selection ========================================================
-  test "CLI should use graphviz generator by default" do
-    cli = RailsERD::CLI.new(Dir.pwd, {})
-    assert_equal RailsERD::Diagram::Graphviz, cli.send(:generator)
-  end
-
-  test "CLI should use mermaid generator when generator option is symbol" do
+  test "CLI should use mermaid generator by default" do
     require "rails_erd/diagram/mermaid"
-    cli = RailsERD::CLI.new(Dir.pwd, { generator: :mermaid })
+    cli = RailsERD::CLI.new(Dir.pwd, {})
     assert_equal RailsERD::Diagram::Mermaid, cli.send(:generator)
   end
 
   test "CLI should use graphviz generator when generator option is graphviz symbol" do
     cli = RailsERD::CLI.new(Dir.pwd, { generator: :graphviz })
     assert_equal RailsERD::Diagram::Graphviz, cli.send(:generator)
+  end
+
+  test "CLI should use mermaid generator when generator option is mermaid symbol" do
+    require "rails_erd/diagram/mermaid"
+    cli = RailsERD::CLI.new(Dir.pwd, { generator: :mermaid })
+    assert_equal RailsERD::Diagram::Mermaid, cli.send(:generator)
   end
 
   # Option parsing (SYMBOL_OPTIONS conversion) =================================

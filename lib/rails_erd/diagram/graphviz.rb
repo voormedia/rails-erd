@@ -1,20 +1,25 @@
 # frozen_string_literal: true
 
 require "rails_erd/diagram"
-require "graphviz"
 require "erb"
 
-# Fix bad RegEx test in Ruby-Graphviz.
-GraphViz::Types::LblString.class_eval do
-  def output # @private :nodoc:
-    if /^<.*>$/m =~ @data
-      @data
-    else
-      @data.to_s.inspect.gsub("\\\\", "\\")
+begin
+  require "graphviz"
+
+  # Fix bad RegEx test in Ruby-Graphviz.
+  GraphViz::Types::LblString.class_eval do
+    def output # @private :nodoc:
+      if /^<.*>$/m =~ @data
+        @data
+      else
+        @data.to_s.inspect.gsub("\\\\", "\\")
+      end
     end
+    alias_method :to_gv, :output
+    alias_method :to_s, :output
   end
-  alias_method :to_gv, :output
-  alias_method :to_s, :output
+rescue LoadError
+  # ruby-graphviz is optional as of v2.0 - only needed when using generator: graphviz
 end
 
 module RailsERD
@@ -182,6 +187,11 @@ module RailsERD
       attr_accessor :graph
 
       setup do
+        unless defined?(GraphViz)
+          raise LoadError, "The ruby-graphviz gem is required for Graphviz output. " \
+            "Add `gem 'ruby-graphviz'` to your Gemfile, or use `generator: mermaid` instead."
+        end
+
         self.graph = GraphViz.digraph(domain.name)
 
         # Set all default attributes.
