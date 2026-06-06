@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "set"
 require "active_support/core_ext/module/delegation"
 require "rails_erd/domain/relationship/cardinality"

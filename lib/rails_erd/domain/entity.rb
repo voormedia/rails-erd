@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module RailsERD
   class Domain
     # Entities represent your Active Record models. Entities may be connected

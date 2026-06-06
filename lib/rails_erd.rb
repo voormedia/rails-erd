@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "active_support/ordered_options"
 require "rails_erd/railtie" if defined? Rails
 require "rails_erd/config"
