@@ -128,8 +128,10 @@ module RailsERD
       instance_eval(&callbacks[:setup])
       if options.only_recursion_depth.present?
         depth = options.only_recursion_depth.to_s.to_i
+        # Ensure options[:only] is an array (CLI may pass a single string)
+        options[:only] = [options[:only]].flatten
         options[:only].dup.each do |class_name|
-          options[:only]+= recurse_into_relationships(@domain.entity_by_name(class_name), depth)
+          options[:only] += recurse_into_relationships(@domain.entity_by_name(class_name), depth)
         end
         options[:only].uniq!
       end
