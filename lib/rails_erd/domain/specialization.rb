@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module RailsERD
   class Domain
     # Describes the specialization of an entity. Specialized entities correspond

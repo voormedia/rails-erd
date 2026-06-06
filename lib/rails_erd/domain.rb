@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rails_erd"
 require "rails_erd/domain/attribute"
 require "rails_erd/domain/entity"
