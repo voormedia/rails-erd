@@ -12,15 +12,24 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        ruby_version: ['3.4', '3.3', '3.2', '3.1']
+        ruby_version: ['4.0', '3.4', '3.3', '3.2', '3.1']
         rails_version: ['7.0.x', '7.1.x', '7.2.x', '8.0.x', 'edge']
         exclude:
+          # Ruby 3.1 doesn't support Rails 8.0+
           - ruby_version: '3.1'
             rails_version: '8.0.x'
           - ruby_version: '3.1'
             rails_version: 'edge'
+          # Ruby 3.2 doesn't support Rails edge
           - ruby_version: '3.2'
             rails_version: 'edge'
+          # Ruby 4.0 only supports Rails 8.0+
+          - ruby_version: '4.0'
+            rails_version: '7.0.x'
+          - ruby_version: '4.0'
+            rails_version: '7.1.x'
+          - ruby_version: '4.0'
+            rails_version: '7.2.x'
     name: Ruby ${{ matrix.ruby_version }} on Rails ${{ matrix.rails_version }}
     env:
       BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/Gemfile-rails.${{ matrix.rails_version }}
