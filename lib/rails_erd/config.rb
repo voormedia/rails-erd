@@ -44,7 +44,10 @@ module RailsERD
 
     def load_file(path)
       if File.exist?(path)
-        YAML.load_file(path).each do |key, value|
+        config = YAML.load_file(path)
+        return unless config.is_a?(Hash)
+
+        config.each do |key, value|
           key = key.to_sym
           @options[key] = normalize_value(key, value)
         end
