@@ -8,6 +8,13 @@ class ConfigTest < ActiveSupport::TestCase
     assert_equal expected_hash, RailsERD::Config.load
   end
 
+  test "load_config_file should return blank hash when config file is empty" do
+    set_local_config_file_to("erdconfig.empty")
+
+    expected_hash = {}
+    assert_equal expected_hash, RailsERD::Config.load
+  end
+
   test "load_config_gile should return a hash from USER_WIDE_CONFIG_FILE when only USER_WIDE_CONFIG_FILE exists." do
     set_user_config_file_to("erdconfig.example")
 
