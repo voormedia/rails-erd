@@ -17,6 +17,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency "activesupport", ">= 7.0"
   s.add_runtime_dependency "ruby-graphviz", "~> 1.2"
   s.add_runtime_dependency "choice", "~> 0.2.0"
+  s.add_runtime_dependency "ostruct" # Required as of Ruby 3.5 (no longer in stdlib)
 
   s.add_development_dependency "pry"
   s.add_development_dependency "pry-nav"
