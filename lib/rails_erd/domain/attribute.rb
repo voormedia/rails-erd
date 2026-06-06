@@ -49,7 +49,7 @@ module RailsERD
       # The type of the attribute, equal to the Rails migration type. Can be any
       # of +:string+, +:integer+, +:boolean+, +:text+, etc.
       def type
-        column.type or column.sql_type.downcase.to_sym
+        !RailsERD.options[:native_types] and column.type or column.sql_type.downcase.to_sym
       end
 
       # Returns +true+ if this attribute is a content column, that is, if it
@@ -129,6 +129,7 @@ module RailsERD
       # <tt>:boolean, :null => false</tt>:: boolean *
       def type_description
         type.to_s.dup.tap do |desc|
+          desc << "[]" if column.respond_to?(:array?) && column.array?
           desc << " #{limit_description}" if limit_description
           desc << " ∗" if mandatory? && !primary_key? # Add a hair space + low asterisk (Unicode characters)
           desc << " U" if unique? && !primary_key? && !foreign_key? # Add U if unique but non-key

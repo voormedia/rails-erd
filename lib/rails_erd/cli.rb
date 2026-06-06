@@ -87,6 +87,16 @@ Choice.options do
     desc "Control how edges are represented. See http://www.graphviz.org/doc/info/attrs.html#d:splines for values."
   end
 
+  option :table_names do
+    long "--table_names=BOOLEAN"
+    desc "Label each entity with the table name instead of the ActiveRecord class name."
+  end
+
+  option :native_types do
+    long "--native_types=BOOLEAN"
+    desc "Display the db-native types instead of the Rails migration ones."
+  end
+
   separator ""
   separator "Output options:"
 

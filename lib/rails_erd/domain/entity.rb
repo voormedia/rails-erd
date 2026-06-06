@@ -40,6 +40,10 @@ module RailsERD
         @domain, @name, @model = domain, name, model
       end
 
+      def label
+        RailsERD.options[:table_names] ? model.table_name : name
+      end
+
       # Returns an array of attributes for this entity.
       def attributes
         @attributes ||= generalized? ? [] : Attribute.from_model(domain, model)
