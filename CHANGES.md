@@ -1,3 +1,30 @@
+2.0.0
+-----
+
+### Breaking Changes
+* Default generator changed from Graphviz to Mermaid (#448)
+* Default filetype changed from PDF to MMD (#448)
+* Default mermaid_style changed from classDiagram to erDiagram (#448)
+* Default direction changed from RL to TB (top-down) (#448)
+* ruby-graphviz gem is now optional (#448)
+
+### New Features
+* Mermaid erDiagram style with crow's foot notation and PK/FK markers (#445)
+* CLI now supports all options that rake task supports (#446, #447)
+* Mermaid direction respects orientation option (#448)
+
+### Bug Fixes
+* Fix --only flag with single model (#441)
+* Fix nil destination crash (#440)
+* Fix empty .erdconfig crash (#443)
+* Fix CLI string-to-symbol option conversion (#447)
+* Exclude Rails 8 Solid* internal models (#437, #438, #439)
+* Suppress Ruby 3.4 hash key warnings (#436)
+
+### Documentation
+* Updated README for Mermaid as default (#444, #448)
+* Added non-Rails usage example (#444)
+
 1.7.2
 -----
 * Suppress warnings for tableless Rails models (#390)
