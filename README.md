@@ -42,13 +42,13 @@ See the [installation instructions](https://voormedia.github.io/rails-erd/instal
 ### Configuration
 
 
-Rails ERD has the ability to be configured via the command line or through the use of a YAML file with configuration options set. It will look for this file first at `~/.erdconfig` and then `./.erdconfig` (which will override any settings in `~/.erdconfig`). The format of the file is as follows (shown here with the default settings used if no `.erdconfig` is found). More information on [customization options](https://voormedia.github.io/rails-erd/customise.html) can be found in Rails ERD's project documentation.
+Rails ERD has the ability to be configured via the command line or through the use of a YAML file with configuration options set. It will look for this file first at `~/.erdconfig` and then `./.erdconfig` (which will override any settings in `~/.erdconfig`). More information on [customization options](https://voormedia.github.io/rails-erd/customise.html) can be found in Rails ERD's project documentation.
+
+Here is an example `.erdconfig` showing the default values:
 
 ```yaml
 attributes:
   - content
-  - foreign_keys
-  - inheritance
 disconnected: true
 filename: erd
 filetype: pdf
@@ -60,17 +60,34 @@ orientation: horizontal
 polymorphism: false
 sort: true
 warn: true
-title: sample title
+title: true
 exclude: null
 only: null
 only_recursion_depth: null
 prepend_primary: false
 cluster: false
 splines: spline
+```
+
+You can also customize fonts (useful if the defaults aren't available on your system):
+
+```yaml
 fonts:
- normal: "Arial"
- bold: "Arial Bold"
- italic: "Arial Italic"
+  normal: "Arial"
+  bold: "Arial Bold"
+  italic: "Arial Italic"
+```
+
+**Note:** The `filename` option can include a path to output the diagram to a specific directory:
+
+```yaml
+filename: docs/erd
+```
+
+Or via command line:
+
+```bash
+bundle exec erd filename="docs/erd"
 ```
 
 Auto generation
@@ -78,6 +95,23 @@ Auto generation
 
 * Run <tt>bundle exec rails g erd:install</tt>
 * Run <tt>bundle exec rails db:migrate</tt>, then the diagram is generated
+
+Using in a gem (without Rails)
+------------------------------
+
+If you want to use Rails ERD in a gem that defines ActiveRecord models but doesn't include Rails/Railties, you can use the API directly:
+
+```ruby
+require 'rails_erd/diagram/graphviz'
+
+# Ensure your models are loaded
+require_relative 'lib/my_gem/models'
+
+# Generate the diagram
+RailsERD::Diagram::Graphviz.create
+```
+
+You'll need to ensure your database connection is established and models are loaded before generating the diagram.
 
 Learn more
 ----------
