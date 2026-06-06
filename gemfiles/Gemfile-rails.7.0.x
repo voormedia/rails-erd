@@ -2,6 +2,11 @@ source "http://rubygems.org"
 
 gemspec :path => ".."
 
+gem "bigdecimal" # is a bundled gem since Ruby 3.4
+gem "concurrent-ruby", "< 1.3.5" # https://github.com/rails/rails/issues/54260
+gem "drb" # is a bundled gem since Ruby 3.4
+gem "mutex_m" # is a bundled gem since Ruby 3.4
+
 gem "activerecord", "~> 7.0.0"
 
 group :development do
@@ -10,7 +15,7 @@ group :development do
   gem "yard"
 
   platforms :ruby do
-    gem "sqlite3", '~> 1.4'
+    gem "sqlite3", "~> 1.4"
     gem "redcarpet"
   end
 

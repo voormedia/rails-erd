@@ -22,8 +22,8 @@ Browse the [gallery](https://voormedia.github.io/rails-erd/gallery.html) for mor
 Requirements
 ---------------
 
-* Ruby 1.9.3+
-* ActiveRecord 3.x - 5.0.x
+* Ruby 2.2+
+* ActiveRecord 4.2+
 
 Getting started
 ---------------

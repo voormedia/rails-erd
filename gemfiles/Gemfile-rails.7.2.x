@@ -2,7 +2,7 @@ source "http://rubygems.org"
 
 gemspec :path => ".."
 
-gem "activerecord", "~> 5.2.0"
+gem "activerecord", "~> 7.2.0"
 
 group :development do
   gem 'mocha'
@@ -10,7 +10,7 @@ group :development do
   gem "yard"
 
   platforms :ruby do
-    gem "sqlite3", '~> 1.3.13'
+    gem "sqlite3"
     gem "redcarpet"
   end
 
