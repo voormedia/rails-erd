@@ -66,7 +66,7 @@ module RailsERD
         end
 
       # <symbol>
-      when :filetype, :notation, :generator
+      when :filetype, :notation, :generator, :mermaid_style
         value.to_sym
 
       # [<string>]
