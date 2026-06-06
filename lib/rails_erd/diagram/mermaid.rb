@@ -32,6 +32,8 @@ module RailsERD
 
       each_relationship do |relationship|
         from, to = relationship.source, relationship.destination
+        next unless from && to
+
         graph << "\t`#{from.name}` #{relation_arrow(relationship)} `#{to.name}`"
 
         from.children.each do |child|
