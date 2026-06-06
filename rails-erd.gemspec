@@ -15,10 +15,12 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency "activerecord", ">= 7.0"
   s.add_runtime_dependency "activesupport", ">= 7.0"
-  s.add_runtime_dependency "ruby-graphviz", "~> 1.2"
   s.add_runtime_dependency "choice", "~> 0.2.0"
   s.add_runtime_dependency "ostruct" # Required as of Ruby 3.5 (no longer in stdlib)
 
+  # ruby-graphviz is optional - only needed when using generator: graphviz
+  # As of v2.0, the default generator is mermaid which has no external dependencies
+  s.add_development_dependency "ruby-graphviz", "~> 1.2"
   s.add_development_dependency "pry"
   s.add_development_dependency "pry-nav"
 

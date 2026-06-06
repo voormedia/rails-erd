@@ -1,5 +1,3 @@
-require 'graphviz/utils'
-
 module ErdRakeHelper
   def say(message)
     puts message unless Rake.application.options.silent
@@ -9,10 +7,16 @@ end
 namespace :erd do
   task :check_dependencies do
     if RailsERD.options.generator == :graphviz
-      include GraphViz::Utils
-      unless find_executable("dot", nil)
-        raise "#{RailsERD.options.generator} Unable to find GraphViz's \"dot\" executable. Please " \
-              "visit https://voormedia.github.io/rails-erd/install.html for installation instructions."
+      begin
+        require 'graphviz/utils'
+        include GraphViz::Utils
+        unless find_executable("dot", nil)
+          raise "Unable to find GraphViz's \"dot\" executable. Please " \
+                "visit https://voormedia.github.io/rails-erd/install.html for installation instructions."
+        end
+      rescue LoadError
+        raise "The ruby-graphviz gem is required for Graphviz output. " \
+              "Add `gem 'ruby-graphviz'` to your Gemfile, or use `generator=mermaid` instead."
       end
     end
   end
