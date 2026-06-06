@@ -141,6 +141,7 @@ module RailsERD
         SolidCache::Entry
         SolidQueue::BlockedExecution
         SolidQueue::ClaimedExecution
+        SolidQueue::Execution
         SolidQueue::FailedExecution
         SolidQueue::Job
         SolidQueue::Pause
