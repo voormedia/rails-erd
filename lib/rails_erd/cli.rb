@@ -160,16 +160,22 @@ module RailsERD
   class CLI
     attr_reader :path, :options
 
+    # Options that should be converted to symbols
+    SYMBOL_OPTIONS = %i[generator mermaid_style filetype notation orientation].freeze
+
     class << self
       def start
         path = Choice.rest.first || Dir.pwd
         options = Choice.choices.each_with_object({}) do |(key, value), opts|
+          key_sym = key.to_sym
           if key.start_with? "no_"
             opts[key.gsub("no_", "").to_sym] = !value
           elsif value.to_s.include? ","
-            opts[key.to_sym] = value.split(",").map(&:to_s)
+            opts[key_sym] = value.split(",").map(&:to_s)
+          elsif SYMBOL_OPTIONS.include?(key_sym) && value.is_a?(String)
+            opts[key_sym] = value.to_sym
           else
-            opts[key.to_sym] = value
+            opts[key_sym] = value
           end
         end
         if options[:config_file] && options[:config_file] != ''
@@ -181,7 +187,11 @@ module RailsERD
 
     def initialize(path, options)
       @path, @options = path, options
-      require "rails_erd/diagram/graphviz" if options[:generator] == :graphviz
+      if options[:generator] == :mermaid
+        require "rails_erd/diagram/mermaid"
+      else
+        require "rails_erd/diagram/graphviz"
+      end
     end
 
     def start
