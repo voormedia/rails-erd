@@ -193,7 +193,9 @@ class GraphvizTest < ActiveSupport::TestCase
 
   test "generate should add set value for fontname attribute" do
     create_simple_domain
-    assert_equal '"Arial Bold"', diagram(fonts: {bold: "Arial Bold"}).graph.graph[:fontname].to_s
+    # Use OS-appropriate font name (macOS uses PostScript names like "Arial BoldMT")
+    expected_font = RailsERD::Config.font_names_based_on_os[:bold]
+    assert_equal "\"#{expected_font}\"", diagram(fonts: {bold: expected_font}).graph.graph[:fontname].to_s
   end
 
   test "generate should add default value for splines attribute" do
