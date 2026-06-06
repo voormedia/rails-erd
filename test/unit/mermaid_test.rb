@@ -280,4 +280,101 @@ class MermaidTest < ActiveSupport::TestCase
 
     assert_equal expected, diagram.graph.uniq
   end
+
+  # erDiagram tests ============================================================
+
+  test "erdiagram style should use erDiagram header" do
+    create_simple_domain
+
+    result = diagram(:mermaid_style => :erdiagram).graph.uniq
+
+    assert_equal "erDiagram", result[0]
+    assert_equal "\tdirection RL", result[1]
+    # Entity blocks are joined with newlines
+    assert result.any? { |line| line.include?("Bar {") }
+    assert result.any? { |line| line.include?("Beer {") }
+    # Relationship uses crow's foot notation
+    assert result.any? { |line| line.include?("Bar") && line.include?("Beer") && line.include?("--") }
+  end
+
+  test "erdiagram style should include attributes with PK/FK markers" do
+    create_model "Foo", :bar => :references, :column => :string do
+      belongs_to :bar
+    end
+
+    create_model "Bar", :column => :string
+
+    result = diagram(:mermaid_style => :erdiagram, :attributes => [:primary_keys, :foreign_keys, :content]).graph.join("\n")
+
+    assert result.include?("erDiagram")
+    assert result.include?("id PK"), "Should include primary key marker"
+    assert result.include?("bar_id FK"), "Should include foreign key marker"
+  end
+
+  test "erdiagram style should use crow's foot notation for one to many" do
+    create_one_to_many_assoc_domain
+
+    result = diagram(:mermaid_style => :erdiagram).graph.uniq
+
+    assert result.include?("erDiagram")
+    # One to many should have }| or }o on the "many" side
+    relationship_line = result.find { |line| line.include?("One") && line.include?("Many") && line.include?("--") }
+    assert relationship_line, "Should have a relationship line between One and Many"
+    assert relationship_line.match?(/\}\||\}o/), "Should use crow's foot notation for many side"
+  end
+
+  test "erdiagram style should use crow's foot notation for many to many" do
+    create_many_to_many_assoc_domain
+
+    result = diagram(:mermaid_style => :erdiagram).graph.uniq
+
+    assert result.include?("erDiagram")
+    # Many to many should have }| or }o on both sides
+    relationship_line = result.find { |line| line.include?("Many") && line.include?("More") && line.include?("--") }
+    assert relationship_line, "Should have a relationship line between Many and More"
+  end
+
+  test "erdiagram style should use crow's foot notation for one to one" do
+    create_one_to_one_assoc_domain
+
+    result = diagram(:mermaid_style => :erdiagram).graph.uniq
+
+    assert result.any? { |line| line.include?("erDiagram") }
+    # One to one should have | on both sides (not })
+    relationship_line = result.find { |line| line.include?("One") && line.include?("Other") && line.include?("--") }
+    assert relationship_line, "Should have a relationship line between One and Other"
+    # Should not have } which indicates "many"
+    refute relationship_line.include?("}"), "One-to-one should not use } (many) notation: #{relationship_line}"
+  end
+
+  test "erdiagram style should use dotted line for indirect relationships" do
+    create_model "Foo" do
+      has_many :bazs
+      has_many :bars
+    end
+
+    create_model "Bar", :foo => :references do
+      belongs_to :foo
+      has_many :bazs, :through => :foo
+    end
+
+    create_model "Baz", :foo => :references do
+      belongs_to :foo
+    end
+
+    result = diagram(:mermaid_style => :erdiagram).graph.uniq
+
+    # Indirect relationship should use .. instead of --
+    indirect_line = result.find { |line| line.include?("Bar") && line.include?("Baz") }
+    assert indirect_line, "Should have a relationship line between Bar and Baz"
+    assert indirect_line.include?(".."), "Indirect relationship should use dotted line"
+  end
+
+  test "er option alias should work same as erdiagram" do
+    create_simple_domain
+
+    result = diagram(:mermaid_style => :er).graph
+
+    assert result.include?("erDiagram")
+  end
 end

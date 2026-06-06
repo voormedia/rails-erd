@@ -55,6 +55,7 @@ filetype: pdf
 indirect: true
 inheritance: false
 markup: true
+mermaid_style: classdiagram
 notation: simple
 orientation: horizontal
 polymorphism: false
@@ -88,6 +89,44 @@ Or via command line:
 
 ```bash
 bundle exec erd filename="docs/erd"
+```
+
+Mermaid output
+--------------
+
+Rails ERD can generate [Mermaid](https://mermaid.js.org/) diagrams instead of Graphviz:
+
+```bash
+bundle exec erd generator=mermaid
+```
+
+By default, Mermaid output uses `classDiagram` syntax. You can switch to the more traditional `erDiagram` syntax with crow's foot notation:
+
+```bash
+bundle exec erd generator=mermaid mermaid_style=erdiagram
+```
+
+Or in your `.erdconfig`:
+
+```yaml
+generator: mermaid
+mermaid_style: erdiagram
+```
+
+The `erDiagram` style produces output like:
+
+```mermaid
+erDiagram
+  User {
+    integer id PK
+    string name
+    integer organization_id FK
+  }
+  Organization {
+    integer id PK
+    string name
+  }
+  Organization ||--o{ User : ""
 ```
 
 Auto generation

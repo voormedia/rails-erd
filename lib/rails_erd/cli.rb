@@ -12,6 +12,11 @@ Choice.options do
     desc "Generator to use (graphviz or mermaid). Defaults to graphviz."
   end
 
+  option :mermaid_style do
+    long "--mermaid_style=STYLE"
+    desc "Mermaid diagram style: classdiagram (default) or erdiagram. Only applies when generator is mermaid."
+  end
+
   option :title do
     long "--title=TITLE"
     desc "Replace default diagram title with a custom one."

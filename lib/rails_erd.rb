@@ -47,6 +47,7 @@ module RailsERD
         :indirect, true,
         :inheritance, false,
         :markup, true,
+        :mermaid_style, :classdiagram,
         :notation, :simple,
         :orientation, :horizontal,
         :polymorphism, false,
