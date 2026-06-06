@@ -1,4 +1,5 @@
-# encoding: utf-8
+# frozen_string_literal: true
+
 require "rails_erd/diagram"
 require "graphviz"
 require "erb"
@@ -123,8 +124,8 @@ module RailsERD
             options[:style] = :dotted if relationship.indirect?
 
             # Cardinality is "look-across".
-            dst = relationship.to_many? ? "crow" : "tee"
-            src = relationship.many_to? ? "crow" : "tee"
+            dst = +(relationship.to_many? ? "crow" : "tee")
+            src = +(relationship.many_to? ? "crow" : "tee")
 
             # Participation is "look-across".
             dst << (relationship.destination_optional? ? "odot" : "tee")
@@ -143,8 +144,8 @@ module RailsERD
             options[:style] = :dotted if relationship.indirect?
 
             # Participation is "look-here".
-            dst = relationship.source_optional? ? "odot" : "dot"
-            src = relationship.destination_optional? ? "odot" : "dot"
+            dst = +(relationship.source_optional? ? "odot" : "dot")
+            src = +(relationship.destination_optional? ? "odot" : "dot")
 
             # Cardinality is "look-across".
             dst << "normal" if relationship.to_many?
