@@ -178,7 +178,13 @@ module RailsERD
         raise "table #{model.table_name} does not exist"
       end
     rescue => e
-      warn "Ignoring invalid model #{model.name} (#{e.message})"
+      warn "Ignoring invalid model #{model.name} (#{e.message})" unless excluded_model?(model)
+    end
+
+    def excluded_model?(model)
+      return false unless options.exclude.present?
+
+      [options.exclude].flatten.map(&:to_sym).include?(model.name.to_sym)
     end
 
     def check_association_validity(association)
@@ -192,7 +198,20 @@ module RailsERD
         entity_by_name(entity_name) or raise "model #{entity_name} exists, but is not included in domain"
       end
     rescue => e
-      warn "Ignoring invalid association #{association_description(association)} (#{e.message})"
+      warn "Ignoring invalid association #{association_description(association)} (#{e.message})" unless excluded_association?(association)
+    end
+
+    def excluded_association?(association)
+      return false unless options.exclude.present?
+
+      excluded_names = [options.exclude].flatten.map(&:to_sym)
+
+      # Suppress warning if either the source model or target model is excluded
+      excluded_names.include?(association.active_record.name.to_sym) ||
+        (association.klass.name && excluded_names.include?(association.klass.name.to_sym))
+    rescue NameError
+      # If we can't determine the target class, check only the source model
+      excluded_names.include?(association.active_record.name.to_sym)
     end
 
     def check_polymorphic_association_validity(association)
