@@ -20,7 +20,8 @@ module RailsERD
       each_entity do |entity, attributes|
         if er_diagram?
           # Build entity block as a single string to avoid uniq issues with closing braces
-          entity_lines = ["\t#{entity} {"]
+          quoted_entity = quote_entity_name(entity)
+          entity_lines = ["\t#{quoted_entity} {"]
           attributes.each do |attr|
             key_marker = attribute_key_marker(attr)
             entity_lines << "\t\t#{attr.type} #{attr.name}#{key_marker}"
@@ -39,7 +40,7 @@ module RailsERD
         from, to = specialization.generalized, specialization.specialized
         if er_diagram?
           # erDiagram doesn't have a direct polymorphic notation, use inheritance-like
-          graph << "\t#{from.name} ||--o{ #{to.name} : \"specializes\""
+          graph << "\t#{quote_entity_name(from.name)} ||--o{ #{quote_entity_name(to.name)} : \"specializes\""
         else
           graph << "\t<<polymorphic>> `#{specialization.generalized}`"
           graph << "\t #{from.name} <|-- #{to.name}"
@@ -51,14 +52,14 @@ module RailsERD
         next unless from && to
 
         if er_diagram?
-          graph << "\t#{from.name} #{er_relation_notation(relationship)} #{to.name} : \"\""
+          graph << "\t#{quote_entity_name(from.name)} #{er_relation_notation(relationship)} #{quote_entity_name(to.name)} : \"\""
 
           from.children.each do |child|
-            graph << "\t#{child.name} #{er_relation_notation(relationship)} #{to.name} : \"\""
+            graph << "\t#{quote_entity_name(child.name)} #{er_relation_notation(relationship)} #{quote_entity_name(to.name)} : \"\""
           end
 
           to.children.each do |child|
-            graph << "\t#{from.name} #{er_relation_notation(relationship)} #{child.name} : \"\""
+            graph << "\t#{quote_entity_name(from.name)} #{er_relation_notation(relationship)} #{quote_entity_name(child.name)} : \"\""
           end
         else
           graph << "\t`#{from.name}` #{relation_arrow(relationship)} `#{to.name}`"
@@ -90,6 +91,17 @@ module RailsERD
 
       def er_diagram?
         options[:mermaid_style] == :erdiagram || options[:mermaid_style] == :er
+      end
+
+      # Quote entity names that contain special characters (like :: for namespaces)
+      # Mermaid erDiagram requires double quotes for names with special characters
+      def quote_entity_name(name)
+        name = name.to_s
+        if name.include?("::")
+          %("#{name}")
+        else
+          name
+        end
       end
 
       # erDiagram relationship notation using crow's foot

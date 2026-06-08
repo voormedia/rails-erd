@@ -60,13 +60,16 @@ class ActiveSupport::TestCase
     superklass = args.first.kind_of?(Class) ? args.shift : ActiveRecord::Base
 
     names = full_name.split('::')
+    name = names.pop  # Remove and store the model name
 
-    parent_module = names[0..-1].inject(Object) do |parent,child|
-      parent = parent.const_set(child.to_sym, Module.new)
+    # Create namespace modules (all parts except the model name)
+    parent_module = names.inject(Object) do |parent, child|
+      if parent.const_defined?(child.to_sym, false)
+        parent.const_get(child.to_sym)
+      else
+        parent.const_set(child.to_sym, Module.new)
+      end
     end
-
-    parent_module ||= Object
-    name = names.last
 
     columns = args.first || {}
     klass = parent_module.const_set name.to_sym, Class.new(superklass)

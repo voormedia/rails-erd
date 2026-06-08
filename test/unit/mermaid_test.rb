@@ -385,4 +385,63 @@ class MermaidTest < ActiveSupport::TestCase
 
     assert result.include?("erDiagram")
   end
+
+  # Namespace tests (Issue #450) ================================================
+
+  test "classDiagram should handle namespaced model names" do
+    create_model "Post"
+    create_module_model "Admin::Author", :post => :references do
+      belongs_to :post
+    end
+
+    result = diagram.graph
+
+    assert result.include?("classDiagram")
+    # Backticks should properly escape the namespace
+    assert result.any? { |line| line.include?("`Admin::Author`") }, "Should wrap namespaced entity in backticks"
+    assert result.any? { |line| line.include?("`Post`") && line.include?("`Admin::Author`") }, "Relationship should use backticks for both entities"
+  end
+
+  test "erDiagram should wrap namespaced model names in double quotes" do
+    create_model "Post"
+    create_module_model "Admin::Author", :post => :references do
+      belongs_to :post
+    end
+
+    result = diagram(:mermaid_style => :erdiagram).graph.join("\n")
+
+    assert result.include?("erDiagram")
+    # Double quotes are required for entity names containing ::
+    assert result.include?('"Admin::Author"'), "Should wrap namespaced entity in double quotes, got: #{result}"
+    # Relationship line should also quote the namespaced entity (order may vary)
+    assert result.match?(/("Admin::Author".*--.*Post|Post.*--.*"Admin::Author")/), "Relationship should quote namespaced entity"
+  end
+
+  test "erDiagram should handle multiple namespaced models in relationships" do
+    create_module_model "Admin::User" do
+      has_many :posts, class_name: "Blog::Post"
+    end
+    create_module_model "Blog::Post", :admin_user => :references do
+      belongs_to :admin_user, class_name: "Admin::User"
+    end
+
+    result = diagram(:mermaid_style => :erdiagram).graph.join("\n")
+
+    assert result.include?('"Admin::User"'), "Should quote Admin::User"
+    assert result.include?('"Blog::Post"'), "Should quote Blog::Post"
+  end
+
+  test "erDiagram should quote namespaced entities in specialization relationships" do
+    create_model "Vehicle", :type => :string
+    # Create a namespaced subclass (STI)
+    create_module_model "Transport::Car", Vehicle
+
+    # STI requires inheritance: true option
+    result = diagram(:mermaid_style => :erdiagram, :inheritance => true).graph.join("\n")
+
+    # The specialization relationship should quote the namespaced entity
+    assert result.include?('"Transport::Car"'), "Should quote namespaced specialized entity"
+    # Verify the specialization relationship line also quotes it
+    assert result.match?(/Vehicle.*--.*"Transport::Car"/), "Specialization relationship should quote namespaced entity"
+  end
 end
