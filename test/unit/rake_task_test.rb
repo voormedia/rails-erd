@@ -15,7 +15,7 @@ class RakeTaskTest < ActiveSupport::TestCase
   end
 
   def teardown
-    FileUtils.rm "erd.dot" rescue nil
+    FileUtils.rm Dir["erd*.*"] rescue nil
   end
 
   define_method :create_app do
