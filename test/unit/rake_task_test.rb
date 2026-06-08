@@ -14,10 +14,6 @@ class RakeTaskTest < ActiveSupport::TestCase
     Rake.application.options.silent = true
   end
 
-  def teardown
-    FileUtils.rm Dir["erd*.*"] rescue nil
-  end
-
   define_method :create_app do
     Object::Quux = Module.new
     Object::Quux::Application = Class.new

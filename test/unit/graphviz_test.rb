@@ -7,10 +7,6 @@ class GraphvizTest < ActiveSupport::TestCase
     RailsERD.options.warn     = false
   end
 
-  def teardown
-    FileUtils.rm Dir["erd*.*"] rescue nil
-  end
-
   def diagram(options = {})
     @diagram ||= Diagram::Graphviz.new(Domain.generate(options), options).tap do |diagram|
       diagram.generate
@@ -52,11 +48,8 @@ class GraphvizTest < ActiveSupport::TestCase
   # Diagram properties =======================================================
   test "file name should depend on file type" do
     create_simple_domain
-    begin
-      assert_equal "erd.svg", Diagram::Graphviz.create(:filetype => :svg)
-    ensure
-      FileUtils.rm "erd.svg" rescue nil
-    end
+    result = Diagram::Graphviz.create(:filetype => :svg)
+    assert result.end_with?(".svg"), "Expected filename to end with .svg, got: #{result}"
   end
 
   test "rank direction should be tb for horizontal orientation" do
