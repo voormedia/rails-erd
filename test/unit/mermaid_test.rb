@@ -8,10 +8,6 @@ class MermaidTest < ActiveSupport::TestCase
     RailsERD.options.mermaid_style = :classdiagram
   end
 
-  def teardown
-    FileUtils.rm Dir["erd*.*"] rescue nil
-  end
-
   def diagram(options = {})
     @diagram ||= Diagram::Mermaid.new(Domain.generate(options), options).tap do |diagram|
       diagram.generate
@@ -27,13 +23,10 @@ class MermaidTest < ActiveSupport::TestCase
   end
 
   # Diagram properties =======================================================
-  test "file name should be mmd" do
+  test "file name should have mmd extension" do
     create_simple_domain
-    begin
-      assert_equal "erd.mmd", Diagram::Mermaid.create
-    ensure
-      FileUtils.rm "erd.mmd" rescue nil
-    end
+    result = Diagram::Mermaid.create
+    assert result.end_with?(".mmd"), "Expected filename to end with .mmd, got: #{result}"
   end
 
   test "direction should be top to bottom by default" do

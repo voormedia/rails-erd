@@ -2,6 +2,7 @@ require "rubygems"
 require "bundler/setup"
 require 'pry'
 require 'pry-nav'
+require 'tmpdir'
 
 require "active_record"
 
@@ -176,6 +177,9 @@ class ActiveSupport::TestCase
       File.expand_path("../../examples/erdconfig.not_exists", __FILE__)
 
     RailsERD.options = RailsERD.default_options.merge(Config.load)
+
+    # Use temp directory for test output to avoid polluting the project root
+    RailsERD.options.filename = File.join(Dir.tmpdir, "rails_erd_test_erd")
   end
 
   def name_to_object_symbol_pairs(name)
