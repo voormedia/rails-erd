@@ -1,3 +1,13 @@
+2.0.1
+-----
+
+### Bug Fixes
+* Fix mermaid syntax errors for namespaced class names (#450, #451)
+* Fix test helper to correctly create namespaced models (#451)
+
+### Internal
+* Use temp directory for test output files (#453)
+
 2.0.0
 -----
 
