@@ -210,11 +210,13 @@ module RailsERD
       excluded_names = [options.exclude].flatten.map(&:to_sym)
 
       # Suppress warning if either the source model or target model is excluded
-      excluded_names.include?(association.active_record.name.to_sym) ||
-        (association.klass.name && excluded_names.include?(association.klass.name.to_sym))
+      return true if excluded_names.include?(association.active_record.name.to_sym)
+
+      target_name = association.options[:polymorphic] ? association.class_name : association.klass.name
+      target_name && excluded_names.include?(target_name.to_sym)
     rescue NameError
-      # If we can't determine the target class, check only the source model
-      excluded_names.include?(association.active_record.name.to_sym)
+      # If we can't determine the target class, the source model was already checked above
+      false
     end
 
     def check_polymorphic_association_validity(association)
