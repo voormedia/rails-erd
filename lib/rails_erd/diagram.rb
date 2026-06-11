@@ -55,6 +55,14 @@ module RailsERD
   # attributes:: Selects which attributes to display. Can be any combination of
   #              +:content+, +:primary_keys+, +:foreign_keys+, +:timestamps+, or
   #              +:inheritance+.
+  # exclude_attributes:: Hides attributes on a per-model basis, without affecting
+  #                      other models. Accepts a hash that maps model names to
+  #                      either +true+ (hide all attributes for that model) or a
+  #                      list of attribute names to hide. From the command line it
+  #                      can also be given as a comma separated string where each
+  #                      entry is either +Model+ (hide all attributes) or
+  #                      +Model.attribute+ (hide a single attribute), for example
+  #                      <tt>exclude_attributes="BigTable,User.password_digest"</tt>.
   # disconnected:: Set to +false+ to exclude entities that are not connected to other
   #                entities. Defaults to +false+.
   # indirect:: Set to +false+ to exclude relationships that are indirect.
@@ -74,6 +82,38 @@ module RailsERD
       # the domain generation and the diagram generation.
       def create(options = {})
         new(Domain.generate(options), options).create
+      end
+
+      # Canonicalises the +exclude_attributes+ option into a hash that maps
+      # model names (as strings) to either +true+ (hide all attributes) or an
+      # array of attribute names to hide. Accepts several input shapes:
+      #
+      #   * a hash, e.g. <tt>{ "BigTable" => true, "User" => ["password_digest"] }</tt>
+      #     (values may be +true+/+"all"+ to hide every attribute, +false+/+nil+
+      #     to hide none, or a comma separated string / array of names);
+      #   * a string or array of <tt>Model</tt> / <tt>Model.attribute</tt>
+      #     entries, e.g. <tt>"BigTable,User.password_digest"</tt>.
+      def normalize_exclude_attributes(value)
+        return {} if value.nil? || value == false
+
+        if value.is_a?(Hash)
+          value.each_with_object({}) do |(model, attrs), result|
+            result[model.to_s] = normalize_exclude_attribute_value(attrs)
+          end
+        else
+          entries = Array(value).flat_map { |entry| entry.to_s.split(",") }
+          entries.each_with_object({}) do |entry, result|
+            model, attribute = entry.split(".", 2)
+            model = model.to_s.strip
+            next if model.empty?
+
+            if attribute.nil?
+              result[model] = true
+            elsif result[model] != true
+              (result[model] ||= []) << attribute.strip
+            end
+          end
+        end
       end
 
       protected
@@ -102,6 +142,16 @@ module RailsERD
 
       def callbacks
         @callbacks ||= Hash.new { proc {} }
+      end
+
+      def normalize_exclude_attribute_value(attrs)
+        case attrs
+        when true then true
+        when false, nil then []
+        when "all", :all, "true" then true
+        else
+          Array(attrs).flat_map { |attr| attr.to_s.split(",") }.map(&:strip).reject(&:empty?)
+        end
       end
     end
 
@@ -205,11 +255,29 @@ module RailsERD
     end
 
     def filtered_attributes(entity)
+      excluded = excluded_attributes_for(entity)
+      return [] if excluded == :all
+
       entity.attributes.reject { |attribute|
+        # Hide attributes excluded for this specific model.
+        excluded.include?(attribute.name) or
         # Select attributes that satisfy the conditions in the :attributes option.
         !options.attributes or entity.specialized? or
         [*options.attributes].none? { |type| attribute.send(:"#{type.to_s.chomp('s')}?") }
       }
+    end
+
+    # Returns the attribute exclusions configured for the given entity through
+    # the +exclude_attributes+ option. Returns +:all+ when every attribute
+    # should be hidden, or an array of attribute names otherwise.
+    def excluded_attributes_for(entity)
+      spec = normalized_exclude_attributes[entity.name]
+      return :all if spec == true
+      Array(spec)
+    end
+
+    def normalized_exclude_attributes
+      @normalized_exclude_attributes ||= self.class.normalize_exclude_attributes(options.exclude_attributes)
     end
 
     def warn(message)

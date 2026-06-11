@@ -70,11 +70,38 @@ sort: true
 warn: true
 title: true
 exclude: null
+exclude_attributes: null
 only: null
 only_recursion_depth: null
 prepend_primary: false
 cluster: false
 splines: spline
+```
+
+### Hiding attributes for specific models
+
+While `attributes: false` hides attributes for *every* model, `exclude_attributes`
+lets you hide attributes for individual models without affecting the others. Map a
+model name to `true` to hide all of its attributes, or to a list of attribute names
+to hide only those:
+
+```yaml
+exclude_attributes:
+  BigTable: true            # hide all attributes for BigTable
+  User:                     # hide only these attributes for User
+    - password_digest
+    - remember_token
+```
+
+From the command line, pass a comma separated list where each entry is either
+`Model` (hide all of its attributes) or `Model.attribute` (hide a single one):
+
+```bash
+# rake task (bare key=value)
+bundle exec rake erd exclude_attributes="BigTable,User.password_digest,User.remember_token"
+
+# erd binary (flags require the -- prefix)
+bundle exec erd --exclude_attributes="BigTable,User.password_digest,User.remember_token"
 ```
 
 You can also customize fonts (useful if the defaults aren't available on your system):

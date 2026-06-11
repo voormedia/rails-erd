@@ -55,6 +55,7 @@ module RailsERD
         :warn, true,
         :title, true,
         :exclude, nil,
+        :exclude_attributes, nil,
         :only, nil,
         :only_recursion_depth, nil,
         :prepend_primary, false,

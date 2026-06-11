@@ -122,6 +122,17 @@ class ConfigTest < ActiveSupport::TestCase
     assert_equal [:content, :primary_keys], normalize_value(:attributes, ["content", "primary_keys"])
   end
 
+  test "normalize_value should canonicalize a hash when key is :exclude_attributes." do
+    value = { "BigTable" => true, "User" => ["password_digest"] }
+    expected = { "BigTable" => true, "User" => ["password_digest"] }
+    assert_equal expected, normalize_value(:exclude_attributes, value)
+  end
+
+  test "normalize_value should parse a string when key is :exclude_attributes." do
+    expected = { "BigTable" => true, "User" => ["password_digest"] }
+    assert_equal expected, normalize_value(:exclude_attributes, "BigTable,User.password_digest")
+  end
+
   test "normalize_value should return hash with symbol keys when key is :fonts and value is a hash." do
     fonts_value = { "normal" => "Arial", "bold" => "Arial Bold", "italic" => "Arial Italic" }
     expected = {:normal => "Arial", :bold => "Arial Bold", :italic => "Arial Italic"}

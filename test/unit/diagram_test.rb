@@ -358,4 +358,34 @@ class DiagramTest < ActiveSupport::TestCase
     Object.const_set :Whisky, Class.new(Beverage)
     assert_equal [], retrieve_attribute_lists(:inheritance => true)[Whisky].map(&:name)
   end
+
+  test "generate should hide all attributes for a model excluded with true" do
+    create_model "Book", :title => :string, :pages => :integer
+    create_model "Author", :name => :string
+    attribute_lists = retrieve_attribute_lists(:exclude_attributes => { "Book" => true })
+    assert_equal [], attribute_lists[Book].map(&:name)
+    assert_equal %w{name}, attribute_lists[Author].map(&:name)
+  end
+
+  test "generate should hide only listed attributes for a model" do
+    create_model "Book", :title => :string, :subtitle => :string, :pages => :integer
+    attribute_lists = retrieve_attribute_lists(:exclude_attributes => { "Book" => ["subtitle"] })
+    assert_equal %w{pages title}, attribute_lists[Book].map(&:name).sort
+  end
+
+  test "generate should hide attributes for the listed model only" do
+    create_model "Book", :title => :string
+    create_model "Author", :name => :string
+    attribute_lists = retrieve_attribute_lists(:exclude_attributes => { "Book" => ["title"] })
+    assert_equal [], attribute_lists[Book].map(&:name)
+    assert_equal %w{name}, attribute_lists[Author].map(&:name)
+  end
+
+  test "generate should accept exclude_attributes as a string" do
+    create_model "Book", :title => :string, :subtitle => :string
+    create_model "Author", :name => :string
+    attribute_lists = retrieve_attribute_lists(:exclude_attributes => "Book.subtitle,Author")
+    assert_equal %w{title}, attribute_lists[Book].map(&:name)
+    assert_equal [], attribute_lists[Author].map(&:name)
+  end
 end
