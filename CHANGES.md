@@ -1,3 +1,9 @@
+Unreleased
+----------
+
+### Features
+* Add `exclude_attributes` option to hide attributes on a per-model basis (#421)
+
 2.0.1
 -----
 

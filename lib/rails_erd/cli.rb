@@ -72,6 +72,11 @@ Choice.options do
     desc "Filter to exclude listed models in diagram."
   end
 
+  option :exclude_attributes do
+    long "--exclude_attributes=MODEL[.ATTRIBUTE],..."
+    desc "Hide attributes per model. Use Model to hide all its attributes or Model.attribute to hide one, e.g. BigTable,User.password_digest."
+  end
+
   option :sort do
     long "--sort=BOOLEAN"
     desc "Sort attribute list alphabetically"
