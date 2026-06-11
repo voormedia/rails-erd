@@ -97,7 +97,11 @@ From the command line, pass a comma separated list where each entry is either
 `Model` (hide all of its attributes) or `Model.attribute` (hide a single one):
 
 ```bash
-bundle exec erd exclude_attributes="BigTable,User.password_digest,User.remember_token"
+# rake task (bare key=value)
+bundle exec rake erd exclude_attributes="BigTable,User.password_digest,User.remember_token"
+
+# erd binary (flags require the -- prefix)
+bundle exec erd --exclude_attributes="BigTable,User.password_digest,User.remember_token"
 ```
 
 You can also customize fonts (useful if the defaults aren't available on your system):
