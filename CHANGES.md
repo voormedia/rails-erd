@@ -1,8 +1,11 @@
-Unreleased
-----------
+2.0.2
+-----
 
 ### Features
-* Add `exclude_attributes` option to hide attributes on a per-model basis (#421)
+* Add `exclude_attributes` option to hide attributes on a per-model basis (#421, #457)
+
+### Bug Fixes
+* Fix crash when using `exclude` option with polymorphic associations on Rails 8 (#454, #455, #456)
 
 2.0.1
 -----
