@@ -255,6 +255,19 @@ class DomainTest < ActiveSupport::TestCase
     assert_match(/polymorphic interface FooBar does not exist/, output)
   end
 
+  test "relationships should not crash when exclude is present and a polymorphic association's interface does not exist" do
+    create_model "Foo" do
+      has_many :bars, :as => :foo
+    end
+    create_model "Bar", :foobar => :references do
+      belongs_to :foo_bar, :polymorphic => true
+    end
+    output = collect_stdout do
+      Domain.generate(:exclude => ["Qux"]).relationships
+    end
+    assert_match(/polymorphic interface FooBar does not exist/, output)
+  end
+
   test "relationships should not warn when a bad association is encountered if warnings are disabled" do
     create_model "Foo" do
       has_many :flabs
