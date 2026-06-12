@@ -302,6 +302,21 @@ class DiagramTest < ActiveSupport::TestCase
       :polymorphism => true).map { |s| s.specialized.name }
   end
 
+  test "generate should not yield specializations whose entity is not part of the domain" do
+    # An abstract parent whose child model has no table (e.g. ActionMailbox::Record
+    # with a tableless ActionMailbox::InboundEmail): the child is excluded from the
+    # domain, so the specialization resolves to a nameless Null entity. It must not
+    # be yielded, otherwise generators emit an edge to a nameless entity (which is
+    # invalid Mermaid output).
+    Object.const_set "GhostRecord", Class.new(ActiveRecord::Base) { self.abstract_class = true }
+    Object.const_set "GhostThing", Class.new(GhostRecord)
+
+    specializations = retrieve_specializations(:inheritance => true, :polymorphism => true)
+    assert_equal [], specializations.select { |s|
+      s.generalized.name.to_s.empty? || s.specialized.name.to_s.empty?
+    }
+  end
+
   # Attribute filtering ======================================================
   test "generate should yield content attributes by default" do
     create_model "Book", :title => :string, :created_at => :datetime, :author => :references do
