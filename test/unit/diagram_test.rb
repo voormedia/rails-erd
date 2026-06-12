@@ -388,4 +388,27 @@ class DiagramTest < ActiveSupport::TestCase
     assert_equal %w{title}, attribute_lists[Book].map(&:name)
     assert_equal [], attribute_lists[Author].map(&:name)
   end
+
+  test "normalize_exclude_attributes should split namespaced models on the first dot only" do
+    assert_equal({ "Admin::User" => ["password_digest"] },
+      Diagram.normalize_exclude_attributes("Admin::User.password_digest"))
+  end
+
+  test "normalize_exclude_attributes should treat a bare namespaced model as hide all" do
+    assert_equal({ "Admin::User" => true },
+      Diagram.normalize_exclude_attributes("Admin::User"))
+  end
+
+  test "normalize_exclude_attributes should return an empty hash for nil" do
+    assert_equal({}, Diagram.normalize_exclude_attributes(nil))
+  end
+
+  test "normalize_exclude_attributes should return an empty hash for false" do
+    assert_equal({}, Diagram.normalize_exclude_attributes(false))
+  end
+
+  test "normalize_exclude_attributes should ignore blank entries in a string" do
+    assert_equal({ "Book" => true },
+      Diagram.normalize_exclude_attributes("Book, ,"))
+  end
 end
