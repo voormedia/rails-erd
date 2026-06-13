@@ -9,7 +9,7 @@ Rake::TestTask.new do |test|
 end
 
 YARD::Rake::YardocTask.new do |yard|
-  yard.files = ["lib/**/*.rb", "-", "LICENSE", "CHANGES.md"]
+  yard.files = ["lib/**/*.rb", "-", "LICENSE.md", "CHANGES.md"]
 end
 
 desc "Generate diagrams for bundled examples"
