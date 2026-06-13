@@ -250,7 +250,13 @@ module RailsERD
     def filtered_specializations
       @domain.specializations.reject { |specialization|
         !options.inheritance && specialization.inheritance? or
-        !options.polymorphism && specialization.polymorphic?
+        !options.polymorphism && specialization.polymorphic? or
+        # Drop specializations whose generalized or specialized entity is not
+        # part of the rendered domain (e.g. an abstract parent whose child model
+        # has no table). These resolve to a Null entity with a blank name and
+        # would otherwise produce an edge to a nameless entity (invalid output).
+        specialization.generalized.name.to_s.empty? or
+        specialization.specialized.name.to_s.empty?
       }
     end
 
