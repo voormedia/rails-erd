@@ -258,12 +258,14 @@ module RailsERD
       excluded = excluded_attributes_for(entity)
       return [] if excluded == :all
 
-      entity.attributes.reject { |attribute|
+      entity.attributes.select { |attribute|
         # Hide attributes excluded for this specific model.
-        excluded.include?(attribute.name) or
-        # Select attributes that satisfy the conditions in the :attributes option.
-        !options.attributes or entity.specialized? or
-        [*options.attributes].none? { |type| attribute.send(:"#{type.to_s.chomp('s')}?") }
+        next false if excluded.include?(attribute.name)
+        # Hide every attribute when the :attributes option is off or the entity
+        # is specialized (its attributes are shown on the parent instead).
+        next false if !options.attributes || entity.specialized?
+        # Otherwise keep only attributes matching the requested :attributes types.
+        [*options.attributes].any? { |type| attribute.send(:"#{type.to_s.chomp('s')}?") }
       }
     end
 
