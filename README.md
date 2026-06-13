@@ -43,7 +43,7 @@ This generates a Mermaid diagram (`erd.mmd`) by default. Mermaid diagrams render
 
 * Add `gem 'ruby-graphviz'` to your Gemfile
 
-* Run `bundle exec erd generator=graphviz filetype=pdf`
+* Run `bundle exec erd --generator=graphviz --filetype=pdf`
 
 ### Configuration
 
@@ -122,7 +122,7 @@ filename: docs/erd
 Or via command line:
 
 ```bash
-bundle exec erd filename="docs/erd"
+bundle exec erd --filename="docs/erd"
 ```
 
 Mermaid output (default)
@@ -133,7 +133,7 @@ Rails ERD generates [Mermaid](https://mermaid.js.org/) diagrams by default. Merm
 By default, Mermaid output uses `erDiagram` syntax with crow's foot notation, PK/FK markers, and proper cardinality. You can switch to `classDiagram` syntax if preferred:
 
 ```bash
-bundle exec erd mermaid_style=classdiagram
+bundle exec erd --mermaid_style=classdiagram
 ```
 
 Or in your `.erdconfig`:
@@ -164,7 +164,7 @@ Graphviz output
 For PDF, PNG, or SVG output, you can use the Graphviz generator:
 
 ```bash
-bundle exec erd generator=graphviz filetype=pdf
+bundle exec erd --generator=graphviz --filetype=pdf
 ```
 
 This requires:
