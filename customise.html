@@ -25,6 +25,24 @@ Continue to read for an overview of all supported options.
 
 The following output options are available in Rails ERD.
 <dl>
+  <dt><pre>generator              mermaid | graphviz</pre></dt>
+  <dd>
+    Selects the diagram generator. The <tt>mermaid</tt> generator (the default)
+    produces text-based <a href="https://mermaid.js.org/">Mermaid</a> diagrams that
+    render natively on GitHub and GitLab, with no external dependencies. The
+    <tt>graphviz</tt> generator produces PDF/PNG/SVG output and requires the
+    <tt>ruby-graphviz</tt> gem and a Graphviz installation.
+    Default value: <tt>mermaid</tt>
+  </dd>
+
+  <dt><pre>mermaid_style          erdiagram | classdiagram</pre></dt>
+  <dd>
+    Only applies to the Mermaid generator. The <tt>erdiagram</tt> style (the
+    default) uses Mermaid's <tt>erDiagram</tt> syntax with crow's foot notation
+    and PK/FK markers. Set to <tt>classdiagram</tt> to use <tt>classDiagram</tt>
+    syntax instead. Default value: <tt>erdiagram</tt>
+  </dd>
+
   <dt><pre>attributes             &lt;type,...&gt; | false</pre></dt>
   <dd>
     Specifies which attributes to include in the diagram output. This can be any
@@ -50,25 +68,24 @@ The following output options are available in Rails ERD.
   <dt><pre>filename               &lt;string&gt;</pre></dt>
   <dd>
     The file basename of the generated diagram. Together with the file type, this
-    will determine the file name of the output. Default value: <tt>ERD</tt>
+    will determine the file name of the output. Default value: <tt>erd</tt>
   </dd>
 
-  <dt><pre>filetype               pdf | dot | ...</pre></dt>
+  <dt><pre>filetype               mmd | pdf | png | svg | dot | ...</pre></dt>
   <dd>
-    The file type of the generated diagram. PDF output is strongly recommended,
-    other formats may render significantly worse. The available formats depend
-    on your installation of Graphviz. If you set the file type to <tt>dot</tt>,
-    raw Graphviz instructions are saved in <tt>dot</tt> format. This does not
-    require Graphviz to be installed. Default value: <tt>pdf</tt>
+    The file type of the generated diagram. With the default Mermaid generator
+    this is <tt>mmd</tt> (a Mermaid text file). With the Graphviz generator, PDF
+    output is recommended; the available formats depend on your installation of
+    Graphviz. If you set the file type to <tt>dot</tt>, raw Graphviz instructions
+    are saved in <tt>dot</tt> format. Default value: <tt>mmd</tt>
   </dd>
 
   <dt><pre>indirect               true | false</pre></dt>
   <dd>
     Specifies whether or not to display relationships that are indirect.
     Indirect relationships are defined in Active Record by
-    <tt>has_many :through</tt> associations. Older versions of Graphviz may
-    have trouble drawing diagrams with indirect relationships.
-    Default value: <tt>false</tt>
+    <tt>has_many :through</tt> associations.
+    Default value: <tt>true</tt>
   </dd>
 
   <dt><pre>inheritance            true | false</pre></dt>
@@ -140,8 +157,41 @@ The following output options are available in Rails ERD.
   <dt><pre>exclude                &lt;string&gt;</pre></dt>
   <dd>
     Exclude specified models. Together with only, this will allow to filter out
-    models on your diagram. Default value: <tt>nil</tt>. Example:
-    <tt>exclude="User,Role"</tt>
+    models on your diagram. Models are matched by exact name.
+    Default value: <tt>nil</tt>. Example: <tt>exclude="User,Role"</tt>
+  </dd>
+
+  <dt><pre>only_recursion_depth   &lt;integer&gt;</pre></dt>
+  <dd>
+    When used with <tt>only</tt>, also includes models within this many
+    relationship "hops" of the listed models, instead of only the listed models
+    themselves. Useful for focusing a diagram on one part of a large domain.
+    Default value: <tt>nil</tt> (no recursion).
+  </dd>
+
+  <dt><pre>exclude_attributes     &lt;hash&gt; | &lt;string&gt;</pre></dt>
+  <dd>
+    Hides attributes on a <strong>per-model</strong> basis (unlike
+    <tt>attributes: false</tt>, which hides them for every model). Map a model
+    name to <tt>true</tt> to hide all of its attributes, or to a list of attribute
+    names to hide only those. From the command line, pass a comma separated list
+    where each entry is either <tt>Model</tt> (hide all) or <tt>Model.attribute</tt>
+    (hide one). Default value: <tt>nil</tt>. Example:
+    <tt>exclude_attributes="BigTable,User.password_digest"</tt>
+  </dd>
+
+  <dt><pre>prepend_primary        true | false</pre></dt>
+  <dd>
+    When enabled, lists the primary key attribute first within each entity,
+    instead of in alphabetical order with the other attributes.
+    Default value: <tt>false</tt>
+  </dd>
+
+  <dt><pre>cluster                true | false</pre></dt>
+  <dd>
+    <em>Graphviz generator only.</em> Groups models that share a namespace into
+    visual sub-clusters, which can make large, namespaced domains easier to read.
+    Default value: <tt>false</tt>
   </dd>
 
 </dl>
