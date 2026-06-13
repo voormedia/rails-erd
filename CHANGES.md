@@ -1,3 +1,13 @@
+Unreleased
+----------
+
+### Bug Fixes
+* Fix unparseable Mermaid output when `polymorphism` is enabled and an abstract parent has a tableless child (#459, #463)
+
+### Internal
+* Restructure `filtered_attributes` for readability and add edge-case tests for `exclude_attributes` normalization (#458)
+* Fix README to show the correct command-line flag syntax for ERD generator options (#461)
+
 2.0.2
 -----
 
