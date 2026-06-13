@@ -7,6 +7,9 @@ Unreleased
 ### Internal
 * Restructure `filtered_attributes` for readability and add edge-case tests for `exclude_attributes` normalization (#458)
 * Fix README to show the correct command-line flag syntax for ERD generator options (#461)
+* Add a native Mermaid preview diagram to the README (#466)
+* Fix stale `LICENSE`/`CHANGES.rdoc` references in the YARD task and gemspec so the license and changelog are documented and packaged (#469)
+* Update LICENSE copyright year to 2026 (#468)
 
 2.0.2
 -----
