@@ -9,7 +9,7 @@ Choice.options do
 
   option :generator do
     long "--generator=Generator"
-    desc "Generator to use (mermaid or graphviz). Defaults to mermaid."
+    desc "Generator to use (mermaid, graphviz, or tbls). Defaults to mermaid."
   end
 
   option :mermaid_style do
@@ -193,10 +193,10 @@ module RailsERD
     def initialize(path, options)
       @path, @options = path, options
       generator = options[:generator] || RailsERD.options[:generator]
-      if generator == :mermaid
-        require "rails_erd/diagram/mermaid"
-      else
-        require "rails_erd/diagram/graphviz"
+      case generator
+      when :mermaid then require "rails_erd/diagram/mermaid"
+      when :tbls    then require "rails_erd/diagram/tbls"
+      else               require "rails_erd/diagram/graphviz"
       end
     end
 
@@ -236,10 +236,10 @@ module RailsERD
 
     def generator
       generator_type = options[:generator] || RailsERD.options[:generator]
-      if generator_type == :mermaid
-        RailsERD::Diagram::Mermaid
-      else
-        RailsERD::Diagram::Graphviz
+      case generator_type
+      when :mermaid then RailsERD::Diagram::Mermaid
+      when :tbls    then RailsERD::Diagram::Tbls
+      else               RailsERD::Diagram::Graphviz
       end
     end
 
