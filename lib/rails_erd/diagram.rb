@@ -231,8 +231,7 @@ module RailsERD
 
     def filtered_entities
       @domain.entities.reject { |entity|
-        options.exclude.present? && [options.exclude].flatten.map(&:to_sym).include?(entity.name.to_sym) or
-        options[:only].present? && entity.model && ![options[:only]].flatten.map(&:to_sym).include?(entity.name.to_sym) or
+        excluded_by_filter?(entity) or
         !options.inheritance && entity.specialized? or
         !options.polymorphism && entity.generalized? or
         !options.disconnected && entity.disconnected?
@@ -243,8 +242,20 @@ module RailsERD
 
     def filtered_relationships
       @domain.relationships.reject { |relationship|
-        !options.indirect && relationship.indirect?
+        (!options.indirect && relationship.indirect?) ||
+          # Drop relationships to a model removed by :only/:exclude, otherwise the filtered-out
+          # model leaks back in: Graphviz skips such edges implicitly (it only draws an edge when
+          # both nodes exist) but Mermaid emits every relationship and renders any named entity.
+          excluded_by_filter?(relationship.source) ||
+          excluded_by_filter?(relationship.destination)
       }
+    end
+
+    # Whether the entity was removed from the diagram by the :only or :exclude option.
+    # Used to filter both entities and the relationships that touch them.
+    def excluded_by_filter?(entity)
+      (options.exclude.present? && [options.exclude].flatten.map(&:to_sym).include?(entity.name.to_sym)) ||
+        (options[:only].present? && entity.model && ![options[:only]].flatten.map(&:to_sym).include?(entity.name.to_sym))
     end
 
     def filtered_specializations
