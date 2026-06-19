@@ -4,6 +4,7 @@ Unreleased
 ### Bug Fixes
 * Fix unparseable Mermaid output when `polymorphism` is enabled and an abstract parent has a tableless child (#459, #463)
 * Fix `only`/`exclude` not filtering relationships, so filtered-out models no longer leak back into Mermaid diagrams as phantom nodes (#472)
+* Process models in a stable order so relationship order and source/destination direction are deterministic across runs, avoiding churn in generated diagrams committed to version control (#475)
 
 ### Internal
 * Restructure `filtered_attributes` for readability and add edge-case tests for `exclude_attributes` normalization (#458)
