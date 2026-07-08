@@ -165,6 +165,32 @@ class DiagramTest < ActiveSupport::TestCase
     assert_equal [Author, Editor], retrieve_entities(:only => ['Author', 'Editor']).map(&:model)
   end
 
+  test "generate should exclude relationships whose endpoints were removed by :only" do
+    create_model "Author"
+    create_model "Book", :author => :references do
+      belongs_to :author
+      has_many :reviews
+    end
+    create_model "Review", :book => :references do
+      belongs_to :book
+    end
+    relationships = retrieve_relationships(:only => [:Author, :Book])
+    assert_equal [Set[Author, Book]], relationships.map { |r| Set[r.source.model, r.destination.model] }
+  end
+
+  test "generate should exclude relationships to an excluded entity" do
+    create_model "Author"
+    create_model "Book", :author => :references do
+      belongs_to :author
+      has_many :reviews
+    end
+    create_model "Review", :book => :references do
+      belongs_to :book
+    end
+    relationships = retrieve_relationships(:exclude => [:Review])
+    assert_equal [Set[Author, Book]], relationships.map { |r| Set[r.source.model, r.destination.model] }
+  end
+
   test "generate should filter disconnected entities if disconnected is false" do
     create_model "Book", :author => :references do
       belongs_to :author
