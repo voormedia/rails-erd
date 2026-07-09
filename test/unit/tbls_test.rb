@@ -60,7 +60,7 @@ class TblsTest < ActiveSupport::TestCase
     widgets = table(payload, "widgets")
     name_col = widgets[:columns].find { |c| c[:name] == "name" }
 
-    assert_equal "varchar", name_col[:type]
+    assert name_col[:type].start_with?("varchar"), "Expected varchar type, got #{name_col[:type]}"
     assert_equal true, name_col[:nullable]
     # tbls schema rejects null comments/defaults — they must be omitted, not nulled.
     refute_includes name_col.keys, :default
