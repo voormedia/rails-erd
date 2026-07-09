@@ -1,7 +1,11 @@
 Unreleased
 ----------
 
+### New Features
+* Add tbls JSON generator for integration with Liam ERD and other tbls-compatible tools (#471, #474)
+
 ### Bug Fixes
+* Invalid generator option now falls back to mermaid (the documented default) instead of graphviz
 * Fix unparseable Mermaid output when `polymorphism` is enabled and an abstract parent has a tableless child (#459, #463)
 
 ### Internal
