@@ -194,9 +194,10 @@ module RailsERD
       @path, @options = path, options
       generator = options[:generator] || RailsERD.options[:generator]
       case generator
-      when :mermaid then require "rails_erd/diagram/mermaid"
-      when :tbls    then require "rails_erd/diagram/tbls"
-      else               require "rails_erd/diagram/graphviz"
+      when :mermaid  then require "rails_erd/diagram/mermaid"
+      when :tbls     then require "rails_erd/diagram/tbls"
+      when :graphviz then require "rails_erd/diagram/graphviz"
+      else                require "rails_erd/diagram/mermaid"
       end
     end
 
@@ -237,9 +238,10 @@ module RailsERD
     def generator
       generator_type = options[:generator] || RailsERD.options[:generator]
       case generator_type
-      when :mermaid then RailsERD::Diagram::Mermaid
-      when :tbls    then RailsERD::Diagram::Tbls
-      else               RailsERD::Diagram::Graphviz
+      when :mermaid  then RailsERD::Diagram::Mermaid
+      when :tbls     then RailsERD::Diagram::Tbls
+      when :graphviz then RailsERD::Diagram::Graphviz
+      else                RailsERD::Diagram::Mermaid
       end
     end
 
