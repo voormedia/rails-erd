@@ -187,7 +187,39 @@ module RailsERD
     def excluded_model?(model)
       return false unless options.exclude.present?
 
-      [options.exclude].flatten.map(&:to_sym).include?(model.name.to_sym)
+      patterns = [options.exclude].flatten
+      patterns.any? { |pattern| matches_pattern?(pattern, model.name) }
+    end
+
+    # Matches a name against a pattern. Supports three pattern types:
+    #
+    # - Exact match: "Foo" matches only "Foo"
+    # - Glob pattern: "SolidQueue::*" matches "SolidQueue::Job", etc.
+    # - Regex pattern: "/^Active/" matches "ActiveRecord", "ActiveStorage::Blob"
+    #
+    def matches_pattern?(pattern, name)
+      pattern_str = pattern.to_s
+
+      # Regex pattern: /pattern/ or /pattern/flags
+      #
+      if pattern_str.start_with?("/") && pattern_str =~ %r{\A/(.+)/([imx]*)\z}
+        regex_body = Regexp.last_match(1)
+        flags_str = Regexp.last_match(2)
+        flags = 0
+        flags |= Regexp::IGNORECASE if flags_str.include?("i")
+        flags |= Regexp::MULTILINE if flags_str.include?("m")
+        flags |= Regexp::EXTENDED if flags_str.include?("x")
+        return Regexp.new(regex_body, flags).match?(name.to_s)
+      end
+
+      # Glob pattern: contains *, ?, or [
+      #
+      if pattern_str.include?("*") || pattern_str.include?("?") || pattern_str.include?("[")
+        return File.fnmatch?(pattern_str, name.to_s)
+      end
+
+      # Exact match (backward compatible)
+      pattern_str == name.to_s
     end
 
     def check_association_validity(association)
@@ -207,13 +239,14 @@ module RailsERD
     def excluded_association?(association)
       return false unless options.exclude.present?
 
-      excluded_names = [options.exclude].flatten.map(&:to_sym)
+      patterns = [options.exclude].flatten
 
       # Suppress warning if either the source model or target model is excluded
-      return true if excluded_names.include?(association.active_record.name.to_sym)
+      source_name = association.active_record.name
+      return true if patterns.any? { |pattern| matches_pattern?(pattern, source_name) }
 
       target_name = association.options[:polymorphic] ? association.class_name : association.klass.name
-      target_name && excluded_names.include?(target_name.to_sym)
+      target_name && patterns.any? { |pattern| matches_pattern?(pattern, target_name) }
     rescue NameError
       # If we can't determine the target class, the source model was already checked above
       false

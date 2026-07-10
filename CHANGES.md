@@ -1,6 +1,9 @@
 Unreleased
 ----------
 
+### New Features
+* Add glob and regex pattern support for `exclude` and `only` options, allowing entire namespaces to be filtered with patterns like `"SolidQueue::*"` or `"/^Active/"` (#465)
+
 ### Bug Fixes
 * Fix unparseable Mermaid output when `polymorphism` is enabled and an abstract parent has a tableless child (#459, #463)
 * Fix `only`/`exclude` not filtering relationships, so filtered-out models no longer leak back into Mermaid diagrams as phantom nodes (#472)

@@ -253,9 +253,52 @@ module RailsERD
 
     # Whether the entity was removed from the diagram by the :only or :exclude option.
     # Used to filter both entities and the relationships that touch them.
+    #
     def excluded_by_filter?(entity)
-      (options.exclude.present? && [options.exclude].flatten.map(&:to_sym).include?(entity.name.to_sym)) ||
-        (options[:only].present? && entity.model && ![options[:only]].flatten.map(&:to_sym).include?(entity.name.to_sym))
+      name = entity.name.to_s
+
+      if options.exclude.present?
+        patterns = [options.exclude].flatten
+        return true if patterns.any? { |pattern| matches_pattern?(pattern, name) }
+      end
+
+      if options[:only].present? && entity.model
+        patterns = [options[:only]].flatten
+        return true unless patterns.any? { |pattern| matches_pattern?(pattern, name) }
+      end
+
+      false
+    end
+
+    # Matches a name against a pattern. Supports three pattern types:
+    #
+    # - Exact match: "Foo" matches only "Foo"
+    # - Glob pattern: "SolidQueue::*" matches "SolidQueue::Job", etc.
+    # - Regex pattern: "/^Active/" matches "ActiveRecord", "ActiveStorage::Blob"
+    #
+    def matches_pattern?(pattern, name)
+      pattern_str = pattern.to_s
+
+      # Regex pattern: /pattern/ or /pattern/flags
+      #
+      if pattern_str.start_with?("/") && pattern_str =~ %r{\A/(.+)/([imx]*)\z}
+        regex_body = Regexp.last_match(1)
+        flags_str = Regexp.last_match(2)
+        flags = 0
+        flags |= Regexp::IGNORECASE if flags_str.include?("i")
+        flags |= Regexp::MULTILINE if flags_str.include?("m")
+        flags |= Regexp::EXTENDED if flags_str.include?("x")
+        return Regexp.new(regex_body, flags).match?(name.to_s)
+      end
+
+      # Glob pattern: contains *, ?, or [
+      #
+      if pattern_str.include?("*") || pattern_str.include?("?") || pattern_str.include?("[")
+        return File.fnmatch?(pattern_str, name.to_s)
+      end
+
+      # Exact match (backward compatible)
+      pattern_str == name.to_s
     end
 
     def filtered_specializations
