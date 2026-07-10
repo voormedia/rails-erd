@@ -128,6 +128,7 @@ module RailsERD
                     .reject { |model| tableless_rails_models.include?(model) }
                     .select { |model| check_model_validity(model) }
                     .reject { |model| check_habtm_model(model) }
+                    .sort_by { |model| model.name.to_s }
     end
 
     # Returns Rails model classes defined in the app

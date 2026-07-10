@@ -230,9 +230,9 @@ class MermaidTest < ActiveSupport::TestCase
       "\tclass `Bar`",
       "\tclass `Baz`",
       "\tclass `Foo`",
-      "\t`Foo` --> `Baz`",
       "\t`Foo` --> `Bar`",
-      "\t`Bar` ..> `Baz`"
+      "\t`Bar` ..> `Baz`",
+      "\t`Foo` --> `Baz`"
     ]
 
     assert_equal expected, diagram.graph.uniq
