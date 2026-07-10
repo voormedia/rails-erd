@@ -318,4 +318,91 @@ class DomainTest < ActiveSupport::TestCase
     end
     assert_equal "", output
   end
+
+  # Pattern matching for exclude/only ==========================================
+  test "matches_pattern? should match exact string" do
+    domain = Domain.new([])
+    assert domain.send(:matches_pattern?, "Foo", "Foo")
+    refute domain.send(:matches_pattern?, "Foo", "Bar")
+  end
+
+  test "matches_pattern? should match glob pattern with asterisk" do
+    domain = Domain.new([])
+    assert domain.send(:matches_pattern?, "SolidQueue::*", "SolidQueue::Job")
+    assert domain.send(:matches_pattern?, "SolidQueue::*", "SolidQueue::Process")
+    refute domain.send(:matches_pattern?, "SolidQueue::*", "SolidCache::Entry")
+  end
+
+  test "matches_pattern? should match glob pattern without namespace separator" do
+    domain = Domain.new([])
+    assert domain.send(:matches_pattern?, "ActiveStorage*", "ActiveStorageBlob")
+    assert domain.send(:matches_pattern?, "ActiveStorage*", "ActiveStorage::Blob")
+    refute domain.send(:matches_pattern?, "ActiveStorage*", "ActionMailbox::InboundEmail")
+  end
+
+  test "matches_pattern? should match regex pattern" do
+    domain = Domain.new([])
+    assert domain.send(:matches_pattern?, "/^Active/", "ActiveRecord")
+    assert domain.send(:matches_pattern?, "/^Active/", "ActiveStorage::Blob")
+    refute domain.send(:matches_pattern?, "/^Active/", "SolidQueue::Job")
+  end
+
+  test "matches_pattern? should match regex pattern with flags" do
+    domain = Domain.new([])
+    assert domain.send(:matches_pattern?, "/queue/i", "SolidQueue::Job")
+    refute domain.send(:matches_pattern?, "/queue/", "SolidQueue::Job")
+  end
+
+  test "excluded_model? should match glob patterns" do
+    create_module_model "SolidQueue::Job"
+    create_module_model "SolidQueue::Process"
+    create_model "User"
+
+    domain = Domain.generate(:exclude => ["SolidQueue::*"])
+
+    # excluded_model? returns true for matching patterns
+    assert domain.send(:excluded_model?, SolidQueue::Job)
+    assert domain.send(:excluded_model?, SolidQueue::Process)
+    refute domain.send(:excluded_model?, User)
+  end
+
+  test "excluded_model? should match regex patterns" do
+    create_module_model "SolidQueue::Job"
+    create_model "User"
+
+    domain = Domain.generate(:exclude => ["/^Solid/"])
+    assert domain.send(:excluded_model?, SolidQueue::Job)
+    refute domain.send(:excluded_model?, User)
+  end
+
+  test "excluded_model? should still match exact names for backward compatibility" do
+    create_model "Foo"
+    create_model "Bar"
+
+    domain = Domain.generate(:exclude => ["Foo"])
+    assert domain.send(:excluded_model?, Foo)
+    refute domain.send(:excluded_model?, Bar)
+  end
+
+  test "excluded_association? should match glob patterns for source model" do
+    create_module_model "SolidQueue::Job" do
+      has_many :executions
+    end
+    create_model "User"
+
+    domain = Domain.generate(:exclude => ["SolidQueue::*"], :warn => false)
+    association = SolidQueue::Job.reflect_on_association(:executions)
+    assert domain.send(:excluded_association?, association)
+  end
+
+  test "excluded_association? should match glob patterns for target model" do
+    create_module_model "SolidQueue::Execution"
+    create_model "Task" do
+      has_many :executions, :class_name => "SolidQueue::Execution"
+    end
+
+    domain = Domain.generate(:exclude => ["SolidQueue::*"], :warn => false)
+    association = Task.reflect_on_association(:executions)
+    assert domain.send(:excluded_association?, association)
+  end
 end

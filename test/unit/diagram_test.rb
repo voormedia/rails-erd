@@ -191,6 +191,50 @@ class DiagramTest < ActiveSupport::TestCase
     assert_equal [Set[Author, Book]], relationships.map { |r| Set[r.source.model, r.destination.model] }
   end
 
+  # Pattern matching for exclude/only ==========================================
+  test "generate should filter entities matching glob pattern in exclude" do
+    create_module_model "SolidQueue::Job"
+    create_module_model "SolidQueue::Process"
+    create_model "User"
+    assert_equal [User], retrieve_entities(:exclude => ["SolidQueue::*"]).map(&:model)
+  end
+
+  test "generate should filter entities matching regex pattern in exclude" do
+    create_module_model "SolidQueue::Job"
+    create_model "User"
+    assert_equal [User], retrieve_entities(:exclude => ["/^Solid/"]).map(&:model)
+  end
+
+  test "generate should include only entities matching glob pattern in only" do
+    create_module_model "MyApp::User"
+    create_module_model "MyApp::Post"
+    create_model "SomeOther"
+    entities = retrieve_entities(:only => ["MyApp::*"]).map(&:model)
+    assert_includes entities, MyApp::User
+    assert_includes entities, MyApp::Post
+    refute_includes entities, SomeOther
+  end
+
+  test "generate should include only entities matching regex pattern in only" do
+    create_model "AdminUser"
+    create_model "AdminPost"
+    create_model "GuestUser"
+    entities = retrieve_entities(:only => ["/^Admin/"]).map(&:model)
+    assert_includes entities, AdminUser
+    assert_includes entities, AdminPost
+    refute_includes entities, GuestUser
+  end
+
+  test "generate should exclude relationships when endpoint matches glob pattern" do
+    create_module_model "SolidQueue::Job"
+    create_model "Task", :solid_queue_job => :references do
+      belongs_to :solid_queue_job, :class_name => "SolidQueue::Job"
+    end
+    create_model "User"
+    relationships = retrieve_relationships(:exclude => ["SolidQueue::*"])
+    assert_equal [], relationships
+  end
+
   test "generate should filter disconnected entities if disconnected is false" do
     create_model "Book", :author => :references do
       belongs_to :author

@@ -183,6 +183,59 @@ bundle exec rake erd exclude_attributes="BigTable,User.password_digest,User.reme
 bundle exec erd --exclude_attributes="BigTable,User.password_digest,User.remember_token"
 ```
 
+### Filtering models with exclude and only
+
+Use `exclude` to hide specific models from the diagram, or `only` to show only
+specific models. Both options support three pattern types:
+
+**Exact match** — the model name must match exactly (backward compatible):
+
+```yaml
+exclude:
+  - AdminUser
+  - AuditLog
+```
+
+**Glob patterns** — use `*` to match any characters, `?` for a single character,
+or `[...]` for character classes. This is useful for excluding entire namespaces:
+
+```yaml
+exclude:
+  - "SolidQueue::*"      # all SolidQueue models (13+ tables)
+  - "Blazer::*"          # all Blazer models
+  - "ActiveStorage::*"   # all ActiveStorage models
+  - "Ahoy::*"            # all Ahoy analytics models
+
+only:
+  - "MyApp::*"           # show only models in MyApp namespace
+```
+
+**Regex patterns** — wrap the pattern in `/slashes/` for regular expression
+matching. Supports `i` (case-insensitive), `m` (multiline), and `x` (extended) flags:
+
+```yaml
+exclude:
+  - "/^Active/"          # models starting with "Active"
+  - "/Queue$/i"          # models ending with "Queue" (case-insensitive)
+  - "/(Audit|Log)/"      # models containing "Audit" or "Log"
+```
+
+You can mix pattern types in the same configuration:
+
+```yaml
+exclude:
+  - "SolidQueue::*"      # glob: entire namespace
+  - "/^Active/"          # regex: prefix match
+  - InternalTool         # exact: specific model
+```
+
+**Notes:**
+
+- Patterns with `*` should be quoted in YAML to avoid parsing issues
+- Invalid regex patterns will raise an error — test your patterns first
+- Only `i`, `m`, `x` regex flags are supported; other flags are ignored
+- When both `exclude` and `only` are specified, `only` is applied first, then `exclude`
+
 You can also customize fonts (useful if the defaults aren't available on your system):
 
 ```yaml
