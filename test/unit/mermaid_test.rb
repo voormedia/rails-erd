@@ -437,4 +437,126 @@ class MermaidTest < ActiveSupport::TestCase
     # Verify the specialization relationship line also quotes it
     assert result.match?(/Vehicle.*--.*"Transport::Car"/), "Specialization relationship should quote namespaced entity"
   end
+
+  # Namespace clustering tests (Issue #479) =====================================
+
+  test "classDiagram with cluster should group entities by namespace" do
+    create_model "Post"
+    create_module_model "Admin::Author", :post => :references do
+      belongs_to :post
+    end
+    create_module_model "Admin::Role"
+
+    result = diagram(:cluster => true).graph.join("\n")
+
+    assert result.include?("classDiagram")
+    # Should have namespace block for Admin
+    assert result.include?("namespace Admin {"), "Should have namespace block for Admin"
+    # Author and Role should be inside the Admin namespace
+    assert result.match?(/namespace Admin \{[^}]*class `Author`/m), "Author should be inside Admin namespace"
+    assert result.match?(/namespace Admin \{[^}]*class `Role`/m), "Role should be inside Admin namespace"
+  end
+
+  test "classDiagram with cluster should place entities without namespace outside blocks" do
+    create_model "Post"
+    create_module_model "Admin::Author", :post => :references do
+      belongs_to :post
+    end
+
+    result = diagram(:cluster => true).graph.join("\n")
+
+    # Post should appear before any namespace block
+    post_index = result.index("class `Post`")
+    namespace_index = result.index("namespace Admin {")
+    assert post_index < namespace_index, "Entities without namespace should appear before namespace blocks"
+  end
+
+  test "classDiagram with cluster should handle nested namespaces" do
+    create_model "Post"
+    create_module_model "Admin::Users::Role", :post => :references do
+      belongs_to :post
+    end
+
+    result = diagram(:cluster => true).graph.join("\n")
+
+    # Nested namespace should use dot notation (Admin.Users)
+    assert result.include?("namespace Admin.Users {"), "Should convert :: to . in namespace names"
+    assert result.match?(/namespace Admin\.Users \{[^}]*class `Role`/m), "Role should be inside Admin.Users namespace"
+  end
+
+  test "classDiagram with cluster should render relationships outside namespace blocks" do
+    create_model "Post"
+    create_module_model "Admin::Author", :post => :references do
+      belongs_to :post
+    end
+
+    result = diagram(:cluster => true).graph.join("\n")
+
+    # Relationship should appear after the namespace block closes
+    namespace_close_index = result.index("}")
+    relationship_index = result.index("`Post` --> `Admin::Author`")
+    assert relationship_index > namespace_close_index, "Relationships should appear after namespace blocks"
+  end
+
+  test "erDiagram with cluster should emit warning and render flat" do
+    create_model "Post"
+    create_module_model "Admin::Author", :post => :references do
+      belongs_to :post
+    end
+
+    test_diagram = nil
+
+    warning_output = collect_stdout do
+      domain = Domain.generate
+      test_diagram = Diagram::Mermaid.new(domain, :cluster => true, :mermaid_style => :erdiagram, :warn => true)
+      test_diagram.generate
+    end
+
+    result = test_diagram.graph.join("\n")
+
+    # Should emit warning about clustering not supported
+    assert warning_output.include?("Clustering is not supported"), "Should warn about clustering not supported in erDiagram"
+    # Should still render the diagram (flat, no namespace blocks)
+    assert result.include?("erDiagram")
+    refute result.include?("namespace"), "erDiagram should not have namespace blocks"
+  end
+
+  test "classDiagram with cluster false should not group entities" do
+    create_model "Post"
+    create_module_model "Admin::Author", :post => :references do
+      belongs_to :post
+    end
+
+    result = diagram(:cluster => false).graph.join("\n")
+
+    assert result.include?("classDiagram")
+    # Should NOT have namespace blocks
+    refute result.include?("namespace"), "cluster: false should not create namespace blocks"
+    # Should use full entity names
+    assert result.include?("class `Admin::Author`"), "Should use full entity name without clustering"
+  end
+
+  test "classDiagram with cluster and inheritance should emit entities before specializations" do
+    create_model "Vehicle", :type => :string
+    create_module_model "Transport::Car", Vehicle
+
+    result = diagram(:cluster => true, :inheritance => true).graph.join("\n")
+
+    # Entity class definitions should appear BEFORE specialization lines
+    vehicle_class_index = result.index("class `Vehicle`")
+    polymorphic_index = result.index("<<polymorphic>>")
+    inheritance_index = result.index("<|--")
+
+    assert vehicle_class_index, "Should have Vehicle class definition.\nGot:\n#{result}"
+    assert polymorphic_index, "Should have polymorphic marker.\nGot:\n#{result}"
+    assert inheritance_index, "Should have inheritance relationship.\nGot:\n#{result}"
+
+    # The key assertion: class definitions must come BEFORE specializations
+    assert vehicle_class_index < polymorphic_index,
+      "Class definitions should appear before polymorphic markers.\n" \
+      "Got:\n#{result}"
+    assert vehicle_class_index < inheritance_index,
+      "Class definitions should appear before inheritance relationships.\n" \
+      "Got:\n#{result}"
+  end
 end

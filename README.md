@@ -236,6 +236,43 @@ exclude:
 - Only `i`, `m`, `x` regex flags are supported; other flags are ignored
 - When both `exclude` and `only` are specified, `only` is applied first, then `exclude`
 
+### Grouping models by namespace
+
+Use `cluster: true` to visually group models by their Ruby namespace. This is
+especially useful for large applications with many namespaced models.
+
+**With Graphviz output**, clustering creates subgraph boxes around each namespace:
+
+```bash
+bundle exec erd --generator=graphviz --cluster=true
+```
+
+**With Mermaid `classDiagram` output**, clustering uses Mermaid's native namespace blocks:
+
+```bash
+bundle exec erd --mermaid_style=classdiagram --cluster=true
+```
+
+This produces output like:
+
+```mermaid
+classDiagram
+    namespace Admin {
+        class User
+        class Role
+    }
+    namespace Billing {
+        class Invoice
+        class Payment
+    }
+    User --> Role
+    Invoice --> Payment
+```
+
+**Note:** Clustering is not supported with Mermaid's default `erDiagram` style
+(ER diagrams don't have a namespace concept). If you need clustering with Mermaid,
+use `mermaid_style: classdiagram`.
+
 You can also customize fonts (useful if the defaults aren't available on your system):
 
 ```yaml
