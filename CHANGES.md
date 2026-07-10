@@ -1,16 +1,16 @@
-Unreleased
-----------
+2.1.0
+-----
 
 ### New Features
-* Add `cluster: true` support for Mermaid `classDiagram` output, grouping entities by Ruby namespace into Mermaid `namespace { }` blocks (#479)
-* Add glob and regex pattern support for `exclude` and `only` options, allowing entire namespaces to be filtered with patterns like `"SolidQueue::*"` or `"/^Active/"` (#465)
+* Add `cluster: true` support for Mermaid `classDiagram` output, grouping entities by Ruby namespace into Mermaid `namespace { }` blocks (#479, #480)
+* Add glob and regex pattern support for `exclude` and `only` options, allowing entire namespaces to be filtered with patterns like `"SolidQueue::*"` or `"/^Active/"` (#465, #478)
 * Add tbls JSON generator for integration with Liam ERD and other tbls-compatible tools (#471, #474)
 
 ### Bug Fixes
 * Invalid generator option now falls back to mermaid (the documented default) instead of graphviz
 * Fix unparseable Mermaid output when `polymorphism` is enabled and an abstract parent has a tableless child (#459, #463)
-* Fix `only`/`exclude` not filtering relationships, so filtered-out models no longer leak back into Mermaid diagrams as phantom nodes (#472)
-* Process models in a stable order so relationship order and source/destination direction are deterministic across runs, avoiding churn in generated diagrams committed to version control (#475)
+* Fix `only`/`exclude` not filtering relationships, so filtered-out models no longer leak back into Mermaid diagrams as phantom nodes (#472, #473)
+* Process models in a stable order so relationship order and source/destination direction are deterministic across runs, avoiding churn in generated diagrams committed to version control (#475, #476)
 
 ### Internal
 * Restructure `filtered_attributes` for readability and add edge-case tests for `exclude_attributes` normalization (#458)
