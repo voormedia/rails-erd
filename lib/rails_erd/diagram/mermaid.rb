@@ -15,6 +15,16 @@ module RailsERD
         # Respect orientation option: horizontal = TB (top-down), vertical = LR (left-right)
         direction = (options.orientation.to_s == "vertical") ? "LR" : "TB"
         self.graph << "\tdirection #{direction}"
+
+        # Initialize namespace grouping for clustering
+        @entities_by_namespace = Hash.new { |h, k| h[k] = [] }
+        @clustering_enabled = options[:cluster] && !er_diagram?
+        @clustered_entities_emitted = false
+
+        # Warn if clustering requested with erDiagram (not supported)
+        if options[:cluster] && er_diagram? && options[:warn]
+          warn "Clustering is not supported with erDiagram style. Use mermaid_style: classdiagram instead."
+        end
       end
 
       each_entity do |entity, attributes|
@@ -28,6 +38,12 @@ module RailsERD
           end
           entity_lines << "\t}"
           graph << entity_lines.join("\n")
+        elsif @clustering_enabled
+          # Collect entities by namespace for later emission
+          ns = entity.namespace || ""
+          short_name = entity.namespace ? entity.name.split("::").last : entity.name
+          entity_block = build_class_diagram_entity(short_name, entity.name, attributes)
+          @entities_by_namespace[ns] << entity_block
         else
           graph << "\tclass `#{entity}`"
           attributes.each do |attr|
@@ -37,6 +53,12 @@ module RailsERD
       end
 
       each_specialization do |specialization|
+        # Emit clustered entities before the first specialization (same as relationships)
+        if @clustering_enabled && !@clustered_entities_emitted
+          emit_clustered_entities
+          @clustered_entities_emitted = true
+        end
+
         from, to = specialization.generalized, specialization.specialized
         if er_diagram?
           # erDiagram doesn't have a direct polymorphic notation, use inheritance-like
@@ -48,6 +70,12 @@ module RailsERD
       end
 
       each_relationship do |relationship|
+        # Emit clustered entities before the first relationship
+        if @clustering_enabled && !@clustered_entities_emitted
+          emit_clustered_entities
+          @clustered_entities_emitted = true
+        end
+
         from, to = relationship.source, relationship.destination
         next unless from && to
 
@@ -76,6 +104,12 @@ module RailsERD
 
       save do
         raise "Saving diagram failed!\nOutput directory '#{File.dirname(filename)}' does not exist." unless File.directory?(File.dirname(filename))
+
+        # Emit clustered entities if not already emitted (e.g., no relationships)
+        if @clustering_enabled && !@clustered_entities_emitted
+          emit_clustered_entities
+          @clustered_entities_emitted = true
+        end
 
         File.write(filename.gsub(/\s/,"_"), graph.uniq.join("\n"))
         filename
@@ -157,6 +191,36 @@ module RailsERD
 
       def arrow_tail(relationship)
         relationship.many_to? ? "<" : ""
+      end
+
+      # Build entity lines for classDiagram mode (used in clustering)
+      def build_class_diagram_entity(short_name, full_name, attributes)
+        lines = ["\t\tclass `#{short_name}`"]
+        attributes.each do |attr|
+          lines << "\t\t`#{short_name}` : +#{attr.type} #{attr.name}"
+        end
+        lines
+      end
+
+      # Emit entities grouped by namespace for clustering
+      def emit_clustered_entities
+        # Entities without namespace go first (outside any namespace block)
+        @entities_by_namespace[""].each do |entity_lines|
+          entity_lines.each { |line| graph << line.sub(/^\t\t/, "\t") }
+        end
+
+        # Then emit each namespace block
+        @entities_by_namespace.each do |ns, entity_blocks|
+          next if ns == ""
+
+          # Convert Ruby namespace (Admin::Users) to Mermaid format (Admin.Users)
+          mermaid_ns = ns.gsub("::", ".")
+          graph << "\tnamespace #{mermaid_ns} {"
+          entity_blocks.each do |entity_lines|
+            entity_lines.each { |line| graph << line }
+          end
+          graph << "\t}"
+        end
       end
 
     end

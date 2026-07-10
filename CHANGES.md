@@ -2,6 +2,7 @@ Unreleased
 ----------
 
 ### New Features
+* Add `cluster: true` support for Mermaid `classDiagram` output, grouping entities by Ruby namespace into Mermaid `namespace { }` blocks (#479)
 * Add glob and regex pattern support for `exclude` and `only` options, allowing entire namespaces to be filtered with patterns like `"SolidQueue::*"` or `"/^Active/"` (#465)
 * Add tbls JSON generator for integration with Liam ERD and other tbls-compatible tools (#471, #474)
 
