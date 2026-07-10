@@ -290,6 +290,25 @@ erDiagram
   Organization ||--o{ User : ""
 ```
 
+tbls JSON output
+----------------
+
+Rails ERD can emit a JSON description of your domain in the
+[tbls](https://github.com/k1LoW/tbls) schema format. Unlike a `schema.rb`
+dump, this output captures the relationships Rails ERD derives from
+ActiveRecord — so `belongs_to` associations show up as foreign keys even
+when the database has no FK constraint.
+
+Any tbls-compatible tool can consume the resulting file. For example, to
+render an interactive ERD with [Liam ERD](https://liambx.com):
+
+```bash
+bundle exec erd --generator=tbls
+# writes erd.json
+
+npx @liam-hq/cli erd build --input erd.json --format tbls
+```
+
 Graphviz output
 ---------------
 

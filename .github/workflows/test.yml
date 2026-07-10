@@ -38,7 +38,7 @@ jobs:
       run: |
         sudo apt-get update -qq
         sudo apt-get install -qq graphviz
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby_version }}

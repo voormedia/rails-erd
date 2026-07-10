@@ -151,6 +151,23 @@ class DomainTest < ActiveSupport::TestCase
     assert_equal ["Many", "More"], [relationship.source.name, relationship.destination.name]
   end
 
+  test "relationships should be deterministic regardless of model order" do
+    create_model "Author"
+    create_model "Book", :author => :references do
+      belongs_to :author
+      has_many :reviews
+    end
+    create_model "Review", :book => :references do
+      belongs_to :book
+    end
+    pairs = lambda do |models|
+      Domain.new(models).relationships.collect { |r| [r.source.name, r.destination.name] }
+    end
+    models = [Author, Book, Review]
+    # Order and source/destination direction must not depend on the input model order.
+    assert_equal pairs.call(models), pairs.call(models.reverse)
+  end
+
   # Specialization processing ================================================
   test "specializations should return empty array for empty domain" do
     assert_equal [], Domain.generate.specializations
