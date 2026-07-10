@@ -504,13 +504,15 @@ class MermaidTest < ActiveSupport::TestCase
       belongs_to :post
     end
 
+    test_diagram = nil
+
     warning_output = collect_stdout do
-      RailsERD.options.warn = true
-      @diagram = nil  # Reset memoized diagram
-      diagram(:cluster => true, :mermaid_style => :erdiagram)
+      domain = Domain.generate
+      test_diagram = Diagram::Mermaid.new(domain, :cluster => true, :mermaid_style => :erdiagram, :warn => true)
+      test_diagram.generate
     end
 
-    result = diagram(:cluster => true, :mermaid_style => :erdiagram).graph.join("\n")
+    result = test_diagram.graph.join("\n")
 
     # Should emit warning about clustering not supported
     assert warning_output.include?("Clustering is not supported"), "Should warn about clustering not supported in erDiagram"
