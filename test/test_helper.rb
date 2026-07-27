@@ -1,7 +1,7 @@
 require "rubygems"
 require "bundler/setup"
 require 'pry'
-require 'pry-nav'
+require 'pry-byebug'
 require 'tmpdir'
 
 require "active_record"
