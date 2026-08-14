@@ -1,3 +1,9 @@
+Unreleased
+----------
+
+### Internal
+* Remove unnecessary `ostruct` runtime dependency; replace stale `pry-nav` with `pry-byebug` (#481)
+
 2.1.0
 -----
 
