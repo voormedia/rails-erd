@@ -2,7 +2,7 @@ Unreleased
 ----------
 
 ### Bug Fixes
-* Mermaid no longer draws entities that were filtered out of the diagram: an edge is only emitted when both of its entities were drawn, matching the Graphviz generator (#482)
+* Mermaid no longer draws entities that were filtered out of the diagram: an edge is only emitted when both of its entities were drawn, matching the Graphviz generator (#482, #484)
 
 
 ### Internal
