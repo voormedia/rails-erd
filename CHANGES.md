@@ -1,6 +1,10 @@
 Unreleased
 ----------
 
+### New Features
+* Add `recursive` option (default `true`); set it to `false` to omit self-referential relationships, such as a `parent_id` pointing at the entity's own table (#483, #485)
+
+
 ### Internal
 * Remove unnecessary `ostruct` runtime dependency; replace stale `pry-nav` with `pry-byebug` (#481)
 
