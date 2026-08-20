@@ -1,6 +1,10 @@
 Unreleased
 ----------
 
+### Bug Fixes
+* Mermaid no longer draws entities that were filtered out of the diagram: an edge is only emitted when both of its entities were drawn, matching the Graphviz generator (#482)
+
+
 ### Internal
 * Remove unnecessary `ostruct` runtime dependency; replace stale `pry-nav` with `pry-byebug` (#481)
 
