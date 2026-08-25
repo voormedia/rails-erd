@@ -73,6 +73,11 @@ module RailsERD
       when :only, :exclude
         Array(value).join(",").split(",").map { |v| v.strip }
 
+      # nil | { <string> => [<string>] }
+      when :only_attributes
+        require "rails_erd/diagram"
+        RailsERD::Diagram.normalize_only_attributes(value)
+
       # nil | { <string> => true | [<string>] }
       when :exclude_attributes
         require "rails_erd/diagram"

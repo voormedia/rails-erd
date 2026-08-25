@@ -57,6 +57,7 @@ module RailsERD
         :exclude, nil,
         :exclude_attributes, nil,
         :only, nil,
+        :only_attributes, nil,
         :only_recursion_depth, nil,
         :prepend_primary, false,
         :cluster, false,

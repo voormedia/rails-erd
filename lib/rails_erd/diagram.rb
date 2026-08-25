@@ -55,6 +55,14 @@ module RailsERD
   # attributes:: Selects which attributes to display. Can be any combination of
   #              +:content+, +:primary_keys+, +:foreign_keys+, +:timestamps+, or
   #              +:inheritance+.
+  # only_attributes:: Shows only the listed attributes for the given models,
+  #                   without affecting other models. Accepts a hash that maps
+  #                   model names to a list of attribute names to keep. From the
+  #                   command line it can also be given as a comma separated
+  #                   string of +Model.attribute+ entries, for example
+  #                   <tt>only_attributes="Book.title,Book.isbn"</tt>. Models
+  #                   that are not listed keep all of their attributes. Unlike
+  #                   +exclude_attributes+ it cannot be set to +true+.
   # exclude_attributes:: Hides attributes on a per-model basis, without affecting
   #                      other models. Accepts a hash that maps model names to
   #                      either +true+ (hide all attributes for that model) or a
@@ -63,6 +71,7 @@ module RailsERD
   #                      entry is either +Model+ (hide all attributes) or
   #                      +Model.attribute+ (hide a single attribute), for example
   #                      <tt>exclude_attributes="BigTable,User.password_digest"</tt>.
+  #                      Applied after +only_attributes+.
   # disconnected:: Set to +false+ to exclude entities that are not connected to other
   #                entities. Defaults to +false+.
   # indirect:: Set to +false+ to exclude relationships that are indirect.
@@ -84,21 +93,26 @@ module RailsERD
         new(Domain.generate(options), options).create
       end
 
-      # Canonicalises the +exclude_attributes+ option into a hash that maps
-      # model names (as strings) to either +true+ (hide all attributes) or an
-      # array of attribute names to hide. Accepts several input shapes:
+      # Canonicalises an attribute filter option (+only_attributes+ or
+      # +exclude_attributes+) into a hash that maps model names (as strings) to
+      # either +true+ (the whole model was named, without any attribute) or an
+      # array of attribute names. Accepts several input shapes:
       #
       #   * a hash, e.g. <tt>{ "BigTable" => true, "User" => ["password_digest"] }</tt>
-      #     (values may be +true+/+"all"+ to hide every attribute, +false+/+nil+
-      #     to hide none, or a comma separated string / array of names);
+      #     (values may be +true+/+"all"+ to name the whole model, +false+/+nil+
+      #     to name no attributes, or a comma separated string / array of names);
       #   * a string or array of <tt>Model</tt> / <tt>Model.attribute</tt>
       #     entries, e.g. <tt>"BigTable,User.password_digest"</tt>.
-      def normalize_exclude_attributes(value)
+      #
+      # How +true+ and an empty list are interpreted is up to the caller: for
+      # +exclude_attributes+ they mean "hide every attribute" and "hide none",
+      # for +only_attributes+ they both mean "keep every attribute".
+      def normalize_attribute_filter(value)
         return {} if value.nil? || value == false
 
         if value.is_a?(Hash)
           value.each_with_object({}) do |(model, attrs), result|
-            result[model.to_s] = normalize_exclude_attribute_value(attrs)
+            result[model.to_s] = normalize_attribute_filter_value(attrs)
           end
         else
           entries = Array(value).flat_map { |entry| entry.to_s.split(",") }
@@ -114,6 +128,25 @@ module RailsERD
             end
           end
         end
+      end
+
+      # Canonicalises the +only_attributes+ option. See #normalize_attribute_filter.
+      # Unlike +exclude_attributes+ it cannot be enabled with a bare +true+:
+      # "show only all attributes" has no meaning, so it is rejected rather than
+      # silently ignored.
+      def normalize_only_attributes(value)
+        if value == true
+          raise ArgumentError, "only_attributes cannot be true: it takes the attributes to keep, " \
+            "either as a hash of model names to attribute names, or as a list of Model.attribute " \
+            "entries. Use attributes: false or exclude_attributes to hide attributes."
+        end
+
+        normalize_attribute_filter(value)
+      end
+
+      # Canonicalises the +exclude_attributes+ option. See #normalize_attribute_filter.
+      def normalize_exclude_attributes(value)
+        normalize_attribute_filter(value)
       end
 
       protected
@@ -144,7 +177,7 @@ module RailsERD
         @callbacks ||= Hash.new { proc {} }
       end
 
-      def normalize_exclude_attribute_value(attrs)
+      def normalize_attribute_filter_value(attrs)
         case attrs
         when true then true
         when false, nil then []
@@ -318,7 +351,12 @@ module RailsERD
       excluded = excluded_attributes_for(entity)
       return [] if excluded == :all
 
+      only = only_attributes_for(entity)
+
       entity.attributes.select { |attribute|
+        # Keep only the attributes listed for this specific model, mirroring how
+        # :only is applied before :exclude when filtering entities.
+        next false if only != :all && !only.include?(attribute.name)
         # Hide attributes excluded for this specific model.
         next false if excluded.include?(attribute.name)
         # Hide every attribute when the :attributes option is off or the entity
@@ -329,6 +367,18 @@ module RailsERD
       }
     end
 
+    # Returns the attributes the given entity is restricted to through the
+    # +only_attributes+ option. Returns +:all+ when no restriction applies,
+    # which is the case when the model is not listed at all, or is listed
+    # without naming any attribute.
+    def only_attributes_for(entity)
+      spec = normalized_only_attributes[entity.name]
+      return :all if spec.nil? || spec == true
+
+      names = Array(spec)
+      names.empty? ? :all : names
+    end
+
     # Returns the attribute exclusions configured for the given entity through
     # the +exclude_attributes+ option. Returns +:all+ when every attribute
     # should be hidden, or an array of attribute names otherwise.
@@ -336,6 +386,10 @@ module RailsERD
       spec = normalized_exclude_attributes[entity.name]
       return :all if spec == true
       Array(spec)
+    end
+
+    def normalized_only_attributes
+      @normalized_only_attributes ||= self.class.normalize_only_attributes(options.only_attributes)
     end
 
     def normalized_exclude_attributes

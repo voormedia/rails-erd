@@ -1,6 +1,9 @@
 Unreleased
 ----------
 
+### New Features
+* Add `only_attributes` option to show only the listed attributes on a per-model basis, the counterpart to `exclude_attributes` (#486)
+
 ### Internal
 * Remove unnecessary `ostruct` runtime dependency; replace stale `pry-nav` with `pry-byebug` (#481)
 
