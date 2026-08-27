@@ -1,6 +1,9 @@
 Unreleased
 ----------
 
+2.2.0
+-----
+
 ### New Features
 * Add `only_attributes` option to show only the listed attributes on a per-model basis, the counterpart to `exclude_attributes` (#486, #487)
 * Add `recursive` option (default `true`); set it to `false` to omit self-referential relationships, such as a `parent_id` pointing at the entity's own table (#483, #485)
