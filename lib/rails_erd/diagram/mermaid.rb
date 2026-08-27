@@ -2,6 +2,7 @@
 
 require "rails_erd/diagram"
 require "erb"
+require "set"
 
 module RailsERD
   class Diagram
@@ -11,6 +12,7 @@ module RailsERD
 
       setup do
         self.graph = [diagram_type]
+        @drawn_entity_names = Set.new
 
         # Respect orientation option: horizontal = TB (top-down), vertical = LR (left-right)
         direction = (options.orientation.to_s == "vertical") ? "LR" : "TB"
@@ -28,6 +30,7 @@ module RailsERD
       end
 
       each_entity do |entity, attributes|
+        @drawn_entity_names << entity.name.to_s
         if er_diagram?
           # Build entity block as a single string to avoid uniq issues with closing braces
           quoted_entity = quote_entity_name(entity)
@@ -79,27 +82,9 @@ module RailsERD
         from, to = relationship.source, relationship.destination
         next unless from && to
 
-        if er_diagram?
-          graph << "\t#{quote_entity_name(from.name)} #{er_relation_notation(relationship)} #{quote_entity_name(to.name)} : \"\""
-
-          from.children.each do |child|
-            graph << "\t#{quote_entity_name(child.name)} #{er_relation_notation(relationship)} #{quote_entity_name(to.name)} : \"\""
-          end
-
-          to.children.each do |child|
-            graph << "\t#{quote_entity_name(from.name)} #{er_relation_notation(relationship)} #{quote_entity_name(child.name)} : \"\""
-          end
-        else
-          graph << "\t`#{from.name}` #{relation_arrow(relationship)} `#{to.name}`"
-
-          from.children.each do |child|
-            graph << "\t`#{child.name}` #{relation_arrow(relationship)} `#{to.name}`"
-          end
-
-          to.children.each do |child|
-            graph << "\t`#{from.name}` #{relation_arrow(relationship)} `#{child.name}`"
-          end
-        end
+        draw_relation(from, to, relationship)
+        from.children.each { |child| draw_relation(child, to, relationship) }
+        to.children.each { |child| draw_relation(from, child, relationship) }
       end
 
       save do
@@ -125,6 +110,22 @@ module RailsERD
 
       def er_diagram?
         options[:mermaid_style] == :erdiagram || options[:mermaid_style] == :er
+      end
+
+      # Mermaid renders any entity a relationship names, so an edge to an entity that was
+      # filtered out would draw it back into the diagram. Skip those, as Graphviz already does.
+      def draw_relation(from, to, relationship)
+        return unless entity_drawn?(from.name) && entity_drawn?(to.name)
+
+        graph << if er_diagram?
+                   "\t#{quote_entity_name(from.name)} #{er_relation_notation(relationship)} #{quote_entity_name(to.name)} : \"\""
+                 else
+                   "\t`#{from.name}` #{relation_arrow(relationship)} `#{to.name}`"
+                 end
+      end
+
+      def entity_drawn?(name)
+        @drawn_entity_names.include?(name.to_s)
       end
 
       # Quote entity names that contain special characters (like :: for namespaces)
