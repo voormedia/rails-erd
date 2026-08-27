@@ -188,11 +188,28 @@ class MermaidTest < ActiveSupport::TestCase
       "\tclass `Cannon`",
       "\tclass `Galleon`",
       "\tclass `Stronghold`",
-      "\t`Defensible` --> `Cannon`",
       "\t`Galleon` --> `Cannon`",
       "\t`Stronghold` --> `Cannon`"
     ]
     assert_equal expected, diagram.graph.uniq
+  end
+
+  test "generate should not draw polymorphic entity that is omitted by only" do
+    create_model "Cannon", :defensible => :references do
+      belongs_to :defensible, :polymorphic => true
+    end
+    create_model "Galleon" do
+      has_many :cannons, :as => :defensible
+    end
+
+    expected = [
+      "classDiagram",
+      "\tdirection TB",
+      "\tclass `Cannon`",
+      "\tclass `Galleon`",
+      "\t`Galleon` --> `Cannon`"
+    ]
+    assert_equal expected, diagram(:only => %w{Cannon Galleon}).graph.uniq
   end
 
   test "generate should support one to many relationships" do

@@ -276,6 +276,7 @@ module RailsERD
     def filtered_relationships
       @domain.relationships.reject { |relationship|
         (!options.indirect && relationship.indirect?) ||
+          (!options.recursive && relationship.recursive?) ||
           # Drop relationships to a model removed by :only/:exclude, otherwise the filtered-out
           # model leaks back in: Graphviz skips such edges implicitly (it only draws an edge when
           # both nodes exist) but Mermaid emits every relationship and renders any named entity.

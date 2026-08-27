@@ -85,7 +85,7 @@ module RailsERD
 
       # true | false
       when :disconnected, :indirect, :inheritance, :markup, :polymorphism,
-           :warn, :cluster
+           :recursive, :warn, :cluster
         !!value
 
       # nil | <string>

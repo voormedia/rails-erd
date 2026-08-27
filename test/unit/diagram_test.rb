@@ -323,6 +323,20 @@ class DiagramTest < ActiveSupport::TestCase
     assert_equal [false, false], retrieve_relationships(:indirect => false).map(&:indirect?)
   end
 
+  test "generate should yield self referential relationships if recursive is true" do
+    create_model "Node", :parent => :references do
+      belongs_to :parent, :class_name => "Node"
+    end
+    assert_equal [true], retrieve_relationships(:recursive => true).map(&:recursive?)
+  end
+
+  test "generate should filter self referential relationships if recursive is false" do
+    create_model "Node", :parent => :references do
+      belongs_to :parent, :class_name => "Node"
+    end
+    assert_equal [], retrieve_relationships(:recursive => false)
+  end
+
   test "generate should yield relationships from specialized entities" do
     create_model "Foo", :bar => :references
     create_model "Bar", :type => :string

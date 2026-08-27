@@ -145,6 +145,7 @@ mermaid_style: erdiagram
 notation: simple
 orientation: horizontal
 polymorphism: false
+recursive: true
 sort: true
 warn: true
 title: true

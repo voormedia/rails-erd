@@ -2,7 +2,11 @@ Unreleased
 ----------
 
 ### New Features
-* Add `only_attributes` option to show only the listed attributes on a per-model basis, the counterpart to `exclude_attributes` (#486)
+* Add `only_attributes` option to show only the listed attributes on a per-model basis, the counterpart to `exclude_attributes` (#486, #487)
+* Add `recursive` option (default `true`); set it to `false` to omit self-referential relationships, such as a `parent_id` pointing at the entity's own table (#483, #485)
+
+### Bug Fixes
+* Mermaid no longer draws entities that were filtered out of the diagram: an edge is only emitted when both of its entities were drawn, matching the Graphviz generator (#482, #484)
 
 ### Internal
 * Remove unnecessary `ostruct` runtime dependency; replace stale `pry-nav` with `pry-byebug` (#481)
