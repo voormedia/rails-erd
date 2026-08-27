@@ -488,6 +488,74 @@ class DiagramTest < ActiveSupport::TestCase
     assert_equal [], attribute_lists[Author].map(&:name)
   end
 
+  test "generate should show only the listed attributes for a model" do
+    create_model "Book", :title => :string, :subtitle => :string, :pages => :integer
+    attribute_lists = retrieve_attribute_lists(:only_attributes => { "Book" => ["title", "pages"] })
+    assert_equal %w{pages title}, attribute_lists[Book].map(&:name).sort
+  end
+
+  test "generate should restrict attributes for the listed model only" do
+    create_model "Book", :title => :string, :subtitle => :string
+    create_model "Author", :name => :string, :born_on => :date
+    attribute_lists = retrieve_attribute_lists(:only_attributes => { "Book" => ["title"] })
+    assert_equal %w{title}, attribute_lists[Book].map(&:name)
+    assert_equal %w{born_on name}, attribute_lists[Author].map(&:name).sort
+  end
+
+  test "generate should accept only_attributes as a string" do
+    create_model "Book", :title => :string, :subtitle => :string
+    create_model "Author", :name => :string
+    attribute_lists = retrieve_attribute_lists(:only_attributes => "Book.title")
+    assert_equal %w{title}, attribute_lists[Book].map(&:name)
+    assert_equal %w{name}, attribute_lists[Author].map(&:name)
+  end
+
+  test "generate should keep all attributes for a model listed in only_attributes without any attribute" do
+    create_model "Book", :title => :string, :subtitle => :string
+    attribute_lists = retrieve_attribute_lists(:only_attributes => "Book")
+    assert_equal %w{subtitle title}, attribute_lists[Book].map(&:name).sort
+  end
+
+  test "generate should not show attributes selected by only_attributes but rejected by attributes" do
+    create_model "Book", :title => :string, :created_at => :datetime
+    attribute_lists = retrieve_attribute_lists(:only_attributes => { "Book" => ["title", "created_at"] },
+      :attributes => [:content])
+    assert_equal %w{title}, attribute_lists[Book].map(&:name)
+  end
+
+  test "generate should apply only_attributes before exclude_attributes" do
+    create_model "Book", :title => :string, :subtitle => :string, :pages => :integer
+    attribute_lists = retrieve_attribute_lists(:only_attributes => { "Book" => ["title", "subtitle"] },
+      :exclude_attributes => { "Book" => ["subtitle"] })
+    assert_equal %w{title}, attribute_lists[Book].map(&:name)
+  end
+
+  test "generate should hide all attributes when a model is in both only_attributes and fully excluded" do
+    create_model "Book", :title => :string, :subtitle => :string
+    attribute_lists = retrieve_attribute_lists(:only_attributes => { "Book" => ["title"] },
+      :exclude_attributes => { "Book" => true })
+    assert_equal [], attribute_lists[Book].map(&:name)
+  end
+
+  test "normalize_only_attributes should split namespaced models on the first dot only" do
+    assert_equal({ "Admin::User" => ["email"] },
+      Diagram.normalize_only_attributes("Admin::User.email"))
+  end
+
+  test "normalize_only_attributes should return an empty hash for nil" do
+    assert_equal({}, Diagram.normalize_only_attributes(nil))
+  end
+
+  test "normalize_only_attributes should return an empty hash for false" do
+    assert_equal({}, Diagram.normalize_only_attributes(false))
+  end
+
+  test "normalize_only_attributes should raise for true" do
+    assert_raises ArgumentError do
+      Diagram.normalize_only_attributes(true)
+    end
+  end
+
   test "normalize_exclude_attributes should split namespaced models on the first dot only" do
     assert_equal({ "Admin::User" => ["password_digest"] },
       Diagram.normalize_exclude_attributes("Admin::User.password_digest"))

@@ -77,6 +77,11 @@ Choice.options do
     desc "Filter to exclude listed models in diagram."
   end
 
+  option :only_attributes do
+    long "--only_attributes=MODEL.ATTRIBUTE,..."
+    desc "Show only the listed attributes for a model, e.g. Book.title,Book.isbn. Models that are not listed keep all their attributes."
+  end
+
   option :exclude_attributes do
     long "--exclude_attributes=MODEL[.ATTRIBUTE],..."
     desc "Hide attributes per model. Use Model to hide all its attributes or Model.attribute to hide one, e.g. BigTable,User.password_digest."

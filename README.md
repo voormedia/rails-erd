@@ -152,36 +152,11 @@ title: true
 exclude: null
 exclude_attributes: null
 only: null
+only_attributes: null
 only_recursion_depth: null
 prepend_primary: false
 cluster: false
 splines: spline
-```
-
-### Hiding attributes for specific models
-
-While `attributes: false` hides attributes for *every* model, `exclude_attributes`
-lets you hide attributes for individual models without affecting the others. Map a
-model name to `true` to hide all of its attributes, or to a list of attribute names
-to hide only those:
-
-```yaml
-exclude_attributes:
-  BigTable: true            # hide all attributes for BigTable
-  User:                     # hide only these attributes for User
-    - password_digest
-    - remember_token
-```
-
-From the command line, pass a comma separated list where each entry is either
-`Model` (hide all of its attributes) or `Model.attribute` (hide a single one):
-
-```bash
-# rake task (bare key=value)
-bundle exec rake erd exclude_attributes="BigTable,User.password_digest,User.remember_token"
-
-# erd binary (flags require the -- prefix)
-bundle exec erd --exclude_attributes="BigTable,User.password_digest,User.remember_token"
 ```
 
 ### Filtering models with exclude and only
@@ -236,6 +211,62 @@ exclude:
 - Invalid regex patterns will raise an error — test your patterns first
 - Only `i`, `m`, `x` regex flags are supported; other flags are ignored
 - When both `exclude` and `only` are specified, `only` is applied first, then `exclude`
+
+### Filtering attributes with exclude_attributes and only_attributes
+
+The `attributes` option selects which *kinds* of attributes are displayed for
+every model. `only_attributes` and `exclude_attributes` refine that per model,
+mirroring the way `only` and `exclude` filter entities: use `only_attributes` to
+show just a few attributes of a model, or `exclude_attributes` to hide a few.
+Both are keyed by model name, and models that are not listed keep all of their
+attributes.
+
+**Showing only some attributes** — map a model name to the attributes to keep:
+
+```yaml
+only_attributes:
+  Book:
+    - title
+    - isbn
+```
+
+**Hiding some attributes** — map a model name to the attributes to hide, or to
+`true` to hide all of them:
+
+```yaml
+exclude_attributes:
+  BigTable: true            # hide all attributes for BigTable
+  User:                     # hide only these attributes for User
+    - password_digest
+    - remember_token
+```
+
+From the command line, both take a comma separated list of `Model.attribute`
+entries. `exclude_attributes` additionally accepts a bare `Model` to hide all of
+its attributes:
+
+```bash
+# rake task (bare key=value)
+bundle exec rake erd only_attributes="Book.title,Book.isbn"
+bundle exec rake erd exclude_attributes="BigTable,User.password_digest,User.remember_token"
+
+# erd binary (flags require the -- prefix)
+bundle exec erd --only_attributes="Book.title,Book.isbn"
+bundle exec erd --exclude_attributes="BigTable,User.password_digest,User.remember_token"
+```
+
+**Notes:**
+
+- Unlike `only`, listing a model in `only_attributes` does not affect any other
+  model; unlisted models keep all of their attributes
+- When both are specified for a model, `only_attributes` is applied first, then
+  `exclude_attributes`
+- Both narrow down the attributes selected by `attributes`; naming an attribute in
+  `only_attributes` does not display it when its kind is not displayed (for example a
+  primary key while `attributes` is only `content`)
+- `only_attributes` cannot be set to `true` the way `exclude_attributes` can, because
+  "show only all attributes" has no meaning. Use `attributes: false` or
+  `exclude_attributes` to hide attributes
 
 ### Grouping models by namespace
 
