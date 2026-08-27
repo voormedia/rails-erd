@@ -47,6 +47,11 @@ Choice.options do
     desc "Display polymorphic and abstract entities."
   end
 
+  option :no_recursive do
+    long "--no-recursive"
+    desc "Omit self-referential relationships (an entity related to itself)."
+  end
+
   option :no_indirect do
     long "--direct"
     desc "Omit indirect relationships (through other entities)."
