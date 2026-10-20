@@ -163,7 +163,9 @@ module RailsERD
       private
 
       def native_type
-        @model.connection.native_database_types[type] or {}
+        @model.connection_pool.with_connection do |connection|
+          connection.native_database_types[type] or {}
+        end
       end
     end
   end

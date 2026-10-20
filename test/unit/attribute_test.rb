@@ -208,6 +208,17 @@ class AttributeTest < ActiveSupport::TestCase
     end
   end
 
+  test "type_description should use a scoped connection when permanent connection checkout is disallowed" do
+    with_native_limit :string, 456 do
+      create_model "Foo"
+      add_column :foos, :my_str, :string, :limit => 255
+      attribute = create_attribute(Foo, "my_str")
+      with_permanent_connection_checkout_disallowed do
+        assert_equal "string (255)", attribute.type_description
+      end
+    end
+  end
+
   test "type_description should append hair space and low asterisk if field is mandatory" do
     create_model "Foo", :a => :integer do
       validates_presence_of :a

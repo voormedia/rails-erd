@@ -52,6 +52,15 @@ class GraphvizTest < ActiveSupport::TestCase
     assert result.end_with?(".svg"), "Expected filename to end with .svg, got: #{result}"
   end
 
+  test "create should write a pdf when permanent connection checkout is disallowed" do
+    create_model "Foo", :name => :string
+    result = with_permanent_connection_checkout_disallowed do
+      Diagram::Graphviz.create(:filetype => :pdf)
+    end
+    assert result.end_with?(".pdf"), "Expected filename to end with .pdf, got: #{result}"
+    assert_equal "%PDF-", File.binread(result, 5)
+  end
+
   test "rank direction should be tb for horizontal orientation" do
     create_simple_domain
     assert_equal '"TB"', diagram(:orientation => "horizontal").graph[:rankdir].to_s

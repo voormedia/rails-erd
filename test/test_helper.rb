@@ -101,6 +101,23 @@ class ActiveSupport::TestCase
     end
   end
 
+  # Rails 7.2+ can forbid the implicit permanent checkout done by
+  # ActiveRecord::Base.connection. The check only applies while the thread holds
+  # no leased connection, so release the one schema setup leased. Earlier
+  # versions have no such setting, so the block runs unchanged there.
+  def with_permanent_connection_checkout_disallowed
+    return yield unless ActiveRecord.respond_to?(:permanent_connection_checkout=)
+
+    previous = ActiveRecord.permanent_connection_checkout
+    ActiveRecord::Base.connection_pool.release_connection
+    ActiveRecord.permanent_connection_checkout = :disallowed
+    begin
+      yield
+    ensure
+      ActiveRecord.permanent_connection_checkout = previous
+    end
+  end
+
   def collect_stdout
     stdout = $stdout
     $stdout = StringIO.new
