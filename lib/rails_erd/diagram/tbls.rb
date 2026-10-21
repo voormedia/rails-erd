@@ -86,9 +86,11 @@ module RailsERD
       end
 
       def indexes_payload(model)
-        return [] unless model.connection.respond_to?(:indexes)
+        indexes = model.connection_pool.with_connection do |connection|
+          connection.respond_to?(:indexes) ? connection.indexes(model.table_name) : []
+        end
 
-        model.connection.indexes(model.table_name).map do |idx|
+        indexes.map do |idx|
           columns = Array(idx.columns).map(&:to_s)
           {
             name: idx.name,

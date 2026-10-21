@@ -141,6 +141,20 @@ class TblsTest < ActiveSupport::TestCase
     assert_equal %w[authors books], fk_targets
   end
 
+  test "indexes are emitted when permanent connection checkout is disallowed" do
+    create_model "Widget", name: :string
+    ActiveRecord::Base.connection.add_index :widgets, :name, unique: true, name: "index_widgets_on_name"
+
+    widgets = with_permanent_connection_checkout_disallowed { table(payload, "widgets") }
+
+    assert_equal [{
+      name: "index_widgets_on_name",
+      def: "CREATE UNIQUE INDEX index_widgets_on_name ON widgets (name)",
+      table: "widgets",
+      columns: ["name"],
+    }], widgets[:indexes]
+  end
+
   # Schema-level payload =====================================================
   test "top-level payload has a name and a tables array" do
     create_simple_domain
